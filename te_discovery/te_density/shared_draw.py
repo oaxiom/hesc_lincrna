@@ -10,9 +10,9 @@ def draw_density(filename, selected_genes, TE=None):
     arr = numpy.zeros(1000) # scaled bins to put in;
     for n, gene in enumerate(selected_genes):
         # scale the TE to the mRNA
-        #print(gene)
+        print(gene)
 
-        tlen = len(gene['loc'])
+        tlen = shared.convert_genocode_to_local(gene)[1]
 
         for d in gene['doms']:
             if TE:
@@ -22,7 +22,7 @@ def draw_density(filename, selected_genes, TE=None):
             s = math.floor(d['span'][0] / tlen * 1000)
             e = math.ceil(d['span'][1] / tlen * 1000)
 
-            #print(s,e)
+            print(s, e, tlen, d['span'], gene['loc'], gene['strand'])
 
             arr[s:e] += 1
 
@@ -42,8 +42,10 @@ def draw_density_utrs(filename, selected_genes, TE=None):
     utr3 = numpy.zeros(1000)
 
     for n, gene in enumerate(selected_genes):
+        print(gene)
         # scale the TE to the mRNA
         pos = shared.convert_genocode_to_local(gene)
+        print(pos)
 
         if pos[2] == pos[3]:
             # Bad CDS, skip this one;
@@ -70,23 +72,26 @@ def draw_density_utrs(filename, selected_genes, TE=None):
             s = d['span'][0]
             e = d['span'][1]
 
-            #print(s, e, utr5_l, utr5_r, cds_l, cds_r, cds_len, utr3_l, utr3_r, utr3_len)
+            print(s, e, 'utr', utr5_l, utr5_r, 'cds', cds_l, cds_r, cds_len, 'utr3', utr3_l, utr3_r, utr3_len)
 
             if s <= utr5_r:
-                ls = max(math.floor(s / utr5_r * 1000), 0)
-                le = min(math.ceil(e / utr5_r * 1000), 1000)
+                ls = max([math.floor(s / utr5_r * 1000), 0])
+                le = min([math.ceil(e / utr5_r * 1000), 1000])
                 utr5[ls:le] += 1
-                #print("Add 5'UTR")
+                print("Add 5'UTR")
             if e >= cds_l and s <= cds_r:
-                ls = max(math.floor((s-cds_l) / cds_len * 1000), 0)
-                le = min(math.ceil((e-cds_l) / cds_len * 1000), 1000)
-                cds[s:e] += 1
-                #print('Add CDS')
+                ls = max([math.floor((s-cds_l) / cds_len * 1000), 0])
+                le = min([math.ceil((e-cds_l) / cds_len * 1000), 1000])
+                cds[ls:le] += 1
+                print('Add CDS')
             if e > utr3_l:
-                ls = max(math.floor((s-utr3_l) / utr3_len * 1000), 0)
-                le = min(math.ceil((e-utr3_l) / utr3_len * 1000), 1000)
-                utr3[s:e] += 1
-                #print("Add 3'UTR")
+                ls = max([math.floor((s-utr3_l) / utr3_len * 1000), 0])
+                le = min([math.ceil((e-utr3_l) / utr3_len * 1000), 1000])
+                utr3[ls:le] += 1
+                print("Add 3'UTR")
+
+            print(ls, le)
+            print()
 
         if (n+1) % 1000 == 0:
             print('Processed: {:,} transcripts'.format(n+1))
@@ -99,14 +104,19 @@ def draw_density_utrs(filename, selected_genes, TE=None):
     ax1 = fig.add_subplot(131)
     ax1.plot(utr5)
     ax1.set_ylim([0, ymax])
+    ax1.set_xticklabels('')
 
     ax2 = fig.add_subplot(132)
     ax2.plot(cds)
     ax2.set_ylim([0, ymax])
+    ax2.set_yticklabels('')
+    ax2.set_xticklabels('')
 
     ax3 = fig.add_subplot(133)
     ax3.plot(utr3)
     ax3.set_ylim([0, ymax])
+    ax3 .set_yticklabels('')
+    ax3.set_xticklabels('')
 
 
     fig.savefig(filename)

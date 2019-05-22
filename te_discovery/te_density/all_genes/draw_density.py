@@ -17,8 +17,9 @@ import shared_draw
 draw = 'png'
 
 doms = glload('../../te_transcripts/transcript_table_HSC_SR_PB_merged.mapped.glb')
-#gencode_db = genome_sql(filename=os.path.expanduser('~/hg38/hg38_gencode_v29.sql'))
+gencode = glload(os.path.expanduser('~/hg38/hg38_gencode_v29.glb')).getColumns(['enst', 'cds_loc'])
 dfam = genelist('../../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
+doms = doms.map(genelist=gencode, key='enst')
 
 shared_draw.draw_density('all_genes_all_tes.png', doms, None)
 

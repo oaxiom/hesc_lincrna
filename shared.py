@@ -131,13 +131,9 @@ def convert_genocode_to_local(gencode):
     cdsl = newcdsl
     cdsr = newcdsr
 
-    if gencode['strand'] == '-': # splice sites and cds are always + strand, so would need to invert them;
-        splice_sites = [tlength-s for s in splice_sites]
-        if gencode: # Have valid cdsl, cdsr
-            cdsl = tlength - cdsl
-            cdsr = tlength - cdsr
-
     splice_sites = splice_sites[:-1] # last one is the termination;
+
+    tlength = gencode['loc']['right'] - gencode['loc']['left']
 
     #ts = gene['loc']['left']
     #te = gene['loc']['right']

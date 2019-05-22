@@ -17,7 +17,8 @@ import shared_draw
 draw = 'png'
 
 doms = glload('../../te_transcripts/transcript_table_HSC_SR_PB_merged.mapped.glb')
-gencode = glload(os.path.expanduser('~/hg38/hg38_gencode_v29.glb'))
+gencode = glload(os.path.expanduser('~/hg38/hg38_gencode_v29.glb')).getColumns(['enst', 'cds_loc'])
+#print(gencode)
 dfam = genelist('../../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
 
 print(doms)
