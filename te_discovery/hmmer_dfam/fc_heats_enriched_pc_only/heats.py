@@ -2,7 +2,7 @@
 import numpy, sys, os
 from glbase3 import *
 import matplotlib.pyplot as plot
-sys.path.append('../')
+sys.path.append('../../../')
 import shared
 
 config.draw_mode = 'png'

@@ -8,7 +8,7 @@ import glob, sys, os, gzip
 from glbase3 import utils, expression, genelist, glload
 
 gl = glload('transcript_table_HSC_SR_PB_merged.transcripts.glb')
-coding_noncoding = genelist(filename='../../../transcript_assembly/coding_noncoding/coding_table.txt', format={'force_tsv': True, 'transcript_id': 0, 'coding': 1})
+coding_noncoding = genelist(filename='../../../transcript_assembly/coding_noncoding/coding_table.txt.gz', format={'force_tsv': True, 'transcript_id': 0, 'coding': 1}, gzip=True)
 all_genes = glload('../../../transcript_assembly/packed/all_genes.glb')
 
 new_c = []
