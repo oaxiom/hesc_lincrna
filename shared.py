@@ -109,7 +109,7 @@ def convert_genocode_to_local(gencode):
     # This is wrong if the transcrip is ~
     cdsl = gencode['cds_loc']['left']
     cdsr = gencode['cds_loc']['right']
-    #print(gene['enst'], gene['transcript_id'], gene['name'], gene['strand'], gencode['loc'], gencode['cds_loc'], gene['exonStarts'], gene['exonEnds'])
+    #print(gencode['enst'], gencode['transcript_id'], gencode['name'], gencode['strand'], gencode['loc'], gencode['cds_loc'], gencode['exonStarts'], gencode['exonEnds'])
 
     # Work out the mRNA length from the gene length and the exons and Es:
     tlength = 0
@@ -132,8 +132,6 @@ def convert_genocode_to_local(gencode):
     cdsr = newcdsr
 
     splice_sites = splice_sites[:-1] # last one is the termination;
-
-    tlength = gencode['loc']['right'] - gencode['loc']['left']
 
     #ts = gene['loc']['left']
     #te = gene['loc']['right']

@@ -10,7 +10,7 @@ def draw_density(filename, selected_genes, TE=None):
     arr = numpy.zeros(1000) # scaled bins to put in;
     for n, gene in enumerate(selected_genes):
         # scale the TE to the mRNA
-        print(gene)
+        #print(gene)
 
         tlen = shared.convert_genocode_to_local(gene)[1]
 
@@ -22,7 +22,8 @@ def draw_density(filename, selected_genes, TE=None):
             s = math.floor(d['span'][0] / tlen * 1000)
             e = math.ceil(d['span'][1] / tlen * 1000)
 
-            print(s, e, tlen, d['span'], gene['loc'], gene['strand'])
+            #print(s, e, tlen, d['span'], gene['loc'], gene['strand'])
+            #print()
 
             arr[s:e] += 1
 

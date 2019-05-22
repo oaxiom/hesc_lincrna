@@ -1,7 +1,7 @@
 genome: 
 	hg38_gencode
 repeat_sql:
-	../../../hg38/repeats/hg38_rmsk_EREs.sql
+	repeats/hg38_rmsk_EREs.sql
 flat: colour=blue min_scaling=1000
     stem_merge150good_sorted.filtered.flat
 genome_sql: 

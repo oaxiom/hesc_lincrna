@@ -7,3 +7,5 @@ __pycache__
 *.svg
 *.flat
 tblout.*
+get_data.sh
+get_gtf.sh
