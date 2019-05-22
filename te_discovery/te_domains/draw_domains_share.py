@@ -17,6 +17,7 @@ import matplotlib.lines as mlines
 import matplotlib.cm as cmap
 from matplotlib.collections import PatchCollection
 
+sys.path.append('../../../')
 sys.path.append('../../')
 import shared
 
@@ -96,9 +97,11 @@ def draw_domain(gene, filename, gencode_db, dfam):
     patches = []
     this_dom = {}
     for dom_idx, dom in enumerate(gene['doms']):
-        print(dom)
         # get the type and subtype out of dfam:
         t = dfam.get(key='name', value=dom['dom'])[0]
+        col_name = '%s:%s' % (t['type'], t['subtype'])
+        color = shared.col_keys[col_name]
+
         if t['type'] == 'LINE':
             posy = 0.45
         elif t['type'] == 'SINE':
@@ -115,12 +118,10 @@ def draw_domain(gene, filename, gencode_db, dfam):
         this_dom[(s, e)] = 1
 
         if dom['strand'] == '+':
-            color='blue'
             posx = s
             ha = 'left'
             strand = 0.06
         elif dom['strand'] == '-':
-            color='red'
             posx = e
             ha = 'right'
             strand = -0.06
@@ -152,8 +153,8 @@ def draw_domain(gene, filename, gencode_db, dfam):
 
     ax.set_xlim([0, tlength])
     ax.set_ylim([-1.5, 1.5])
-    ax.set_yticks([-1.0, 0, 1.0])
-    ax.set_yticklabels(['Coding Seq', 'TEs', 'Splice Junctions'])
+    ax.set_yticks([-1.0, -0.45, -0.15, 0, 0.15, 0.45, 1.0])
+    ax.set_yticklabels(['Coding Seq', 'LINE', 'SINE', 'TEs              ', 'LTR', 'Other', 'Splice Junctions'])
     ax.set_title('%s(%s) %s %s' % (gene['enst'], gene['strand'], gene['transcript_id'], gene['name']))
     ax.set_frame_on(False)
     ax.tick_params(left=False)
