@@ -17,9 +17,12 @@ import matplotlib.lines as mlines
 import matplotlib.cm as cmap
 from matplotlib.collections import PatchCollection
 
+sys.path.append('../../')
+import shared
+
 draw = 'png'
 
-def draw_domain(gene, filename, gencode_db):
+def draw_domain(gene, filename, gencode_db, dfam):
     #print(gene)
     try:
         print('Doing %s' % gene['name'])
@@ -74,20 +77,36 @@ def draw_domain(gene, filename, gencode_db):
     ts = gene['loc']['left']
     te = gene['loc']['right']
 
-    fig = plot.figure(figsize=[8,2.8])
-    fig.subplots_adjust(left=0.2, right=0.95, bottom=0.18, top=0.7)
+    fig = plot.figure(figsize=[8,4])
+    fig.subplots_adjust(left=0.2, right=0.95, bottom=0.18, top=0.8)
     ax = fig.add_subplot(111)
 
     # three row markers
     line = []
     line.append(mlines.Line2D([0, tlength], [1, 1], lw=1, alpha=1.0, color='grey', zorder=0))
-    line.append(mlines.Line2D([0, tlength], [0, 0], lw=1, alpha=1.0, color='grey', zorder=0))
+    # TE lines:
+    line.append(mlines.Line2D([0, tlength], [0.45, 0.45], lw=1, alpha=1.0, color='grey', zorder=0))
+    line.append(mlines.Line2D([0, tlength], [0.15, 0.15], lw=1, alpha=1.0, color='grey', zorder=0))
+    line.append(mlines.Line2D([0, tlength], [-0.15, -0.15], lw=1, alpha=1.0, color='grey', zorder=0))
+    line.append(mlines.Line2D([0, tlength], [-0.45, -0.45], lw=1, alpha=1.0, color='grey', zorder=0))
+
     line.append(mlines.Line2D([0, tlength], [-1, -1], lw=5, alpha=1.0, color='black', zorder=0))
 
     # TEs:
     patches = []
     this_dom = {}
     for dom_idx, dom in enumerate(gene['doms']):
+        print(dom)
+        # get the type and subtype out of dfam:
+        t = dfam.get(key='name', value=dom['dom'])[0]
+        if t['type'] == 'LINE':
+            posy = 0.45
+        elif t['type'] == 'SINE':
+            posy = 0.15
+        elif t['type'] == 'LTR':
+            posy=-0.15
+        else: # And everything else?
+            posy=-0.45
 
         s = dom['span'][0]
         e = dom['span'][1]
@@ -98,22 +117,20 @@ def draw_domain(gene, filename, gencode_db):
         if dom['strand'] == '+':
             color='blue'
             posx = s
-            posy = 0.5
             ha = 'left'
-            strand = 0.25
+            strand = 0.06
         elif dom['strand'] == '-':
             color='red'
             posx = e
-            posy = -0.5
             ha = 'right'
-            strand = -0.25
+            strand = -0.06
 
         #print(dom)
         # I need a color key for the TEs:
-        rect = mpatches.Rectangle([s, 0.0], e-s, strand, ec="none", facecolor=color)
+        rect = mpatches.Rectangle([s, posy], e-s, strand, ec="none", facecolor=color)
         ax.add_patch(rect)
 
-        ax.text(posx, posy, dom['dom'], fontsize=6, ha=ha, va='center')
+        ax.text(posx, posy + (strand*2.1), dom['dom'], fontsize=6, ha=ha, va='center')
 
     # Draw splice markers;
     pad = (tlength / 120)
