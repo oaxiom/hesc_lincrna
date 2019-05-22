@@ -5,3 +5,4 @@ __pycache__
 *.sql
 *.png
 *.svg
+*.flat
