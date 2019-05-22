@@ -98,6 +98,8 @@ for f in sorted(glob.glob('raw_data/tblout*.tsv.gz')):
         all_doms = new_doms
         #print('After remove simple Dupes:', len(all_doms))
 
+        # (1083, 1384), (1251, 1384),
+
         # This is slow, so obvious cases are deleted before entering;
         marked_for_deletion = set([])
         for idx_dom1, dom1 in enumerate(all_doms):
@@ -115,7 +117,7 @@ for f in sorted(glob.glob('raw_data/tblout*.tsv.gz')):
                 dom2_span = dom2[1]
 
                 # The second simple case: One domain is entirely contained in another domain
-                if dom1_span[0] > dom2_span[0] and dom1_span[1] < dom2_span[1]: # dom1 is inside dom2:
+                if dom1_span[0] >= dom2_span[0] and dom1_span[1] <= dom2_span[1]: # dom1 is inside dom2:
                     if dom1[0] <= dom2[0]:# E value
                         marked_for_deletion.add(dom2)
                         continue
@@ -123,7 +125,7 @@ for f in sorted(glob.glob('raw_data/tblout*.tsv.gz')):
                         marked_for_deletion.add(dom1)
                         continue
 
-                if dom2_span[0] > dom1_span[0] and dom2_span[1] < dom1_span[1]: # dom2 is inside dom1:
+                if dom2_span[0] >= dom1_span[0] and dom2_span[1] <= dom1_span[1]: # dom2 is inside dom1:
                     if dom1[0] <= dom2[0]:# E value
                         marked_for_deletion.add(dom2)
                         continue
@@ -157,7 +159,7 @@ for f in sorted(glob.glob('raw_data/tblout*.tsv.gz')):
         #print()
         #break
 
-        if (idx+1) % 1000 == 0:
+        if (idx+1) % 100 == 0:
             config.log.info('Processed: {:,} transcripts'.format(idx+1))
             #break
 

@@ -31,7 +31,7 @@ genes = set(['SOX2', 'NANOG', 'SALL4', 'LIN28A', 'LIN28B', 'SALL1', 'POU5F1',
     'HNRNPK', 'HNRNPU'])
 
 for n, gene in enumerate(doms):
-    print(gene['name'].split(' ')[0])
+    #print(gene['name'].split(' ')[0])
     if gene['name'].split(' ')[0] not in genes:
         continue
 
