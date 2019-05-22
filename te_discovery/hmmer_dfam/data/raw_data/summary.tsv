@@ -1,0 +1,11 @@
+name	num_fasta	num_bps
+HSC_SR_PB_merged.transcripts	93053	303379644
+Homo_sapiens.GRCh38.cdna.all	187626	310245896
+Homo_sapiens.GRCh38.ncrna	38739	33617986
+Hs_pacbio_hesc_h1.rp1	118286	311915913
+Hs_pacbio_hesc_h1.rp2	121992	305191820
+Hs_pacbio_ipsc_c11.rp1	118850	277492003
+Hs_pacbio_ipsc_c11.rp2	115117	267410479
+gencode.v29.lncRNA_transcripts	29566	31667143
+gencode.v29.pc_transcripts	98913	212045474
+gencode.v29.transcripts	206694	316747430
