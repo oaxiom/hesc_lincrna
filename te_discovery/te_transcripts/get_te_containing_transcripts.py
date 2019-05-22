@@ -1,13 +1,7 @@
 
 '''
 
-Draw protein domain-style plots, but containing the locations of the TEs
-
-The plots should be the mRNA, with a protein coding exon (if present), and the location of the TE;
-
-This script collectes the data
-
-Get a list of all transcripts that contain a TE, add their genome coordinates from the GTF
+Build the final annotation tables;
 
 '''
 

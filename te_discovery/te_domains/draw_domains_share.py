@@ -41,6 +41,7 @@ def draw_domain(gene, filename, gencode_db, dfam):
             if len(gencode['cds_loc']) == 0: # non-coding
                 gencode = None
 
+    #TODO: replace with shared.convert_genocode_to_local()
     cdsl = None; cdsr = None
     if gencode:
         # This is wrong if the transcrip is ~

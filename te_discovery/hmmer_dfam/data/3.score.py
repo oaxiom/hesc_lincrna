@@ -100,7 +100,7 @@ for te in sorted(list(all_te_keys)):
 oh.close()
 
 # Get TE annotations;
-dfam = genelist('dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'HMMlength': 1, 'species': 2, 'type': 3, 'subtype': 4})
+dfam = genelist('../../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'HMMlength': 1, 'species': 2, 'type': 3, 'subtype': 4})
 
 sam_order = [
     'gencode.v29.transcripts',

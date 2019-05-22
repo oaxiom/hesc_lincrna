@@ -17,10 +17,30 @@ import shared_draw
 draw = 'png'
 
 doms = glload('../../te_transcripts/transcript_table_HSC_SR_PB_merged.mapped.glb')
-#gencode_db = genome_sql(filename=os.path.expanduser('~/hg38/hg38_gencode_v29.sql'))
+gencode = glload(os.path.expanduser('~/hg38/hg38_gencode_v29.glb'))
 dfam = genelist('../../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
 
-shared_draw.draw_density('all_genes_all_tes.png', doms, None)
+print(doms)
+doms = doms.map(genelist=gencode, key='enst')
+
+# preprocss the doms list to remove non-coding genes;
+newdoms = []
+for gene in doms:
+    if ';NC;' in gene['name']:
+        continue
+    if ';~;' in gene['name']: # CDS locations are not accurate in these;
+        continue
+    if len(gene['cds_loc']) == 0:
+        continue
+    newdoms.append(gene)
+doms = genelist()
+doms.load_list(newdoms)
+print(doms)
+print('List now %s transcripts long' % len(doms))
+
+shared_draw.draw_density_utrs('all_genes_all_tes.png', doms, None)
+
+# preprocss the doms list to remove non-coding genes;
 
 # split them up by gene-type;
 
@@ -34,5 +54,5 @@ for TE in dfam:
     type_subtype[t_s].append(TE['name'])
 
 for ts in type_subtype:
-    shared_draw.draw_density('by_te_family/all_genes_%s.png' % (ts,), doms, set(type_subtype[ts]))
+    shared_draw.draw_density_utrs('by_te_family/all_genes_%s.png' % (ts,), doms, set(type_subtype[ts]))
 

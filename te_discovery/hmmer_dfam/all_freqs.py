@@ -2,7 +2,7 @@
 import numpy, sys, os
 from glbase3 import *
 import matplotlib.pyplot as plot
-#sys.path.append('../')
+sys.path.append('../../')
 import shared
 
 config.draw_mode = 'png'
@@ -14,8 +14,6 @@ gl_all = glload('fc_heats_enriched_all_only/gl_freqs.glb')
 
 # merge all the flies into one genelist:
 all_tes = set(gl_pc['name'] + gl_ncrna['name'] + gl_all['name'])
-
-
 
 # Count the subtypes and get a barchart:
 res = {k: [0,0,0] for k in all_tes}
@@ -57,5 +55,4 @@ gl_freqs = genelist()
 gl_freqs.load_list([{'name': k, 'freq_all': res[k]} for k in res])
 gl_freqs.save('gl_freqs.glb')
 gl_freqs.saveTSV('gl_freqs.tsv')
-
 '''

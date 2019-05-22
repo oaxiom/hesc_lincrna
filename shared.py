@@ -92,6 +92,58 @@ def classify_transcript(name):
 
     return(destination, alpha)
 
+def convert_genocode_to_local(gencode):
+    '''
+    Convert a gencode genomic annotation into a local transcript structure. i.e. convert this:
+
+    [{'loc': <location chr1:57598-64116>, 'cds_loc': <location chr1:57598-57598>, 'exonStarts': [57598, 58700, 62916], 'exonEnds': [57653, 58856, 64116], 'name': 'OR4G11P (ENST00000642116)', 'type': 'gene', 'strand': '+'}]
+
+    into:
+    TSS, TTS, CDSL, CDSR, splice_locations
+
+    and it is always on the 5' strand, and TSS (by definition) == 0
+
+    '''
+    cdsl = None; cdsr = None
+
+    # This is wrong if the transcrip is ~
+    cdsl = gencode['cds_loc']['left']
+    cdsr = gencode['cds_loc']['right']
+    #print(gene['enst'], gene['transcript_id'], gene['name'], gene['strand'], gencode['loc'], gencode['cds_loc'], gene['exonStarts'], gene['exonEnds'])
+
+    # Work out the mRNA length from the gene length and the exons and Es:
+    tlength = 0
+    currpos = gencode['loc']['left'] # transcript position in genomic coords
+    splice_sites = []
+    newcdsl = 0 ; newcdsr = 0
+    for splice in zip(gencode['exonStarts'], gencode['exonEnds']):
+        if gencode:
+            if cdsl >= splice[0] and cdsl <= splice[1]:
+                newcdsl = tlength + (cdsl-splice[0])
+            if cdsr >= splice[0] and cdsr <= splice[1]:
+                newcdsr = tlength + (cdsr-splice[0])
+
+        tlength += (splice[1]-splice[0])
+        currpos = splice[1]
+        splice_sites.append(tlength)
+
+    #if gencode and cdsl != cdsr: # if cdsl= cdsr then it is non-coding;
+    cdsl = newcdsl
+    cdsr = newcdsr
+
+    if gencode['strand'] == '-': # splice sites and cds are always + strand, so would need to invert them;
+        splice_sites = [tlength-s for s in splice_sites]
+        if gencode: # Have valid cdsl, cdsr
+            cdsl = tlength - cdsl
+            cdsr = tlength - cdsr
+
+    splice_sites = splice_sites[:-1] # last one is the termination;
+
+    #ts = gene['loc']['left']
+    #te = gene['loc']['right']
+
+    return 0, tlength, cdsl, cdsr, splice_sites
+
 if __name__ == '__main__':
     import matplotlib.pyplot as plot
 
