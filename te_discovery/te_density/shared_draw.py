@@ -27,12 +27,13 @@ def draw_density(filename, selected_genes, TE=None):
 
             arr[s:e] += 1
 
-    fig = plot.figure()
+    fig = plot.figure(figsize=[2.2,1.4])
     ax = fig.add_subplot(111)
 
     ax.plot(arr)
-
+    ax.tick_params(axis='both', which='minor', labelsize=6)
     fig.savefig(filename)
+    fig.savefig(filename.replace('.png', '.svg'))
     plot.close(fig)
     print('Saved %s' % filename)
 
@@ -99,19 +100,20 @@ def draw_density_utrs(filename, selected_genes, TE=None):
             print('Processed: {:,} transcripts'.format(n+1))
             #if n> 2000: break
 
-    fig = plot.figure(figsize=[7,5])
+    fig = plot.figure(figsize=[2.2,1.4])
 
     ymax = max([utr5.max(), cds.max(), utr3.max(), 1])
 
     ax1 = fig.add_subplot(131)
     ax1.plot(utr5)
     ax1.set_ylim([0, ymax])
+    ax1.tick_params(axis='both', which='minor', labelsize=6)
     ax1.set_xticklabels('')
 
     ax2 = fig.add_subplot(132)
     ax2.plot(cds)
     ax2.set_ylim([0, ymax])
-    ax2.set_yticklabels('')
+    ax2.set_yticklabels('', fontsize=6)
     ax2.set_xticklabels('')
 
     ax3 = fig.add_subplot(133)
@@ -122,5 +124,7 @@ def draw_density_utrs(filename, selected_genes, TE=None):
 
 
     fig.savefig(filename)
+    fig.savefig(filename.replace('.png', '.svg'))
     plot.close(fig)
+
     print('Saved %s' % filename)
