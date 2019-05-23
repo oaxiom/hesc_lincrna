@@ -7,6 +7,7 @@ Measure the density of TE insertions, scaled across the length of the transcript
 
 import glob, sys, os, gzip, numpy, math
 import matplotlib.pyplot as plot
+import matplotlib.cm as cm
 from glbase3 import glload, utils, expression, genelist, genome_sql
 
 sys.path.append('../../../')
@@ -17,7 +18,8 @@ import shared_draw
 draw = 'png'
 
 doms = glload('../../te_transcripts/transcript_table_HSC_SR_PB_merged.mapped.glb')
-gencode = glload(os.path.expanduser('~/hg38/hg38_gencode_v29.glb')).getColumns(['enst', 'cds_loc'])
+gencode = glload('../../../gencode/hg38_gencode_v30.glb').getColumns(['enst', 'cds_loc'])
+gencode_doms = glload('../../te_transcripts/transcript_table_merged.mapped.glb')
 dfam = genelist('../../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
 
 print(doms)
@@ -44,6 +46,9 @@ for TE in dfam:
         type_subtype[t_s] = []
     type_subtype[t_s].append(TE['name'])
 
+res = {}
 for ts in type_subtype:
-    shared_draw.draw_density('by_te_family/pc_%s.png' % (ts,), doms, set(type_subtype[ts]))
+    res[ts] = shared_draw.draw_density('by_te_family/ncrna_%s.png' % (ts,), doms, set(type_subtype[ts]))
 
+# turn it into a megatable:
+shared_draw.draw_heatmap('te_heat.png', res)

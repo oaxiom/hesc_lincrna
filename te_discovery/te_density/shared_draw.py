@@ -1,6 +1,7 @@
 
 import math, numpy, sys
 import matplotlib.pyplot as plot
+import matplotlib.cm as cmby_te
 
 sys.path.append('../../')
 import shared
@@ -27,7 +28,12 @@ def draw_density(filename, selected_genes, TE=None):
 
             arr[s:e] += 1
 
+    if max(arr) < 10:
+        return [0] # stop from drawing
+
+
     fig = plot.figure(figsize=[2.2,1.4])
+    fig.subplots_adjust(left=0.25, bottom=0.3,)
     ax = fig.add_subplot(111)
 
     ax.plot(arr)
@@ -36,6 +42,25 @@ def draw_density(filename, selected_genes, TE=None):
     fig.savefig(filename.replace('.png', '.svg'))
     plot.close(fig)
     print('Saved %s' % filename)
+    return arr
+
+def draw_heatmap(filename, res):
+    res_labels = sorted([k for k in res if max(res[k]) > 10])
+    res_tab = numpy.array([res[k] for k in res_labels])
+
+    fig = plot.figure(figsize=[4,7])
+    ax = fig.add_subplot(111)
+    ax.set_position([0.5, 0.1, 0.48, 0.8])
+
+    ax.imshow(res_tab, cmap=cm.viridis, aspect="auto",
+        origin='lower',
+        extent=[0, res_tab.shape[1], 0, res_tab.shape[0]])
+
+    ax.set_yticks(numpy.arange(len(res_labels))+0.5)
+    ax.set_yticklabels(res_labels)
+
+    fig.savefig(filename)
+    fig.savefig(filename.replace('.png', '.svg'))
 
 def draw_density_utrs(filename, selected_genes, TE=None):
 
