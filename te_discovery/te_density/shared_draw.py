@@ -43,10 +43,11 @@ def draw_density_utrs(filename, selected_genes, TE=None):
     utr3 = numpy.zeros(1000)
 
     for n, gene in enumerate(selected_genes):
-        print(gene)
+        #print(gene)
         # scale the TE to the mRNA
         pos = shared.convert_genocode_to_local(gene)
-        print(pos)
+        # return 0, tlength, cdsl, cdsr, splice_sites
+        #print(pos)
 
         if pos[2] == pos[3]:
             # Bad CDS, skip this one;
@@ -73,26 +74,26 @@ def draw_density_utrs(filename, selected_genes, TE=None):
             s = d['span'][0]
             e = d['span'][1]
 
-            print(s, e, 'utr', utr5_l, utr5_r, 'cds', cds_l, cds_r, cds_len, 'utr3', utr3_l, utr3_r, utr3_len)
+            #print(s, e, 'utr', utr5_l, utr5_r, 'cds', cds_l, cds_r, cds_len, 'utr3', utr3_l, utr3_r, utr3_len)
 
             if s <= utr5_r:
                 ls = max([math.floor(s / utr5_r * 1000), 0])
                 le = min([math.ceil(e / utr5_r * 1000), 1000])
                 utr5[ls:le] += 1
-                print("Add 5'UTR")
+                #print("Add 5'UTR")
             if e >= cds_l and s <= cds_r:
                 ls = max([math.floor((s-cds_l) / cds_len * 1000), 0])
                 le = min([math.ceil((e-cds_l) / cds_len * 1000), 1000])
                 cds[ls:le] += 1
-                print('Add CDS')
+                #print('Add CDS')
             if e > utr3_l:
                 ls = max([math.floor((s-utr3_l) / utr3_len * 1000), 0])
                 le = min([math.ceil((e-utr3_l) / utr3_len * 1000), 1000])
                 utr3[ls:le] += 1
-                print("Add 3'UTR")
+                #print("Add 3'UTR")
 
-            print(ls, le)
-            print()
+            #print(ls, le)
+            #print()
 
         if (n+1) % 1000 == 0:
             print('Processed: {:,} transcripts'.format(n+1))

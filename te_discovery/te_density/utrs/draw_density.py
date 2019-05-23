@@ -29,7 +29,7 @@ newdoms = []
 for gene in doms:
     if ';NC;' in gene['name']:
         continue
-    if ';~;' in gene['name']: # CDS locations are not accurate in these;
+    if ';~' in gene['name']: # CDS locations are not accurate in these;
         continue
     if len(gene['cds_loc']) == 0:
         continue

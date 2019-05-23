@@ -104,8 +104,6 @@ def convert_genocode_to_local(gencode):
     and it is always on the 5' strand, and TSS (by definition) == 0
 
     '''
-    cdsl = None; cdsr = None
-
     # This is wrong if the transcrip is ~
     cdsl = gencode['cds_loc']['left']
     cdsr = gencode['cds_loc']['right']
@@ -117,15 +115,16 @@ def convert_genocode_to_local(gencode):
     splice_sites = []
     newcdsl = 0 ; newcdsr = 0
     for splice in zip(gencode['exonStarts'], gencode['exonEnds']):
-        if gencode:
-            if cdsl >= splice[0] and cdsl <= splice[1]:
-                newcdsl = tlength + (cdsl-splice[0])
-            if cdsr >= splice[0] and cdsr <= splice[1]:
-                newcdsr = tlength + (cdsr-splice[0])
+        if cdsl >= splice[0] and cdsl <= splice[1]:
+            newcdsl = tlength + (cdsl-splice[0])
+        if cdsr >= splice[0] and cdsr <= splice[1]:
+            newcdsr = tlength + (cdsr-splice[0])
 
         tlength += (splice[1]-splice[0])
         currpos = splice[1]
         splice_sites.append(tlength)
+
+        #print(tlength, cdsl, cdsr, splice, newcdsl, newcdsr, cdsl >= splice[0] and cdsl <= splice[1], cdsr >= splice[0] and cdsr <= splice[1])
 
     #if gencode and cdsl != cdsr: # if cdsl= cdsr then it is non-coding;
     cdsl = newcdsl
