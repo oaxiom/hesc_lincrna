@@ -5,7 +5,7 @@ import matplotlib.pyplot as plot
 sys.path.append('../../../')
 import shared
 
-config.draw_mode = 'png'
+config.draw_mode = ['png','svg']
 
 expn = glload('../data/te_per1Mbp_seq.glb')
 
@@ -37,7 +37,7 @@ print('\n'.join(sorted(set(types))))
 row_cols = shared.get_cols(expn['merged_type'])
 
 res = expn.heatmap('fc_gt1.svg', bracket=[-2, 2], figsize=[6,12], row_font_size=6,
-    row_colbar=row_cols, heat_wid=0.02*len(expn.getConditionNames()))
+    row_colbar=row_cols, heat_wid=0.02*len(expn.getConditionNames()), grid=True)
 
 print('\n'.join(reversed(res['reordered_rows'])))
 
@@ -47,7 +47,7 @@ for t in all_type:
     newe = expn.get(key='type', value=t)
     newe.heatmap('type_%s.png' % t, bracket=[-2, 2], figsize=[6,12], row_font_size=6,
         row_colbar=shared.get_cols(newe['merged_type']), heat_wid=0.02*len(expn.getConditionNames()), col_cluster=False,
-        heat_hei=0.006*len(newe))
+        heat_hei=0.007*len(newe), grid=True)
 
 # Split out the LTR subtypes
 ltrs_only = expn.get(key='type', value='LTR')
@@ -56,7 +56,7 @@ for t in all_type:
     newe = ltrs_only.get(key='subtype', value=t)
     newe.heatmap('type_LTR_%s.png' % t, bracket=[-2, 2], figsize=[6,12], row_font_size=6,
         row_colbar=shared.get_cols(newe['merged_type']), heat_wid=0.02*len(expn.getConditionNames()), col_cluster=False,
-        heat_hei=0.006*len(newe))
+        heat_hei=0.007*len(newe), grid=True)
 
 # Plot these for all samples:
 

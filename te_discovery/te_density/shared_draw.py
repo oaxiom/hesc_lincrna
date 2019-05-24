@@ -26,6 +26,10 @@ def draw_density(filename, selected_genes, selected_genes2, TE=None, threshold=2
     if max(res[0]) < threshold and max(res[1]) < threshold:
         return None # stop from drawing
 
+    # # norm values to the number of transcripts in total set;
+    res[0] /= len(selected_genes)
+    res[1] /= len(selected_genes2)
+
     fig = plot.figure(figsize=[2,1.3])
     fig.subplots_adjust(left=0.30, bottom=0.35,)
     ax = fig.add_subplot(111)
