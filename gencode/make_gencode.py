@@ -23,6 +23,11 @@ ncrna = []
 done = 0
 skipped = 0
 trans = None
+transcript_types_seen = set([])
+transcript_types_dont_keep = set(['miRNA', 'snRNA', 'snoRNA', 'Mt_tRNA', 'Mt_rRNA', 'TEC', 'scRNA', 'scaRNA','vaultRNA',
+    'nonsense_mediated_decay', 'ribozyme','retained_intron',
+    'IG_pseudogene', 'IG_J_gene', 'TR_J_pseudogene', 'IG_J_pseudogene', 'TR_D_gene',
+    'IG_V_gene', 'IG_C_pseudogene',  'TR_J_gene','TR_V_pseudogene','sRNA', 'TR_V_gene', 'IG_D_gene', 'IG_C_gene', 'IG_V_pseudogene', 'TR_C_gene',])
 
 for idx, line in enumerate(oh):
     if '#' in line[0]:
@@ -60,13 +65,16 @@ for idx, line in enumerate(oh):
                 'transcript_type': trans['transcript_type'],
                 }
 
-            newgl.append(entry)
-            gsql.add_feature(trans['loc'], trans['cds_loc'], trans['exonCounts'], trans['exonStarts'], trans['exonEnds'], '%s (%s)' % (trans['name'], trans['enst'].split('.')[0]), trans['strand'], 'gene')
+            if trans['transcript_type'] not in transcript_types_dont_keep:
+                transcript_types_seen.add(trans['transcript_type'])
 
-            if trans['transcript_type'] == 'protein_coding':
-                pc.append(entry)
-            elif trans['transcript_type'] == 'lincRNA':
-                ncrna.append(entry)
+                newgl.append(entry)
+                gsql.add_feature(trans['loc'], trans['cds_loc'], trans['exonCounts'], trans['exonStarts'], trans['exonEnds'], '%s (%s)' % (trans['name'], trans['enst'].split('.')[0]), trans['strand'], 'gene')
+
+                if trans['transcript_type'] == 'protein_coding':
+                    pc.append(entry)
+                elif trans['transcript_type'] == 'lincRNA':
+                    ncrna.append(entry)
 
             done += 1
             if done % 10000 == 0:
@@ -103,6 +111,8 @@ for idx, line in enumerate(oh):
             trans['cds_loc'] = [1e20, -1]
         trans['cds_loc'] = [min(int(line[3]), trans['cds_loc'][0]), max(int(line[4]), trans['cds_loc'][1])]
         #print(trans['cds_loc'], trans)
+
+print(transcript_types_seen)
 
 print('Processed: %s transcripts' % done)
 print('Skipped  : %s transcripts' % skipped)

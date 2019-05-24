@@ -7,11 +7,12 @@ Build the final annotation tables;
 
 
 import glob, sys, os, gzip
+sys.path.append('../')
 import pies
 from glbase3 import glload, utils, expression, genelist
 
-all_genes = glload('../../transcript_assembly/packed/all_genes.glb')
-te = glload('../te_transcripts/transcript_table_merged.mapped.glb')
+all_genes = glload('../../../transcript_assembly/packed/all_genes.glb')
+te = glload('../../te_transcripts/transcript_table_merged.mapped.glb')
 not_te = te.map(genelist=all_genes, key='transcript_id', logic='notright')
 
 all_genes_ensg = set([g['ensg'] for g in all_genes if 'ENSG' in g['ensg']])
