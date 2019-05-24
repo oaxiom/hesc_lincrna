@@ -28,21 +28,12 @@ for g in doms:
 
 doms._optimiseData()
 doms = doms.map(gencode, key='enst')
-# remove chromM:
-newl = []
-for g in doms:
-    if g['loc']['chr'] == 'M':
-        print('Skipped %s' % g['name'])
-        continue
-    newl.append(g)
-doms.load_list(newl)
-
 print(doms.keys())
 doms.save('transcript_table_gencode_all.glb')
 doms.saveTSV('transcript_table_gencode_all.tsv')
 
 # And the PC and ncrna lists:
-doms = glload('../hmmer_dfam/data/transcript_table_gencode.v29.transcripts.glb') # to fix;
+doms = glload('../hmmer_dfam/data/transcript_table_Homo_sapiens.GRCh38.ncrna.glb') # to fix;
 # I need to go in and fix the transcript_id key, which is just the FASTA name;
 for g in doms:
     g['transcript_id'] = g['transcript_id'].split('|')[0].split('.')[0]
@@ -50,5 +41,16 @@ for g in doms:
 doms._optimiseData()
 doms = doms.map(gencode, key='enst')
 print(doms.keys())
-doms.save('transcript_table_gencode_all.glb')
-doms.saveTSV('transcript_table_gencode_all.tsv')
+doms.save('transcript_table_gencode_ncrna.glb')
+doms.saveTSV('transcript_table_gencode_ncrna.tsv')
+
+doms = glload('../hmmer_dfam/data/transcript_table_gencode.v29.pc_transcripts.glb') # to fix;
+# I need to go in and fix the transcript_id key, which is just the FASTA name;
+for g in doms:
+    g['transcript_id'] = g['transcript_id'].split('|')[0].split('.')[0]
+    g['enst'] = g['transcript_id']
+doms._optimiseData()
+doms = doms.map(gencode, key='enst')
+print(doms.keys())
+doms.save('transcript_table_gencode_pc.glb')
+doms.saveTSV('transcript_table_gencode_pc.tsv')

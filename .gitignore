@@ -9,3 +9,4 @@ __pycache__
 tblout.*
 get_data.sh
 get_gtf.sh
+gencode.v30.annotation.gtf.gz

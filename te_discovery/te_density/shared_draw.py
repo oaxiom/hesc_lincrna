@@ -1,63 +1,82 @@
 
 import math, numpy, sys
 import matplotlib.pyplot as plot
-import matplotlib.cm as cmby_te
+import matplotlib.cm as cm
 
 sys.path.append('../../')
 import shared
 
-def draw_density(filename, selected_genes, TE=None):
+def draw_density(filename, selected_genes, selected_genes2, TE=None, threshold=20):
 
-    arr = numpy.zeros(1000) # scaled bins to put in;
-    for n, gene in enumerate(selected_genes):
-        # scale the TE to the mRNA
-        #print(gene)
+    res = [numpy.zeros(1000), numpy.zeros(1000)] # scaled bins to put in;
+    for ridx, sl in enumerate([selected_genes, selected_genes2]):
+        for n, gene in enumerate(sl):
+            tlen = shared.convert_genocode_to_local(gene)[1]
 
-        tlen = shared.convert_genocode_to_local(gene)[1]
+            for d in gene['doms']:
+                if TE:
+                    if d['dom'] not in TE:
+                        continue
 
-        for d in gene['doms']:
-            if TE:
-                if d['dom'] not in TE:
-                    continue
+                s = math.floor(d['span'][0] / tlen * 1000)
+                e = math.ceil(d['span'][1] / tlen * 1000)
 
-            s = math.floor(d['span'][0] / tlen * 1000)
-            e = math.ceil(d['span'][1] / tlen * 1000)
+                res[ridx][s:e] += 1
 
-            #print(s, e, tlen, d['span'], gene['loc'], gene['strand'])
-            #print()
-
-            arr[s:e] += 1
-
-    if max(arr) < 10:
-        return [0] # stop from drawing
-
+    if max(res[0]) < threshold and max(res[1]) < threshold:
+        return None # stop from drawing
 
     fig = plot.figure(figsize=[2.2,1.4])
     fig.subplots_adjust(left=0.25, bottom=0.3,)
     ax = fig.add_subplot(111)
 
-    ax.plot(arr)
+    ax.plot(res[0])
+    ax.plot(res[1])
     ax.tick_params(axis='both', which='minor', labelsize=6)
     fig.savefig(filename)
     fig.savefig(filename.replace('.png', '.svg'))
     plot.close(fig)
+
     print('Saved %s' % filename)
-    return arr
+    return res
 
 def draw_heatmap(filename, res):
-    res_labels = sorted([k for k in res if max(res[k]) > 10])
-    res_tab = numpy.array([res[k] for k in res_labels])
+    # should be just one set of labels...
 
-    fig = plot.figure(figsize=[4,7])
-    ax = fig.add_subplot(111)
-    ax.set_position([0.5, 0.1, 0.48, 0.8])
+    res_labels = sorted(res.keys(), reverse=True)
 
-    ax.imshow(res_tab, cmap=cm.viridis, aspect="auto",
-        origin='lower',
-        extent=[0, res_tab.shape[1], 0, res_tab.shape[0]])
+    # normalise each row;
+    for k in res_labels:
+        s = max(res[k][0].std(), res[k][1].std())
+        m = max(res[k][0].mean(), res[k][1].mean())
+        res[k][0] -= m
+        res[k][0] /= s
 
-    ax.set_yticks(numpy.arange(len(res_labels))+0.5)
-    ax.set_yticklabels(res_labels)
+        res[k][1] -= m
+        res[k][1] /= s
+
+    fig = plot.figure(figsize=[8,8])
+    heat_hei = 0.009*len(res_labels)
+    fig.subplots_adjust(left=0.2, right=0.75, bottom=0.95-heat_hei, top=0.95, wspace=0.1)
+
+    for i in [0,1]: # only 2 heatmaps supported at the moment;
+        res_tab = numpy.array([res[k][i] for k in res_labels])
+
+        ax = fig.add_subplot(1,2,i+1)
+        #ax.set_position([0.5, 0.1, 0.48, 0.8])
+
+        ax.imshow(res_tab, cmap=cm.PuOr_r, aspect="auto",
+            origin='lower',
+            extent=[0, res_tab.shape[1], 0, res_tab.shape[0]])
+
+        ax.set_yticklabels(res_labels)
+        if i>0:
+            ax.set_yticklabels('')
+        ax.set_yticks(numpy.arange(len(res_labels))+0.5)
+
+        ax.set_xticklabels('')
+        ax.tick_params(labelsize=6, bottom=False)
+        #plot.colorbar(cax=ax)
 
     fig.savefig(filename)
     fig.savefig(filename.replace('.png', '.svg'))
