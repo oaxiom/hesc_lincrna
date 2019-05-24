@@ -17,6 +17,9 @@ oh = gzip.open('gencode.v%s.annotation.gtf.gz' % version, 'rt') # you need to do
 
 newgl = []
 
+pc = []
+ncrna = []
+
 done = 0
 skipped = 0
 trans = None
@@ -44,7 +47,7 @@ for idx, line in enumerate(oh):
                 else:
                     trans['cds_loc'] = trans['loc'].pointRight()
 
-            newgl.append({'ensg': trans['ensg'],
+            entry = {'ensg': trans['ensg'],
                 'enst': trans['enst'],
                 'name': trans['name'],
                 'loc': trans['loc'],
@@ -55,8 +58,15 @@ for idx, line in enumerate(oh):
                 'exonEnds': trans['exonEnds'],
                 'exonCounts': trans['exonEnds'],
                 'transcript_type': trans['transcript_type'],
-                })
+                }
+
+            newgl.append(entry)
             gsql.add_feature(trans['loc'], trans['cds_loc'], trans['exonCounts'], trans['exonStarts'], trans['exonEnds'], '%s (%s)' % (trans['name'], trans['enst'].split('.')[0]), trans['strand'], 'gene')
+
+            if trans['transcript_type'] == 'protein_coding':
+                pc.append(entry)
+            elif trans['transcript_type'] == 'lincRNA':
+                ncrna.append(entry)
 
             done += 1
             if done % 10000 == 0:
@@ -103,3 +113,13 @@ gl = genelist()
 gl.load_list(newgl)
 gl.saveTSV('hg38_gencode_v%s.tsv' % version, key_order=['ensg', 'transcript_id', 'name', 'enst'])
 gl.save('hg38_gencode_v%s.glb' % version)
+
+gl = genelist()
+gl.load_list(pc)
+gl.saveTSV('hg38_gencode_v%s.pc.tsv' % version, key_order=['ensg', 'transcript_id', 'name', 'enst'])
+gl.save('hg38_gencode_v%s.pc.glb' % version)
+
+gl = genelist()
+gl.load_list(ncrna)
+gl.saveTSV('hg38_gencode_v%s.ncrna.tsv' % version, key_order=['ensg', 'transcript_id', 'name', 'enst'])
+gl.save('hg38_gencode_v%s.ncrna.glb' % version)

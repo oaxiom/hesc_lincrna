@@ -26,13 +26,15 @@ def draw_density(filename, selected_genes, selected_genes2, TE=None, threshold=2
     if max(res[0]) < threshold and max(res[1]) < threshold:
         return None # stop from drawing
 
-    fig = plot.figure(figsize=[2.2,1.4])
-    fig.subplots_adjust(left=0.25, bottom=0.3,)
+    fig = plot.figure(figsize=[2,1.3])
+    fig.subplots_adjust(left=0.30, bottom=0.35,)
     ax = fig.add_subplot(111)
 
     ax.plot(res[0])
     ax.plot(res[1])
-    ax.tick_params(axis='both', which='minor', labelsize=6)
+    ax.tick_params(labelsize=6)
+    ax.set_xticks([0, 1000])
+    ax.set_xticklabels(['TSS', 'TTS'])
     fig.savefig(filename)
     fig.savefig(filename.replace('.png', '.svg'))
     plot.close(fig)
@@ -55,8 +57,8 @@ def draw_heatmap(filename, res):
         res[k][1] -= m
         res[k][1] /= s
 
-    fig = plot.figure(figsize=[8,8])
-    heat_hei = 0.009*len(res_labels)
+    fig = plot.figure(figsize=[8,9])
+    heat_hei = 0.010*len(res_labels)
     fig.subplots_adjust(left=0.2, right=0.75, bottom=0.95-heat_hei, top=0.95, wspace=0.1)
 
     for i in [0,1]: # only 2 heatmaps supported at the moment;
@@ -151,7 +153,7 @@ def draw_density_utrs(filename, selected_genes, TE=None):
     ax1 = fig.add_subplot(131)
     ax1.plot(utr5)
     ax1.set_ylim([0, ymax])
-    ax1.tick_params(axis='both', which='minor', labelsize=6)
+    ax1.tick_params(labelsize=6)
     ax1.set_xticklabels('')
 
     ax2 = fig.add_subplot(132)
