@@ -17,3 +17,4 @@ def pie(filename, data, labels, title=''):
     ax.set_title(title, size=6)
     fig.savefig(filename)
     fig.savefig(filename.replace('.png', '.svg'))
+    print('Saved %s' % filename)

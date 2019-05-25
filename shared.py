@@ -66,7 +66,8 @@ def get_cols(labels):
     return(cols)
 
 part1 = {'~)': 'novel_isoform',
-    '=)': 'known_isoform'}
+    '=)': 'known_isoform',
+    '~)': 'unknown_isoform',}
 
 part2 = {'(ME': 'multi_exon',
     '(SE': 'single_exon'}
@@ -81,7 +82,7 @@ part4 = {'SR': 'short_read',
 
 def classify_transcript(name):
     sum = name.split(' ')[1].split(';')
-    if 'HSC' in name:
+    if 'HSC' in name: # and also ';!)'
         destination = 'unknown_transcript_%s_%s_%s' % (part3[sum[1]], part2[sum[0]], part4[sum[2]])
         alpha = '.'
 
