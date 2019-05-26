@@ -21,7 +21,7 @@ draw = 'png'
 
 #[os.remove(f) for f in glob.glob('%s/*.%s' % (draw, draw))]
 
-doms = glload('../../te_transcripts/transcript_table_HSC_SR_PB_merged.mapped.glb')
+doms = glload('../../te_transcripts/transcript_table_merged.mapped.glb')
 gencode_db = genome_sql(filename=os.path.expanduser('~/hg38/hg38_gencode_v29.sql'))
 dfam = genelist('../../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
 

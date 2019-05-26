@@ -11,7 +11,7 @@ c = chipfish.app()
 c.startup(os.path.expanduser("../trk_TEs.txt"))
 
 annot = glload(os.path.expanduser('~/hg38/hg38_ensembl_v95_enst.glb'))
-gllocs = glload('../../te_discovery/transcripts/transcripts_with_te.glb')
+gllocs = glload('../../te_discovery/te_transcripts/transcript_table_merged.mapped.glb')
 #print(gllocs)
 
 locs = ['SOX2', 'NANOG', 'SALL4', 'LIN28A', 'LIN28B', 'SALL1', 'POU5F1A',
