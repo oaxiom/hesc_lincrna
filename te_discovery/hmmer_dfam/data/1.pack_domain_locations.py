@@ -13,7 +13,7 @@ import glob, sys, os, gzip
 from operator import itemgetter
 from glbase3 import utils, expression, genelist, glload, config
 
-dfam = genelist('dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'HMMlength': 1, 'species': 2, 'type': 3, 'subtype': 4})
+dfam = genelist('../../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'HMMlength': 1, 'species': 2, 'type': 3, 'subtype': 4})
 
 reject_species = set([
     'Chrysochloris_asiatica', # Golden mole;
