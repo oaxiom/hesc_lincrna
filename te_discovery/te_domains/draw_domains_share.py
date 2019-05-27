@@ -47,6 +47,8 @@ def draw_domain(gene, filename, gencode_db, dfam):
         # This is wrong if the transcrip is ~
         cdsl = gencode['cds_loc']['left']
         cdsr = gencode['cds_loc']['right']
+        if ';~' in gene['name']:
+            cdsl = 0; cdsr = 0 # triggers the non-coding code below;
         #print(gene['enst'], gene['transcript_id'], gene['name'], gene['strand'], gencode['loc'], gencode['cds_loc'], gene['exonStarts'], gene['exonEnds'])
     # Work out the mRNA length from the gene length and the exons and Es:
     tlength = 0
@@ -101,7 +103,7 @@ def draw_domain(gene, filename, gencode_db, dfam):
         # get the type and subtype out of dfam:
         t = dfam.get(key='name', value=dom['dom'])[0]
         col_name = '%s:%s' % (t['type'], t['subtype'])
-        color = shared.col_keys[col_name]
+        color = shared.get_col(col_name)
 
         if t['type'] == 'LINE':
             posy = 0.45

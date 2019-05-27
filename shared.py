@@ -59,11 +59,14 @@ col_keys = {
     'tRNA:.': 'orchid',
     }
 
+def get_col(e):
+    if e in col_keys:
+        return col_keys[e]
+    print('Colors: %s not found' % e)
+    return 'grey'
+
 def get_cols(labels):
-    cols = []
-    for e in labels:
-        cols.append(col_keys[e])
-    return(cols)
+    return [get_col(e) for e in labels]
 
 part1 = {'~)': 'novel_isoform',
     '=)': 'known_isoform',

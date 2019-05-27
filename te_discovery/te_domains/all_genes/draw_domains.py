@@ -22,8 +22,9 @@ draw = 'png'
 [os.remove(f) for f in glob.glob('%s/*/*/*.%s' % (draw, draw))]
 [os.remove(f) for f in glob.glob('%s/*/*.%s' % (draw, draw))]
 
-doms = glload('../../te_transcripts/transcript_table_HSC_SR_PB_merged.mapped.glb')
+doms = glload('../../te_transcripts/transcript_table_merged.mapped.glb')
 gencode_db = genome_sql(filename=os.path.expanduser('~/hg38/hg38_gencode_v29.sql'))
+dfam = genelist('../../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
 
 for n, gene in enumerate(doms):
     destination, alpha = shared.classify_transcript(gene['name'])
@@ -35,7 +36,7 @@ for n, gene in enumerate(doms):
     if not os.access(path, os.R_OK | os.W_OK):
         os.mkdir(path)
 
-    draw_domains_share.draw_domain(gene, '%s/%s.%s.%s.%s' % (path, gene['name'], gene['transcript_id'], gene['enst'], draw), gencode_db)
+    draw_domains_share.draw_domain(gene, '%s/%s.%s.%s.%s' % (path, gene['name'], gene['transcript_id'], gene['enst'], draw), gencode_db, dfam)
 
     if (n+1) % 1000 == 0:
         print('Processed: {:,} domains'.format(n+1))
