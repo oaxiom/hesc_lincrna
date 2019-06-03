@@ -112,6 +112,7 @@ sam_order = [
 
     'gencode.v30.lncRNA_transcripts',
     'Homo_sapiens.GRCh38.ncrna',
+    'NONCODEv5_human',
     'HSC_SR_PB_merged.ncrna',
     ]
 
@@ -123,6 +124,7 @@ new_names = [
     'custom.pc',
     'gencode.ncrna',
     'GRCh38.ncrna',
+    'noncode.ncrna',
     'custom.ncrna',
     ]
 

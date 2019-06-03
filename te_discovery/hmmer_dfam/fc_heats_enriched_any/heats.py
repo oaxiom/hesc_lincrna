@@ -9,6 +9,8 @@ config.draw_mode = ['png','svg']
 
 expn = glload('../data/te_per1Mbp_seq.glb')
 
+print(expn.getConditionNames())
+
 expn = expn.sliceConditions(['gencode.all', 'GRCh38.all', 'custom.all', 'gencode.pc', 'custom.pc', 'gencode.ncrna', 'GRCh38.ncrna', 'custom.ncrna'])
 
 expn = expn.norm_multi_fc({'gencode.all':
