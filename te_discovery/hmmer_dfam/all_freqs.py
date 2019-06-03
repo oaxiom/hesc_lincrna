@@ -19,7 +19,6 @@ all_tes = set(gl_pc['name'] + gl_ncrna['name'] + gl_all['name'])
 res = {k: [0,0,0] for k in all_tes}
 for n, gl in enumerate([gl_all, gl_pc, gl_ncrna]):
     for e in gl:
-        print(e['name'])
         res[e['name']][n] = e['freq']
 
 title_dict = {0: 'All', 1: 'PC', 2: 'ncRNA'}
@@ -28,7 +27,7 @@ fig = plot.figure(figsize=[6,3.0])
 for c in [0,1,2]:
     labs = list(reversed(sorted(res.keys())))
     vals = [res[k][c] for k in labs]
-    cols = [shared.col_keys[k] for k in labs]
+    cols = [shared.get_col(k) for k in labs]
 
     ax = fig.add_subplot(1,3,c+1)
     fig.subplots_adjust(left=0.2, top=0.92)
