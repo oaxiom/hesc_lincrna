@@ -11,10 +11,10 @@ expn = glload('../data/te_per1Mbp_seq.glb')
 
 print(expn.getConditionNames())
 
-expn = expn.sliceConditions(['gencode.all', 'GRCh38.all', 'custom.all', 'gencode.pc', 'custom.pc', 'gencode.ncrna', 'GRCh38.ncrna', 'custom.ncrna'])
+expn = expn.sliceConditions(['gencode.all', 'GRCh38.all', 'custom.all', 'gencode.pc', 'custom.pc', 'gencode.ncrna', 'GRCh38.ncrna', 'noncode.ncrna', 'custom.ncrna'])
 
 expn = expn.norm_multi_fc({'gencode.all':
-    ['GRCh38.all', 'custom.all', 'gencode.pc', 'custom.pc', 'gencode.ncrna', 'GRCh38.ncrna', 'custom.ncrna']}, pad=0.1)
+    ['GRCh38.all', 'custom.all', 'gencode.pc', 'custom.pc', 'gencode.ncrna', 'GRCh38.ncrna', 'noncode.ncrna', 'custom.ncrna']}, pad=0.1)
 
 print(expn.getConditionNames())
 

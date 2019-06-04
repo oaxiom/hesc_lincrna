@@ -13,17 +13,20 @@ gl_ncrna = glload('fc_heats_enriched_ncrna_only/gl_freqs.glb')
 gl_all = glload('fc_heats_enriched_all_only/gl_freqs.glb')
 
 # merge all the flies into one genelist:
-all_tes = set(gl_pc['name'] + gl_ncrna['name'] + gl_all['name'])
+all_tes = gl_pc['name'] + gl_ncrna['name'] + gl_all['name']
+all_tes = set([i for i in all_tes if '.' not in i])
 
 # Count the subtypes and get a barchart:
 res = {k: [0,0,0] for k in all_tes}
 for n, gl in enumerate([gl_all, gl_pc, gl_ncrna]):
     for e in gl:
+        if e['name'] not in res:
+            continue
         res[e['name']][n] = e['freq']
 
 title_dict = {0: 'All', 1: 'PC', 2: 'ncRNA'}
 
-fig = plot.figure(figsize=[6,3.0])
+fig = plot.figure(figsize=[4,2.4])
 for c in [0,1,2]:
     labs = list(reversed(sorted(res.keys())))
     vals = [res[k][c] for k in labs]
@@ -47,6 +50,9 @@ for c in [0,1,2]:
 
 fig.savefig('freq.png')
 fig.savefig('freq.svg')
+fig.savefig('freq.pdf')
+
+print('\n'.join(reversed(labs)))
 
 # save all:
 '''

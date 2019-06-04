@@ -23,7 +23,7 @@ FC = 1.0
 # get the sig ones;
 newe = []
 for e in expn:
-    if True in [i>FC for i in e['conditions']]:
+    if e['conditions'][1] >= FC:
         merged_type = '%s:%s' % (e['type'], e['subtype'])
         e['merged_type'] = merged_type
         newe.append(e)
