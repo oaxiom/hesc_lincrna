@@ -9,10 +9,10 @@ config.draw_mode = ['png', 'svg']
 
 expn = glload('../data/te_per1Mbp_seq.glb')
 
-expn = expn.sliceConditions(['gencode.pc', 'custom.pc'])
+expn = expn.sliceConditions(['gencode.pc', 'GRCh38.pc', 'custom.pc'])
 
 expn = expn.norm_multi_fc({'gencode.pc':
-    ['custom.pc']}, pad=0.1)
+    ['GRCh38.pc', 'custom.pc']}, pad=0.1)
 
 print(expn.getConditionNames())
 
@@ -23,7 +23,7 @@ FC = 1.0
 # get the sig ones;
 newe = []
 for e in expn:
-    if e['conditions'][1] >= FC:
+    if e['conditions'][2] >= FC:
         merged_type = '%s:%s' % (e['type'], e['subtype'])
         e['merged_type'] = merged_type
         newe.append(e)

@@ -108,6 +108,7 @@ sam_order = [
     'HSC_SR_PB_merged.transcripts',
 
     'gencode.v30.pc_transcripts',
+    'Homo_sapiens.GRCh38.cds.all',
     'HSC_SR_PB_merged.pc',
 
     'gencode.v30.lncRNA_transcripts',
@@ -121,6 +122,7 @@ new_names = [
     'GRCh38.all',
     'custom.all',
     'gencode.pc',
+    'GRCh38.pc',
     'custom.pc',
     'gencode.ncrna',
     'GRCh38.ncrna',

@@ -1,6 +1,6 @@
 
 col_keys = {
-    'DNA:.': 'royalblue',
+    'DNA:.': 'black',
     'DNA:Crypton': 'royalblue',
     'DNA:Crypton-A': 'royalblue',
     'DNA:Kolobok': 'royalblue',
@@ -28,19 +28,19 @@ col_keys = {
     'LINE:Penelope': 'goldenrod',
     'LINE:RTE-BovB': 'goldenrod',
 
-    'LTR:.': 'coral',
+    'LTR:.': 'black',
     'LTR:ERV1': 'tomato',
     'LTR:ERVK': 'orangered',
     'LTR:ERVL': 'darkred',
     'LTR:ERVL-MaLR': 'brown',
     'LTR:Gypsy': 'indianred',
-    'LINE:RTE-X': 'tomato',
+    'LINE:RTE-X': 'coral',
 
     'RC:Helitron': 'greenyellow',
 
     'Retroposon:SVA': 'orange', # To get new cols;
 
-    'Satellite:.': 'olive',
+    'Satellite:.': 'black',
     'Satellite:acromeric': 'olive',
     'Satellite:centromeric': 'olivedrab',
     'Satellite:subtelomeric': 'olivedrab',
@@ -152,12 +152,13 @@ if __name__ == '__main__':
     for i, name in enumerate(reversed(list(col_keys.keys()))):
         y = i * 10
 
-        ax.text(4, y, name, fontsize=6,
+        ax.text(2.5, y, name, fontsize=6,
                 horizontalalignment='left',
                 verticalalignment='center')
 
         ax.hlines(y, 1, 2, color=col_keys[name], linewidth=5)
     fig.savefig('legend.png')
     fig.savefig('legend.svg')
+    fig.savefig('legend.pdf')
 
     print('\n'.join(list(col_keys.keys())))
