@@ -157,7 +157,7 @@ def draw_domain(gene, filename, gencode_db, dfam):
     ax.set_xlim([0, tlength])
     ax.set_ylim([-1.5, 1.5])
     ax.set_yticks([-1.0, -0.45, -0.15, 0, 0.15, 0.45, 1.0])
-    ax.set_yticklabels(['Coding Seq', 'LINE', 'SINE', 'TEs              ', 'LTR', 'Other', 'Splice Junctions'])
+    ax.set_yticklabels(['Coding Seq', 'Retroposons', 'LTRs', 'TEs              ', 'SINEs', 'LINEs', 'Splice Junctions'])
     ax.set_title('%s(%s) %s %s' % (gene['enst'], gene['strand'], gene['transcript_id'], gene['name']))
     ax.set_frame_on(False)
     ax.tick_params(left=False)

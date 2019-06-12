@@ -87,68 +87,90 @@ def draw_heatmap(filename, res):
     fig.savefig(filename)
     fig.savefig(filename.replace('.png', '.svg'))
 
-def draw_density_utrs(filename, selected_genes, TE=None):
+def draw_density_utrs(filename, known, novel, bkgd, TE=None):
+    data = {
+        'known': {
+            'utr5': numpy.zeros(1000), # scaled bins to put in;
+            'cds': numpy.zeros(1000),
+            'utr3': numpy.zeros(1000),
+            },
+        'novel': {
+            'utr5': numpy.zeros(1000), # scaled bins to put in;
+            'cds': numpy.zeros(1000),
+            'utr3': numpy.zeros(1000),
+            },
+        'bkgd': {
+            'utr5': numpy.zeros(1000), # scaled bins to put in;
+            'cds': numpy.zeros(1000),
+            'utr3': numpy.zeros(1000),
+            }
+        }
 
-    utr5 = numpy.zeros(1000) # scaled bins to put in;
-    cds = numpy.zeros(1000)
-    utr3 = numpy.zeros(1000)
+    genes = {'known': selected_genes,
+        'novel': bkgd1,
+        'bkgd': bkgd2}
 
-    for n, gene in enumerate(selected_genes):
-        #print(gene)
-        # scale the TE to the mRNA
-        pos = shared.convert_genocode_to_local(gene)
-        # return 0, tlength, cdsl, cdsr, splice_sites
-        #print(pos)
+    for gl in genes:
+        for n, gene in enumerate(genes[gl]):
+            #print(gene)
+            # scale the TE to the mRNA
+            if gl != 'novel':
+                pos = shared.convert_genocode_to_local(gene) # return 0, tlength, cdsl, cdsr, splice_sites
+            else:
+                # Have to get the pos from the gene entry
+                pos = (0, 100, 20, 50, [])
+                print(gene)
+            print(pos)
 
-        if pos[2] == pos[3]:
-            # Bad CDS, skip this one;
-            continue
+            if pos[2] == pos[3]:
+                # Bad CDS, skip this one;
+                continue
 
-        utr5_l = 0
-        utr5_r = pos[2]
+            utr5_l = 0
+            utr5_r = pos[2]
 
-        cds_l = pos[2]
-        cds_r = pos[3]
-        cds_len  = pos[3] - pos[2]
+            cds_l = pos[2]
+            cds_r = pos[3]
+            cds_len  = pos[3] - pos[2]
 
-        utr3_l = pos[3]
-        utr3_r = pos[1]
-        utr3_len = (pos[1] - pos[3]) +1 # in case some utr = 0
+            utr3_l = pos[3]
+            utr3_r = pos[1]
+            utr3_len = (pos[1] - pos[3]) +1 # in case some utr = 0
 
-        tlen = len(gene['loc'])
+            tlen = len(gene['loc'])
 
-        for d in gene['doms']:
-            if TE:
-                if d['dom'] not in TE:
-                    continue
+            for d in gene['doms']:
+                if TE:
+                    if d['dom'] not in TE:
+                        continue
 
-            s = d['span'][0]
-            e = d['span'][1]
+                s = d['span'][0]
+                e = d['span'][1]
 
-            #print(s, e, 'utr', utr5_l, utr5_r, 'cds', cds_l, cds_r, cds_len, 'utr3', utr3_l, utr3_r, utr3_len)
+                #print(s, e, 'utr', utr5_l, utr5_r, 'cds', cds_l, cds_r, cds_len, 'utr3', utr3_l, utr3_r, utr3_len)
 
-            if s <= utr5_r:
-                ls = max([math.floor(s / utr5_r * 1000), 0])
-                le = min([math.ceil(e / utr5_r * 1000), 1000])
-                utr5[ls:le] += 1
-                #print("Add 5'UTR")
-            if e >= cds_l and s <= cds_r:
-                ls = max([math.floor((s-cds_l) / cds_len * 1000), 0])
-                le = min([math.ceil((e-cds_l) / cds_len * 1000), 1000])
-                cds[ls:le] += 1
-                #print('Add CDS')
-            if e > utr3_l:
-                ls = max([math.floor((s-utr3_l) / utr3_len * 1000), 0])
-                le = min([math.ceil((e-utr3_l) / utr3_len * 1000), 1000])
-                utr3[ls:le] += 1
-                #print("Add 3'UTR")
+                if s <= utr5_r:
+                    ls = max([math.floor(s / utr5_r * 1000), 0])
+                    le = min([math.ceil(e / utr5_r * 1000), 1000])
+                    data[gl]['utr5'][ls:le] += 1
+                    #print("Add 5'UTR")
+                if e >= cds_l and s <= cds_r:
+                    ls = max([math.floor((s-cds_l) / cds_len * 1000), 0])
+                    le = min([math.ceil((e-cds_l) / cds_len * 1000), 1000])
+                    data[gl]['cds'][ls:le] += 1
+                    #print('Add CDS')
+                if e > utr3_l:
+                    ls = max([math.floor((s-utr3_l) / utr3_len * 1000), 0])
+                    le = min([math.ceil((e-utr3_l) / utr3_len * 1000), 1000])
+                    data[gl]['utr3'][ls:le] += 1
+                    #print("Add 3'UTR")
 
-            #print(ls, le)
-            #print()
+                #print(ls, le)
+                #print()
 
-        if (n+1) % 1000 == 0:
-            print('Processed: {:,} transcripts'.format(n+1))
-            #if n> 2000: break
+            if (n+1) % 1000 == 0:
+                print('Processed: {:,} transcripts'.format(n+1))
+                if n> 20: break
 
     fig = plot.figure(figsize=[2.2,1.4])
 

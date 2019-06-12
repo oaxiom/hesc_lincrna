@@ -5,7 +5,9 @@ __pycache__
 *.sql
 *.png
 *.svg
+*.pdf
 *.flat
+*.tsv
 tblout.*
 get_data.sh
 get_gtf.sh

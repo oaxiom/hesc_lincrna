@@ -100,7 +100,13 @@ def convert_genocode_to_local(gencode):
     '''
     Convert a gencode genomic annotation into a local transcript structure. i.e. convert this:
 
-    [{'loc': <location chr1:57598-64116>, 'cds_loc': <location chr1:57598-57598>, 'exonStarts': [57598, 58700, 62916], 'exonEnds': [57653, 58856, 64116], 'name': 'OR4G11P (ENST00000642116)', 'type': 'gene', 'strand': '+'}]
+    [{'loc': <location chr1:57598-64116>,
+    'cds_loc': <location chr1:57598-57598>,
+    'exonStarts': [57598, 58700, 62916],
+    'exonEnds': [57653, 58856, 64116],
+    'name': 'OR4G11P (ENST00000642116)',
+    'type': 'gene',
+    'strand': '+'}]
 
     into:
     TSS, TTS, CDSL, CDSR, splice_locations
