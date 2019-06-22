@@ -31,12 +31,12 @@ res = {
     'pc': {'TE': 0, 'nonTE': 0},
     'ncrna': {'TE': 0, 'nonTE': 0},
     'non_coding_version_of_coding_gene': {'TE': 0, 'nonTE': 0},
-    'unknown': {'TE': 0, 'nonTE': 0},
-    'unknown_pc': {'TE': 0, 'nonTE': 0},
-    'unknown_ncrna': {'TE': 0, 'nonTE': 0},
-    'all_novel': {'TE': 0, 'nonTE': 0},
-    'pc_novel': {'TE': 0, 'nonTE': 0},
-    'ncrna_novel': {'TE': 0, 'nonTE': 0},
+    'novel': {'TE': 0, 'nonTE': 0},
+    'novel_pc': {'TE': 0, 'nonTE': 0},
+    'novel_ncrna': {'TE': 0, 'nonTE': 0},
+    'all_variant': {'TE': 0, 'nonTE': 0},
+    'pc_variant': {'TE': 0, 'nonTE': 0},
+    'ncrna_variant': {'TE': 0, 'nonTE': 0},
     }
 
 non_coding_gene_names = ['U1', 'U7', '.', 'LINC', '-AS', 'MIR']
@@ -46,23 +46,23 @@ data = {'TE': te, 'nonTE': not_te}
 for k in data:
     for g in data[k]:
         if ';!' in g['name']:
-            res['unknown'][k] += 1
+            res['novel'][k] += 1
         if ';~' in g['name']:
-            res['all_novel'][k] += 1
+            res['all_variant'][k] += 1
 
         if ';C;' in g['name']:
             res['pc'][k] += 1
             if ';~' in g['name']:
-                res['pc_novel'][k] += 1
+                res['pc_variant'][k] += 1
             if ';!' in g['name']:
-                res['unknown_pc'][k] += 1
+                res['novel_pc'][k] += 1
 
         elif ';NC;' in g['name']:
             res['ncrna'][k] += 1
             if ';~' in g['name']:
-                res['ncrna_novel'][k] += 1
+                res['ncrna_variant'][k] += 1
             if ';!' in g['name']:
-                res['unknown_ncrna'][k] += 1
+                res['novel_ncrna'][k] += 1
 
         # non_coding_version_of_coding_gene
         if ';NC;' in g['name']:
@@ -75,13 +75,13 @@ for k in data:
 
 title_map = {'pc': 'protein-coding',
     'ncrna': 'non-coding RNA',
-    'all_novel': 'Novel transcripts',
-    'pc_novel': 'protein-coding (novel)',
-    'ncrna_novel': 'non-coding RNA (novel)',
+    'all_variant': 'Variant transcripts',
+    'pc_variant': 'protein-coding (variant)',
+    'ncrna_variant': 'non-coding RNA (variant)',
     'non_coding_version_of_coding_gene': 'non-coding version of coding gene',
-    'unknown': 'Unknown',
-    'unknown_pc': 'Unknown protein-coding',
-    'unknown_ncrna': 'Unknown non-coding',
+    'novel': 'Novel',
+    'novel_pc': 'Novel protein-coding',
+    'novel_ncrna': 'Novel non-coding',
     }
 
 for k in res:
