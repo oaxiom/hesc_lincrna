@@ -6,12 +6,11 @@ data1 = CreateSeuratObject(counts=Read10X(data.dir="../rawdata/ss.C11Solo.out/")
 data2 = CreateSeuratObject(counts=Read10X(data.dir="../rawdata/ss.WIBR3PriSolo.out"), project="primed_wibr3_esc")
 data3 = CreateSeuratObject(counts=Read10X(data.dir="../rawdata/ss.hesc_posam1Solo.out"), project="primed_wtc_ipsc_rp1")
 data4 = CreateSeuratObject(counts=Read10X(data.dir="../rawdata/ss.hesc_posam3Solo.out"), project="primed_wtc_ipsc_rp3")
-data5 = CreateSeuratObject(counts=Read10X(data.dir="../rawdata/ss.hesc_posam4Solo.out"), project="primed_wtc_ipsc_rp4")
 data6 = CreateSeuratObject(counts=Read10X(data.dir="../rawdata/ss.hesc_posam5Solo.out"), project="primed_wtc_ipsc_rp5")
 
-sams = list(data1, data2, data3, data4, data5, data6)
+sams = list(data1, data2, data3, data4, data6)
 
-sams <- lapply(sams, subset, subset=nFeature_RNA > 1000 & nFeature_RNA < 4000)
+sams <- lapply(sams, subset, subset=nFeature_RNA > 1000 & nFeature_RNA < 5000)
 sams <- lapply(sams, NormalizeData)
 
 sams <- FindIntegrationAnchors(object.list=sams, dims=1:20)
@@ -35,7 +34,7 @@ all_data <- RunPCA(all_data, npcs=100)
 pdf("jackstraw.pdf", width=10, height=6)
 all_data <- JackStraw(all_data, num.replicate = 100)
 all_data <- ScoreJackStraw(all_data, dims = 1:30)
-JackStrawPlot(all_data, dims = 1:30)
+JackStrawPlot(all_data, dims = 1:20)
 ElbowPlot(all_data, ndims = 100)
 dev.off()
 
@@ -119,12 +118,41 @@ dev.off()
 
 save(all_data, file="human_escs.Rda")
 
-# And export to loom:
-hescs <- as.loom(all_data, filename="human_escs.loom")
-hescs
-hescs$close_all()
+# And export to loom: All these conversions are currently broken:
+#hescs <- as.loom(all_data, filename="human_escs.loom")
+#hescs
+#hescs$close_all()
+#pfile <- Convert(from=all_data, to="loom", filename="human_escs.loom", display.progress=T)
+#pbmc.sce <- as.SingleCellExperiment(pbmc)
 
-pfile <- Convert(from=all_data, to="loom", filename="human_escs.loom", display.progress=T)
+# Can load in scanpy:
+DefaultAssay(all_data) <- 'RNA'
 
-pbmc.sce <- as.SingleCellExperiment(pbmc)
+cell.order <- colnames(all_data)
+feature.order <- rownames(all_data)
+
+# Save metadata:
+meta.data <- all_data[[]][cell.order, ]
+meta.data <- meta.data[c('orig.ident', 'nCount_RNA', 'nFeature_RNA', 'seurat_clusters')]
+write.table(meta.data, file='metadata.tsv', sep='\t')
+
+# Save matrix:
+counts <- as.matrix(t(as.data.frame(GetAssayData(all_data, assay="RNA", slot='counts')))) # [feature.order, cell.order]))
+
+keep_genes <- colSums(counts) > 200  # Filter out empty genes:
+keep_cells <- rowSums(counts) > 1000
+norm_table = counts[keep_genes]
+norm_table = norm_table[keep_cells]
+keep_genes = feature.order[keep_genes]
+keep_cells = cell.order[keep_cells]
+
+table(keep_cells)
+table(keep_genes)
+
+write.table(norm_table, file='matrix.tsv', sep='\t', col.names=F, row.names=F)
+write.table(keep_genes, file='gene_names.tsv', sep='\t')
+write.table(keep_cells, file='cell_names.tsv', sep='\t')
+
+# Get the metadata of the samples:
+
 

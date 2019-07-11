@@ -4,6 +4,10 @@ repeat_sql:
 	repeats/hg38_rmsk_EREs.sql
 flat: colour=blue min_scaling=1000
     stem_merge150good_sorted.filtered.flat
+flat: colour=orange min_scaling=10 clamp=0 inverted=True
+    single_cell.str2.flat
+flat: colour=red min_scaling=10 clamp=0
+    single_cell.str1.flat
 genome_sql: 
     ../transcript_assembly/packed/hg38_hpscs_srlr.sql
 
