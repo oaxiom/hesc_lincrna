@@ -15,7 +15,7 @@ draw = 'png'
 c = chipfish.app()
 c.startup(os.path.expanduser("../trk_TEs.txt"))
 
-gllocs = glload('../../te_discovery/transcripts/transcripts_with_te.glb')
+gllocs = glload('../../te_discovery/te_transcripts/transcript_table_merged.mapped.glb')
 
 for k in gllocs:
     destination = 'none'
