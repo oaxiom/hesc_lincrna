@@ -9,6 +9,7 @@ __pycache__
 *.flat
 *.tsv
 *.Rhistory
+*.Rda
 tblout.*
 get_data.sh
 get_gtf.sh
