@@ -8,22 +8,17 @@ data3 = CreateSeuratObject(counts=Read10X(data.dir="../rawdata/ss.hesc_posam1Sol
 data4 = CreateSeuratObject(counts=Read10X(data.dir="../rawdata/ss.hesc_posam3Solo.out"), project="primed_wtc_ipsc#3")
 data5 = CreateSeuratObject(counts=Read10X(data.dir="../rawdata/ss.hesc_posam4Solo.out"), project="primed_wtc_ipsc#4")
 data6 = CreateSeuratObject(counts=Read10X(data.dir="../rawdata/ss.hesc_posam5Solo.out"), project="primed_wtc_ipsc#5")
-# The distribution of data5, 6 is a little odd, we have plenty of data here, so just use the above
 
 sams = list(data1, data2, data3, data4, data5, data6)
-
-pbmc[["percent.mt"]] <- PercentageFeatureSet(pbmc, pattern = "^MT-")
 
 sams <- lapply(sams, subset, subset=nFeature_RNA > 2000 & nFeature_RNA < 5000)
 sams <- lapply(sams, NormalizeData)
 
-sams <- FindIntegrationAnchors(object.list=sams, dims=1:20)
+sams <- FindIntegrationAnchors(object.list=sams, anchor.features = 4000, dims=1:20)
 all_data = IntegrateData(anchorset=sams, dims=1:20)
 
 DefaultAssay(all_data) <- "integrated"
-
-all_data <- FindVariableFeatures(all_data, selection.method = "vst", nfeatures = 2000)
-
+all_data <- FindVariableFeatures(all_data, selection.method = "vst", nfeatures = 4000)
 all_data <- ScaleData(all_data)
 
 # Quick QC:

@@ -7,7 +7,7 @@ As we don't trust the short read data to assemble these, we only consider them f
 
 '''
 
-import sys, numpy, itertools
+import sys, numpy, itertools, pickle
 import matplotlib.pyplot as plot
 import matplotlib.cm as cm
 from glbase3 import glload, genelist, expression, config
@@ -60,7 +60,6 @@ e.heatmap('paired.png', heat_wid=0.3, heat_hei=0.2, bracket=[0, 50], grid=True,
     cmap=cm.plasma,
     optimal_ordering=True)
 
-
 fig = plot.figure(figsize=[3,4])
 
 labs = list(reversed(sorted(res.keys())))
@@ -81,3 +80,51 @@ ax.yaxis.label.set_size(6)
 
 fig.savefig('freq.png')
 fig.savefig('freq.svg')
+fig.savefig('freq.pdf')
+
+# Measure enrichment versus the genome:
+
+oh = open('../../genome_repeats/te_freqs.pickle', 'rb')
+genome_repeat_freqs = pickle.load(oh)
+oh.close()
+
+total_tes = sum(genome_repeat_freqs.values())
+
+total_solotes = sum(res.values())
+
+for k in sorted(res.keys()):
+    if k not in genome_repeat_freqs: # Some of the names are a little different, it's some really rare ones though so just ignore
+        print("Warning: couldn't find {0} in genome, number of TEs in transcripts={1}".format(k, res[k]))
+        continue
+    #print(k, res[k], genome_repeat_freqs[k])
+
+    observed = res[k]
+    expected = total_solotes * (genome_repeat_freqs[k] / total_tes)
+    res[k] = (observed+1)/(expected+1)
+
+    print('obs={0:.2f}\texp={1:.2f}\tenrich={2:.2f}\t{3}'.format(observed, expected, res[k], k))
+
+    #res[k] = res[k] / genome_repeat_freqs[k] * 1e6
+
+fig = plot.figure(figsize=[3,4])
+
+labs = list(reversed(sorted(res.keys())))
+vals = [res[k] for k in labs]
+cols = [shared.get_col(k) for k in labs]
+
+ax = fig.add_subplot(1,1,1)
+fig.subplots_adjust(left=0.3, top=0.92)
+
+print(vals)
+
+ax.barh(numpy.arange(len(labs)), width=vals, height=0.8, color=cols)
+ax.set_yticklabels(labs)
+ax.set_yticks(numpy.arange(len(labs)))
+[t.set_fontsize(6) for t in ax.get_yticklabels()]
+[t.set_fontsize(6) for t in ax.get_xticklabels()]
+ax.yaxis.label.set_size(6)
+ax.set_xlim([0, 3])
+
+fig.savefig('freq_enrichment.png')
+fig.savefig('freq_enrichment.svg')
+fig.savefig('freq_enrichment.pdf')

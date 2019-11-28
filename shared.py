@@ -147,6 +147,34 @@ def convert_genocode_to_local(gencode):
 
     return 0, tlength, cdsl, cdsr, splice_sites
 
+def get_transcript_length(gencode):
+    '''
+    Report the length of the transcript, from something that looks like this:
+
+    [{'loc': <location chr1:57598-64116>,
+    'exonStarts': [57598, 58700, 62916],
+    'exonEnds': [57653, 58856, 64116],
+    'name': 'OR4G11P (ENST00000642116)',
+    'type': 'gene',
+    'strand': '+'}]
+
+    and it is always on the 5' strand, and TSS (by definition) == 0
+
+    '''
+    # Work out the mRNA length from the gene length and the exons and Es:
+    tlength = 0
+    currpos = gencode['loc']['left'] # transcript position in genomic coords
+    splice_sites = []
+    newcdsl = 0 ; newcdsr = 0
+    for splice in zip(gencode['exonStarts'], gencode['exonEnds']):
+        tlength += (splice[1]-splice[0])
+        currpos = splice[1]
+        splice_sites.append(tlength)
+
+    splice_sites = splice_sites[:-1] # last one is the termination;
+
+    return tlength
+
 if __name__ == '__main__':
     import matplotlib.pyplot as plot
 

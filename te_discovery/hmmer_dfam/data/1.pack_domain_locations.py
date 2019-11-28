@@ -12,22 +12,38 @@ from glbase3 import utils, expression, genelist, glload, config
 dfam = genelist('../../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'HMMlength': 1, 'species': 2, 'type': 3, 'subtype': 4})
 
 reject_species = set([
-    'Chrysochloris_asiatica', # Golden mole;
     'Caenorhabditis_elegans',
+    'Chrysemys', # Turtles
+    'Chrysemys_picta_bellii',
+    'Chrysochloris_asiatica', # Golden mole;
+    'Cyprinidae',
     'Danio',
     'Danio_rerio',
     'Drosophila_fruit_fly_genus',
+    'Drosophila_melanogaster',
+    'Durocryptodira',
     'Ficedula_albicollis',
     'Halyomorpha_halys',
+    'Heliconiini',
+    'Heliconius',
     'Muridae',
     'Murinae',
     'Mus_mouse_genus',
     'Mus_musculus',
     'Protostomia', # Humans are Deuterostomia
     'Rodentia',
+    'Sauropsida',
+    'Sciuromorpha',
     'Teleostei',
     'Testudines',
+    'Testudinoidea',
+    'Theria_Mammalia',
+    'Uraeginthus_cyanocephalus',
     ])
+
+all_species = sorted(list(set(dfam['species'])))
+
+print('\n'.join(all_species))
 
 for f in sorted(glob.glob('raw_data/tblout*.tsv.gz')):
     skipped = 0

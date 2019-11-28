@@ -34,13 +34,14 @@ def draw_density(filename, selected_genes, selected_genes2, TE=None, threshold=2
     fig.subplots_adjust(left=0.30, bottom=0.35,)
     ax = fig.add_subplot(111)
 
-    ax.plot(res[0])
-    ax.plot(res[1])
+    ax.plot(res[0], label=selected_genes.name)
+    ax.plot(res[1], label=selected_genes2.name)
     ax.tick_params(labelsize=6)
     ax.set_xticks([0, 1000])
     ax.set_xticklabels(['TSS', 'TTS'])
-    fig.savefig(filename)
-    fig.savefig(filename.replace('.png', '.svg'))
+    #fig.savefig(filename)
+    #ax.legend()
+    fig.savefig(filename.replace('.png', '.pdf'))
     plot.close(fig)
 
     print('Saved %s' % filename)
@@ -84,8 +85,8 @@ def draw_heatmap(filename, res):
         ax.tick_params(labelsize=6, bottom=False)
         #plot.colorbar(cax=ax)
 
-    fig.savefig(filename)
-    fig.savefig(filename.replace('.png', '.svg'))
+    #fig.savefig(filename)
+    fig.savefig(filename.replace('.png', '.pdf'))
 
 def draw_density_utrs(filename, known, novel, bkgd, TE=None):
     data = {
@@ -195,8 +196,8 @@ def draw_density_utrs(filename, known, novel, bkgd, TE=None):
     ax3.set_xticklabels('')
 
 
-    fig.savefig(filename)
-    fig.savefig(filename.replace('.png', '.svg'))
+    #fig.savefig(filename)
+    fig.savefig(filename.replace('.png', '.pdf'))
     plot.close(fig)
 
     print('Saved %s' % filename)

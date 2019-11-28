@@ -40,7 +40,11 @@ genes = set(['SOX2', 'NANOG', 'SALL4', 'LIN28A', 'LIN28B', 'SALL1', 'POU5F1A',
     # Down in naive:
     'SFRP1', 'ZIC2', 'KDR', 'OTX2', 'DUSP6', 'SPRY4', 'THY1', 'ID3', 'ZIC5',
     # MA Gang's possibles:
-    'HNRNPK', 'DDX1', 'DDX50', 'BRCA2', 'BRCA1', 'TOP1', 'RAP3', 'TRIM25', 'HNRNPU',])
+    'HNRNPK', 'DDX1', 'DDX50', 'BRCA2', 'BRCA1', 'TOP1', 'RAP3', 'TRIM25', 'HNRNPU',
+
+    # Wang Jichang paper, Fig 3a. These ones have HERV spliced into their message
+    'SCGB3A2', 'NCR1', 'KLKB1', 'IL34', 'PLP1', 'ESRG', 'RPL39L',
+    ])
 
 for n, gene in enumerate(doms):
     #print(gene['name'].split(' ')[0])

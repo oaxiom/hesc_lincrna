@@ -21,6 +21,7 @@ type = 'ncrna'
 doms = glload('../../te_transcripts/transcript_table_merged.mapped.glb')
 gencode = glload('../../../gencode/hg38_gencode_v30.glb').getColumns(['enst', 'cds_loc'])
 gencode_doms = glload('../../te_transcripts/transcript_table_gencode_%s.glb' % type)
+gencode_doms.name = 'GENCODE'
 dfam = genelist('../../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
 doms = doms.map(genelist=gencode, key='enst')
 
@@ -31,6 +32,7 @@ for gene in doms:
         newdoms.append(gene)
 doms = genelist()
 doms.load_list(newdoms)
+doms.name = 'ncrna'
 
 print('List now %s transcripts long' % len(doms))
 

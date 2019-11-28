@@ -30,6 +30,24 @@ locs = ['SOX2', 'NANOG', 'SALL4', 'LIN28A', 'LIN28B', 'SALL1', 'POU5F1A',
     'SFRP1', 'ZIC2', 'KDR', 'OTX2', 'DUSP6', 'SPRY4', 'THY1', 'ID3', 'ZIC5',
     # MA Gang's possibles:
     'HNRNPK', 'DDX1', 'DDX50', 'BRCA2', 'BRCA1', 'TOP1', 'RAP3', 'TRIM25', 'HNRNPU',
+    # Headline genes from Ihry et al., Cell Rep.
+    # Significantly down-regualte POU5F1 P<0.05
+    'TGFBR2',
+    'GGCT',
+    'MAML2',
+    'POU5F1',
+    'TGFBR1',
+    'TMEM107',
+    'ZNF469',
+    'SMARCA4',
+    'PROK2',
+    'PAQR7',
+    'MINDY4',
+    # Odd stuff:
+    'LIN28B-AS1',
+    # Wang Jichang paper, Fig 3a. These ones have HERV spliced into their message
+    'SCGB3A2', 'NCR1', 'KLKB1', 'IL34', 'PLP1', 'ESRG', 'RPL39L',
+
     ]
 locs = genelist(loadable_list=[{'name': k} for k in locs])
 ll = locs.map(genelist=annot, key='name')

@@ -27,8 +27,8 @@ doms = doms.map(genelist=gencode, key='enst')
 # preprocss the doms list to remove non-coding genes;
 newdoms = []
 for gene in doms:
-    if ';NC;' in gene['name']: # Change me to 'NC'
-        newdoms.append(gene)
+    #if ';NC;' in gene['name']: # Change me to 'NC'
+    newdoms.append(gene)
 doms = genelist()
 doms.load_list(newdoms)
 
