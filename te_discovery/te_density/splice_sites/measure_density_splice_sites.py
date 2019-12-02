@@ -17,10 +17,10 @@ import shared_draw
 
 draw = 'png'
 
-type = 'ncrna' # change me if you want to do ncrna or protein coding;
+transcriptome_type = 'ncrna' # change me if you want to do ncrna or protein coding;
 
 doms = glload('../../te_transcripts/transcript_table_merged.mapped.glb') # TODO: Add a new key here, PSC and notPSC
-gencode = glload('../../te_transcripts/transcript_table_gencode_%s.glb' % type)
+gencode = glload('../../te_transcripts/transcript_table_gencode_%s.glb' % transcriptome_type)
 print(shared.convert_genocode_to_splice_sites(gencode[0]))
 dfam = genelist('../../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
 # rebuild to a lookup table:
@@ -41,32 +41,35 @@ def init_res_store():
 
 cond_names = ['sp+', 'sp-']
 
-res = {'LTR': init_res_store(),
+# Store TEs by type:
+res_tetype = {'LTR': init_res_store(),
     'SINE':init_res_store(),
     'LINE': init_res_store(),
     'Retroposon': init_res_store(),
     'DNA': init_res_store(),
     }
-
-res_totals = {'LTR': init_res_classes(),
+totals_tetype = {'LTR': init_res_classes(),
     'SINE': init_res_classes(),
     'LINE': init_res_classes(),
     'Retroposon': init_res_classes(),
     'DNA': init_res_classes()}
 
-res_by_te = defaultdict(init_res_store)
-res_by_te_totals = defaultdict(init_res_classes)
-res_te_totals = init_res_classes()
+# Store TEs by family:
+res_tefamily = defaultdict(init_res_store)
+totals_tefamily = defaultdict(init_res_classes)
+
+# Scores for normalisations
+totals_all = init_res_classes()
 
 # preprocss the doms list to remove non-coding genes;
 newdoms = []
 novel = []
 
+# Here, later do ncrna, all and pc as a for:
+
 data_to_process = {'ES': doms, # Using all here, for now
     #'notES': Not available yet,
     'GENCODE': gencode}
-
-padding = 400
 
 for dataset in data_to_process:
     print(dataset)
@@ -74,14 +77,12 @@ for dataset in data_to_process:
         if (idx+1) % 10000 == 0:
             print('{:,}'.format(idx+1))
 
-        # You need to make sure you use the correct GENCODE background, otherwise the results will be odd:
-
         _, tlength, splice_sites = shared.convert_genocode_to_splice_sites(gene)
 
-        if type == 'pc':
+        if transcriptome_type == 'pc': # You need to make sure you use the correct GENCODE background, otherwise the results will be odd:
             if ';NC;' in gene['name']: # i.e., remove non-coding
                 continue
-        elif type == 'ncrna':
+        elif transcriptome_type == 'ncrna':
             if ';C;' in gene['name']: # i.e., remove coding
                 continue
         else:
@@ -89,80 +90,80 @@ for dataset in data_to_process:
             1/0
 
         for dom in gene['doms']: # The DOM locations are always in the + strand orientation.
-            # test ot see if the dom overlaps a splice site:
+            # test to see if the dom overlaps a splice site:
             for splice_site in splice_sites:
                 full_name = dfam_lookup[dom['dom']] # get the full TE name from dfam:
-                typ = full_name.split(':')[0]
+                te_type = full_name.split(':')[0]
 
-                if typ not in res: # Just the 5 I am mainly interested in
+                if te_type not in totals_tetype: # Just the 5 I am interested in
                     continue
 
                 if splice_site > dom['span'][0] and splice_site < dom['span'][1]:
+                    #print(splice_site, dom)
                     # TE spans a splice site;
                     if dom['strand'] == '+': # same orientation as the transgene
-                        res_by_te[typ]['sp+'][dataset] += 1
+                        res_tefamily[full_name]['sp+'][dataset] += 1
+                        res_tetype[te_type]['sp+'][dataset] += 1
                     elif dom['strand'] == '-':
-                        res_by_te[typ]['sp-'][dataset] += 1
+                        res_tefamily[full_name]['sp-'][dataset] += 1
+                        res_tetype[te_type]['sp-'][dataset] += 1
+                    else:
+                        1/0
 
-                    res_totals[typ][dataset] += 1
-                    res_by_te_totals[dom['dom']][dataset] += 1
-                    res_te_totals[dataset] += 1
-
-print(res_by_te)
+                    totals_tetype[te_type][dataset] += 1
+                    totals_tefamily[full_name][dataset] += 1
+                    totals_all[dataset] += 1
 
 # Build them into glbase:
+# Analyis by TYPE (LINE, SINE, LTR, etc)
 for dataset in ['ES']:# , 'notES']:
     newl = []
-    for typ in res_totals.keys():
+    for te_type in res_tetype.keys():
         enrich = []
-        for part in ('sp+', 'sp-'):
-            obs = res[typ][part][dataset] / (res_totals[typ][dataset] + 1)
-            exp = res[typ][part]['GENCODE'] / (res_totals[typ]['GENCODE'] + 1)
+        for part in cond_names:
+
+            #obs = res_tetype[te_family][part][dataset] / (totals_tetype[te_family][dataset] + 1)
+            #exp = res_tetype[te_family][part]['GENCODE'] / (totals_tetype[te_family]['GENCODE'] + 1)
 
             # This version is better, but again, it will normalise away the higher number of TEs/transcript discovered in our assemblies.
             # Still, it gives a second opinion.
-            obs = (res_by_te[typ][part][dataset]+1) / (res_te_totals[dataset])
-            exp = ((res_by_te[typ][part]['GENCODE']+1) / (res_te_totals['GENCODE']))
-
-            print(typ, obs, exp)
+            obs = (res_tetype[te_type][part][dataset]+1) / (totals_tetype[te_type][dataset])
+            exp = ((res_tetype[te_type][part]['GENCODE']+1) / (totals_tetype[te_type]['GENCODE']))
 
             enrich.append(obs/exp)
 
-        newl.append({'name': typ, 'conditions': enrich})
+            #print(dataset, part, te_type, obs, exp, enrich[-1], res_tetype[te_type][part][dataset]+1, totals_tetype[te_type][dataset], res_tetype[te_type][part]['GENCODE']+1, totals_tetype[te_type]['GENCODE'])
+
+        newl.append({'name': te_type, 'conditions': enrich})
     expn = expression(loadable_list=newl, cond_names=cond_names)
     expn.saveTSV('freqs_{0}.tsv'.format(dataset))
-    expn.heatmap('heatfreqs_{0}.png'.format(dataset), grid=True, heat_hei=0.013*len(expn), heat_wid=0.08, col_cluster=False)
+    expn.heatmap('heatfreqs_{0}.png'.format(dataset), grid=True, heat_hei=0.013*len(expn), heat_wid=0.08, bracket=[0, 3], col_cluster=False)
 
+# Analyiss by TE FAMILY:
 for dataset in ['ES']:# , 'notES']:
     newl = []
-    for typ in res_by_te_totals.keys():
+    for te_family in res_tefamily.keys():
         enrich = []
-        #if res_by_te_totals[typ]['GENCODE'] < 50:
-        #    continue
-        #if res_by_te[typ]['MID']['GENCODE'] < 10:
-        #    continue
+
         for part in cond_names:
             # trim trivial totals:
-            '''
-            # This is wrong as it would normalise away higher frequency of detection of TEs
-            obs = (res_by_te[typ][part][dataset]+1) / (res_by_te_totals[typ][dataset]+1)
-            exp = ((res_by_te[typ][part]['GENCODE']+1) / (res_by_te_totals[typ]['GENCODE']+1))
-            '''
-            # This version is better, but again, it will normalise away the higher number of TEs/transcript discovered in our assemblies.
-            # Still, it gives a second opinion.
-            obs = (res_by_te[typ][part][dataset]+1) / (res_te_totals[dataset]/1000)
-            exp = ((res_by_te[typ][part]['GENCODE']+1) / (res_te_totals['GENCODE']/1000))
+            if totals_tefamily[te_family][dataset] == 0:
+                continue
 
-            print(part, typ, obs, exp, res_by_te[typ][part][dataset], (res_by_te_totals[typ][dataset]+1), res_by_te[typ][part]['GENCODE'], (res_by_te_totals[typ]['GENCODE']+1))
+            obs = (res_tefamily[te_family][part][dataset]) / (totals_tefamily[te_family][dataset])
+            exp = ((res_tefamily[te_family][part]['GENCODE']+1) / (totals_tefamily[te_family]['GENCODE']+1))
 
-            enr = obs/exp
+            #print(te_family, res_tefamily[te_family][part][dataset], (totals_tefamily[te_family][dataset]+1), res_tefamily[te_family][part]['GENCODE'], (totals_tefamily[te_family]['GENCODE']+1))
+
+            enr = obs/(exp)
 
             enrich.append(enr)
 
-            #print('{0} \t{1:.2f} {2:.2f} {3:.2f}'.format(typ, obs, exp, enrich[-1]))
+            #print('{0}\t{1:.2f} {2:.2f} {3:.2f}'.format(te_family, obs, exp, enrich[-1]))
 
-        if max(enrich) > 3.0:
-            newl.append({'name': dfam_lookup[typ], 'conditions': enrich})
+        if enrich and max(enrich) > 3.0:
+            #newl.append({'name': dfam_lookup[te_family], 'conditions': enrich})
+            newl.append({'name': te_family, 'conditions': enrich})
 
     # split them up by class:
     for cl in ['SINE', 'LINE', 'LTR', 'Retroposon', 'DNA']:
@@ -176,5 +177,5 @@ for dataset in ['ES']:# , 'notES']:
         if expn:
             expn.saveTSV('freqs_by_class_{0}-{1}.tsv'.format(cl, dataset))
             expn.heatmap('heatfreqs_by_class_{0}-{1}.png'.format(cl, dataset), size=[6,12],
-                row_font_size=6, bracket=[0, 3],
+                row_font_size=6, bracket=[0, 5],
                 grid=True, heat_hei=0.0072*len(expn), heat_wid=0.08, col_cluster=False)
