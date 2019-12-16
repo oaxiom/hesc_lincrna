@@ -80,17 +80,22 @@ part3 = {'C': 'coding',
     'U': 'unknown'}
 
 part4 = {'SR': 'short_read',
-    'SR+LR': 'long_read', # Takes preference for purposes of prrof
+    'SR+LR': 'long_read', # Takes preference for purposes of proof
     'LR': 'long_read'}
+
+part5 = {';ES+;': 'ES-enriched',
+    ';ES:;': 'ES-neutral',
+    ';ES-;': 'ES-depleted'}
 
 def classify_transcript(name):
     sum = name.split(' ')[1].split(';')
-    if 'HSC' in name: # and also ';!)'
-        destination = 'novel_transcript_%s_%s_%s' % (part3[sum[1]], part2[sum[0]], part4[sum[2]])
+    if 'HSC' in name: # and hence ';!)'
+        destination = 'novel_transcript_%s_%s_%s' % (part3[sum[1]], part2[sum[0]], part4[sum[3]], part5[sum[2]])
         alpha = '.'
 
     else:
-        destination = '%s_%s_%s_%s' % (part1[sum[3]], part3[sum[1]], part2[sum[0]], part4[sum[2]])
+        # transcript_type - coding - exon_status - evidence - expression
+        destination = '%s_%s_%s_%s' % (part1[sum[4]], part3[sum[1]], part2[sum[0]], part4[sum[3]], part5[sum[2]])
 
         alpha = name[0]
 

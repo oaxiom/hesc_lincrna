@@ -8,7 +8,53 @@ Pack the GTF into a gneome_sql for chipFish
 import sys, os, gzip
 from glbase3 import *
 
-version = 30
+def add_entry(done ):
+    if '.' in trans['loc']['chr']: # strange contigs
+        skipped += 1
+        return
+
+    #print(trans)
+    #1/0
+
+    if trans['cds_loc']:
+        trans['cds_loc'] = location(chr=trans['loc']['chr'], left=trans['cds_loc'][0], right=trans['cds_loc'][1])
+    else: # A non-coding, so fill in with the TSS instead:
+        if trans['strand'] == '+':
+            trans['cds_loc'] = trans['loc'].pointLeft()
+        else:
+            trans['cds_loc'] = trans['loc'].pointRight()
+
+    entry = {'ensg': trans['ensg'],
+        'enst': trans['enst'],
+        'name': trans['name'],
+        'loc': trans['loc'],
+        'cds_loc': trans['cds_loc'],
+        'transcript_id': trans['transcript_id'],
+        'strand': trans['strand'],
+        'exonStarts': trans['exonStarts'],
+        'exonEnds': trans['exonEnds'],
+        'exonCounts': trans['exonEnds'],
+        'transcript_type': trans['transcript_type'],
+        }
+
+    if trans['transcript_type'] not in transcript_types_dont_keep:
+        transcript_types_seen.add(trans['transcript_type'])
+
+        newgl.append(entry)
+        gsql.add_feature(trans['loc'], trans['cds_loc'], trans['exonCounts'], trans['exonStarts'], trans['exonEnds'], '%s (%s)' % (trans['name'], trans['enst'].split('.')[0]), trans['strand'], 'gene')
+
+        if trans['transcript_type'] == 'protein_coding':
+            pc.append(entry)
+        elif trans['transcript_type'] == 'lncRNA':
+            ncrna.append(entry)
+
+    done += 1
+    if done % 10000 == 0:
+        print('Processed: {:,}'.format(done))
+
+    return done
+
+version = 32
 
 # Combined GTF:
 print('GENCODE GTF...')
@@ -37,48 +83,7 @@ for idx, line in enumerate(oh):
     # I need to assemble the full transcript data first
     if line[2] == 'transcript':
         if trans and trans['exonCounts'] > 0: # Write the previous transcript out
-            if '.' in trans['loc']['chr']: # strange contigs
-                skipped += 1
-                continue
-
-            #print(trans)
-            #1/0
-
-            if trans['cds_loc']:
-                trans['cds_loc'] = location(chr=trans['loc']['chr'], left=trans['cds_loc'][0], right=trans['cds_loc'][1])
-            else: # A non-coding, so fill in with the TSS instead:
-                if trans['strand'] == '+':
-                    trans['cds_loc'] = trans['loc'].pointLeft()
-                else:
-                    trans['cds_loc'] = trans['loc'].pointRight()
-
-            entry = {'ensg': trans['ensg'],
-                'enst': trans['enst'],
-                'name': trans['name'],
-                'loc': trans['loc'],
-                'cds_loc': trans['cds_loc'],
-                'transcript_id': trans['transcript_id'],
-                'strand': trans['strand'],
-                'exonStarts': trans['exonStarts'],
-                'exonEnds': trans['exonEnds'],
-                'exonCounts': trans['exonEnds'],
-                'transcript_type': trans['transcript_type'],
-                }
-
-            if trans['transcript_type'] not in transcript_types_dont_keep:
-                transcript_types_seen.add(trans['transcript_type'])
-
-                newgl.append(entry)
-                gsql.add_feature(trans['loc'], trans['cds_loc'], trans['exonCounts'], trans['exonStarts'], trans['exonEnds'], '%s (%s)' % (trans['name'], trans['enst'].split('.')[0]), trans['strand'], 'gene')
-
-                if trans['transcript_type'] == 'protein_coding':
-                    pc.append(entry)
-                elif trans['transcript_type'] == 'lincRNA':
-                    ncrna.append(entry)
-
-            done += 1
-            if done % 10000 == 0:
-                print('Processed: {:,}'.format(done))
+            done = add_entry(done)
 
         # Start a new transcript;
         gtf_dec = {}
@@ -111,6 +116,8 @@ for idx, line in enumerate(oh):
             trans['cds_loc'] = [1e20, -1]
         trans['cds_loc'] = [min(int(line[3]), trans['cds_loc'][0]), max(int(line[4]), trans['cds_loc'][1])]
         #print(trans['cds_loc'], trans)
+
+done = add_entry(done) # add the last one
 
 print(transcript_types_seen)
 

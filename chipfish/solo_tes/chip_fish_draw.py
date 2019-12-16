@@ -5,7 +5,7 @@ sys.path.append(os.path.join(os.path.expanduser("~"), "chipfish"))
 import app as chipfish
 from glbase_wrapper import location, glload
 
-draw = 'png'
+draw = 'pdf'
 
 [os.remove(f) for f in glob.glob('%s/*/*/*.%s' % (draw, draw))]
 
