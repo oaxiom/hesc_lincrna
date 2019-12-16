@@ -11,13 +11,13 @@ sys.path.append('../')
 import pies
 from glbase3 import glload, utils, expression, genelist
 
-all_genes = glload('../../../gencode/hg38_gencode_v30.glb')
+all_genes = glload('../../../gencode/hg38_gencode_v32.glb')
 te = glload('../../te_transcripts/transcript_table_gencode_all.glb')
 
 not_te = te.map(genelist=all_genes, key='transcript_id', logic='notright')
 
-pc = glload('../../../gencode/hg38_gencode_v30.pc.glb')
-ncrna = glload('../../../gencode/hg38_gencode_v30.ncrna.glb')
+pc = glload('../../../gencode/hg38_gencode_v32.pc.glb')
+ncrna = glload('../../../gencode/hg38_gencode_v32.ncrna.glb')
 
 all_genes_ensg = set([g['ensg'] for g in all_genes if 'ENSG' in g['ensg']])
 pc_genes_ensg = set(pc['ensg'])
@@ -37,8 +37,6 @@ res = {
     'ncrna': {'TE': 0, 'nonTE': 0},
     'non_coding_version_of_coding_gene': {'TE': 0, 'nonTE': 0},
     }
-
-non_coding_gene_names = ['U1', 'U7', '.', 'LINC', '-AS', 'MIR']
 
 data = {'TE': te, 'nonTE': not_te}
 

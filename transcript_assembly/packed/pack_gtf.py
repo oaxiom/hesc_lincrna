@@ -59,7 +59,9 @@ def add_entry(trans, gsql, newgl, done):
     toadd = {'ensg': trans['ensg'], 'enst': trans['enst'], 'name': new_name, 'loc': trans['loc'], 'transcript_id': transcript_id,
         'exonCounts': trans['exonCounts'], 'exonStarts': trans['exonStarts'], 'exonEnds': trans['exonEnds'],
         'strand': trans['strand'],
-        'tags': '%s; %s; %s; %s; %s' % (exon_state, c_nc, e, trans['evidence'], trans['decision'])
+        'tags': '%s; %s; %s; %s; %s' % (exon_state, c_nc, e, trans['evidence'], trans['decision']),
+        'coding': c_nc,
+        'expression': e,
         }
 
     #print(toadd)
@@ -128,10 +130,10 @@ for idx, line in enumerate(oh):
                 item = item.strip(' ').replace('"', '').split(' ')
                 gtf_dec[item[0]] = item[1]
         #print(gtf_dec)
-        if 'ens_gene_id' not in gtf_dec:
-            gtf_dec['ens_gene_id'] = gtf_dec['gene_id']
+        if 'GENCODE_gene_id' not in gtf_dec:
+            gtf_dec['GENCODE_gene_id'] = gtf_dec['gene_id']
             gtf_dec['gene_name'] = gtf_dec['transcript_id'] # If one is missing, the other is also missing;
-            gtf_dec['ens_transcript_id'] = gtf_dec['transcript_id'] # enst
+            gtf_dec['GENCODE_transcript_id'] = gtf_dec['transcript_id'] # enst
 
         if 'decision' not in gtf_dec:
             gtf_dec['decision'] = '!'
@@ -145,12 +147,14 @@ for idx, line in enumerate(oh):
             'decision': gtf_dec['decision'],
             'evidence': gtf_dec['evidence'],
             'name': gtf_dec['gene_name'],
-            'ensg': gtf_dec['ens_gene_id'],
-            'enst': gtf_dec['ens_transcript_id'],
+            'ensg': gtf_dec['GENCODE_gene_id'],
+            'enst': gtf_dec['GENCODE_transcript_id'],
             'gene_id': gtf_dec['gene_id'],
             'transcript_id': gtf_dec['transcript_id'],
             'evidence': gtf_dec['evidence'],
-            'tags': ''}
+            'tags': '',
+            'coding': '',
+            'expression': '',}
 
     if line[2] == 'exon':
         # Isn't this different, depending upon the strand?

@@ -20,6 +20,7 @@ draw = 'png'
 transcriptome_type = 'ncrna' # change me if you want to do ncrna or protein coding;
 
 doms = glload('../../te_transcripts/transcript_table_merged.mapped.glb') # TODO: Add a new key here, PSC and notPSC
+print(doms)
 gencode = glload('../../te_transcripts/transcript_table_gencode_%s.glb' % transcriptome_type)
 print(shared.convert_genocode_to_splice_sites(gencode[0]))
 dfam = genelist('../../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
@@ -31,7 +32,7 @@ for item in dfam:
 #doms = doms.map(genelist=gencode_sliced, key='enst') # Only keep those with a known gene structure. Why?
 
 def init_res_classes():
-    return {'ES': 0, 'notES': 0, 'GENCODE': 0}
+    return {'ES': 0, 'ES:': 0, 'ES-': 0, 'GENCODE': 0}
 
 def init_res_store():
     return {
@@ -67,8 +68,9 @@ novel = []
 
 # Here, later do ncrna, all and pc as a for:
 
-data_to_process = {'ES': doms, # Using all here, for now
-    #'notES': Not available yet,
+data_to_process = {'ES+': doms, # Using all here, for now
+    'ES:': ,
+    'ES-': ,
     'GENCODE': gencode}
 
 for dataset in data_to_process:
@@ -116,7 +118,7 @@ for dataset in data_to_process:
 
 # Build them into glbase:
 # Analyis by TYPE (LINE, SINE, LTR, etc)
-for dataset in ['ES']:# , 'notES']:
+for dataset in ['ES+', 'ES:', 'ES-']:
     newl = []
     for te_type in res_tetype.keys():
         enrich = []

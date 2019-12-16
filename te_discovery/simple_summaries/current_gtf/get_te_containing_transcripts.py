@@ -15,6 +15,10 @@ all_genes = glload('../../../transcript_assembly/packed/all_genes.glb')
 te = glload('../../te_transcripts/transcript_table_merged.mapped.glb')
 not_te = te.map(genelist=all_genes, key='transcript_id', logic='notright')
 
+print(all_genes)
+print()
+print(te)
+
 all_genes_ensg = set([g['ensg'] for g in all_genes if 'ENSG' in g['ensg']])
 has_at_least_one_coding_isoform = set([g['ensg'] for g in all_genes if ';C;' in g['name'] and 'ENSG' in g['ensg']])
 
@@ -38,8 +42,6 @@ res = {
     'pc_variant': {'TE': 0, 'nonTE': 0},
     'ncrna_variant': {'TE': 0, 'nonTE': 0},
     }
-
-non_coding_gene_names = ['U1', 'U7', '.', 'LINC', '-AS', 'MIR']
 
 data = {'TE': te, 'nonTE': not_te}
 

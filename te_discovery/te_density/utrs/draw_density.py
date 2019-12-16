@@ -17,7 +17,7 @@ import shared_draw
 draw = 'png'
 
 doms = glload('../../te_transcripts/transcript_table_merged.mapped.glb')
-gencode = glload('../../../gencode/hg38_gencode_v30.glb')
+gencode = glload('../../../gencode/hg38_gencode_v32.glb')
 gencode_sliced = gencode.getColumns(['enst', 'cds_loc'])
 
 #print(gencode)

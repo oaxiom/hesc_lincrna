@@ -19,8 +19,8 @@ doms.save('transcript_table_merged.mapped.glb') # fixed name version
 doms.saveTSV('transcript_table_merged.mapped.tsv') # fixed name version
 
 # And do the same for the gencode data:
-gencode = glload('../../gencode/hg38_gencode_v30.glb')
-doms = glload('../hmmer_dfam/data/transcript_table_gencode.v29.transcripts.glb') # to fix;
+gencode = glload('../../gencode/hg38_gencode_v32.glb')
+doms = glload('../hmmer_dfam/data/transcript_table_gencode.v32.transcripts.glb') # to fix;
 # I need to go in and fix the transcript_id key, which is just the FASTA name;
 for g in doms:
     g['transcript_id'] = g['transcript_id'].split('|')[0].split('.')[0]
