@@ -107,11 +107,11 @@ sam_order = [
     'Homo_sapiens.GRCh38.cdna.all',
     'HSC_SR_PB_merged.transcripts',
 
-    'gencode.v30.pc_transcripts',
+    'gencode.v32.pc_transcripts',
     'Homo_sapiens.GRCh38.cds.all',
     'HSC_SR_PB_merged.pc',
 
-    'gencode.v30.lncRNA_transcripts',
+    'gencode.v32.lncRNA_transcripts',
     'Homo_sapiens.GRCh38.ncrna',
     'NONCODEv5_human',
     'HSC_SR_PB_merged.ncrna',

@@ -55,16 +55,16 @@ for c_nc in coding_noncoding:
     #print(ann)
     #print(transcript_length)
 
-    if c_nc == 'Coding':
+    if c_nc == 'coding':
         num_fasta['c'] += 1
         num_bps['c'] += transcript_length
-    elif c_nc == 'Noncoding':
+    elif c_nc == 'noncoding':
         num_fasta['nc'] += 1
         num_bps['nc'] += transcript_length
     else:
         print('No annot %s' % c_nc)
 
-
+# Append the newly generated lib sizes to the summary file
 ih = open('raw_data/summary.tsv', 'r')
 oh = open('lib_sizes.txt', 'w')
 
