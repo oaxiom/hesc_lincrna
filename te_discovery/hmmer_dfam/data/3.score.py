@@ -103,7 +103,7 @@ oh.close()
 dfam = genelist('../../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'HMMlength': 1, 'species': 2, 'type': 3, 'subtype': 4})
 
 sam_order = [
-    'gencode.v30.transcripts',
+    'gencode.v32.transcripts',
     'Homo_sapiens.GRCh38.cdna.all',
     'HSC_SR_PB_merged.transcripts',
 
