@@ -30,13 +30,68 @@ Be careful with this script, it's a bit precarious
 import gzip
 from glbase3 import genelist
 
-conding_noncoding = genelist(filename='../coding_noncoding/coding_table.txt.gz', format={'force_tsv': True, 'transcript_id': 0, 'coding': 1}, gzip=True)
+def add_entry(trans, gsql, newgl, done):
+    transcript_id = trans['transcript_id']
+
+    exon_state = '--'
+    if trans['exonCounts'] > 1:
+        exon_state = 'ME'
+    elif trans['exonCounts'] == 1:
+        exon_state = 'SE'
+
+    # get coding potential:
+    if transcript_id in data_coding_noncoding:
+        c_nc = data_coding_noncoding[transcript_id]
+    else:
+        print('WARNING: {0} not in conding_noncoding table'.format(transcript_id))
+        c_nc = 'U'
+    if transcript_id in data_expression_data:
+        e = data_expression_data[transcript_id]
+    else:
+        print('WARNING: {0} not in data_expression_data table'.format(transcript_id))
+        e = 'U'
+
+    new_name = '%s (%s;%s;%s;%s;%s)' % (trans['name'], exon_state, coding_noncoding_map[c_nc], expn_map[e], trans['evidence'], trans['decision'])
+
+    if 'HSCSR.159919.3' in line: # Debug
+        print(line)
+
+    toadd = {'ensg': trans['ensg'], 'enst': trans['enst'], 'name': new_name, 'loc': trans['loc'], 'transcript_id': transcript_id,
+        'exonCounts': trans['exonCounts'], 'exonStarts': trans['exonStarts'], 'exonEnds': trans['exonEnds'],
+        'strand': trans['strand'],
+        'tags': '%s; %s; %s; %s; %s' % (exon_state, c_nc, e, trans['evidence'], trans['decision'])
+        }
+
+    #print(toadd)
+
+    newgl.append(toadd)
+
+    gsql.add_feature(trans['loc'], trans['loc'].pointLeft(), trans['exonCounts'], trans['exonStarts'], trans['exonEnds'], new_name, trans['strand'], 'gene')
+
+    done += 1
+    if done % 10000 == 0:
+        print('Processed: {:,}'.format(done))
+
+    return done
+
+data_coding_noncoding = genelist(filename='../coding_noncoding/coding_table.txt.gz', format={'force_tsv': True, 'transcript_id': 0, 'coding': 11}, gzip=True)
+data_expression_data = genelist(filename='../expression/expression_table.tsv.gz', format={'force_tsv': True, 'transcript_id': 0, 'esc_spec': 5}, gzip=True)
+
+# convert ot fast lookups:
+data_expression_data = {i['transcript_id']: i['esc_spec'] for i in data_expression_data.linearData}
+data_coding_noncoding = {i['transcript_id']: i['coding'] for i in data_coding_noncoding.linearData}
+
+#print(data_expression_data)
+#print(data_coding_noncoding)
 
 decision = {'same': '=',
     'different': '~'}
 
-coding_noncoding_map = {'Coding': 'C',
-    'Noncoding': 'NC'}
+coding_noncoding_map = {'coding': 'C',
+    'noncoding': 'NC',
+    'U': 'U'}
+
+expn_map = {'enriched': 'ES+', 'unbiased': 'ES:', 'depleted': 'ES-'}
 
 from glbase3 import *
 
@@ -52,7 +107,6 @@ skipped = 0
 trans = None
 
 for idx, line in enumerate(oh):
-
     if 'HSCSR.159919.3' in line:
         print(line)
 
@@ -60,41 +114,12 @@ for idx, line in enumerate(oh):
         continue
     line = line.strip().split('\t')
 
+    #print(line)
+
     # I need to assemble the full transcript data first
     if line[2] == 'transcript':
         if trans and trans['exonCounts'] > 0: # Write the previous transcript out
-            exon_state = '--'
-            if trans['exonCounts'] > 1:
-                exon_state = 'ME'
-            elif trans['exonCounts'] == 1:
-                exon_state = 'SE'
-
-            # get coding potential:
-            c_nc = conding_noncoding.get(key='transcript_id', value=trans['transcript_id'])
-            if not c_nc:
-                print('Not found', trans['transcript_id'])
-                c_nc = 'U'
-            else:
-                c_nc = coding_noncoding_map[c_nc[0]['coding']]
-
-            new_name = '%s (%s;%s;%s;%s)' % (trans['name'], exon_state, c_nc, trans['evidence'], trans['decision'])
-
-            if 'HSCSR.159919.3' in line:
-                print(line)
-
-            toadd = {'ensg': trans['ensg'], 'enst': trans['enst'], 'name': new_name, 'loc': trans['loc'], 'transcript_id': trans['transcript_id'],
-                'exonCounts': trans['exonCounts'], 'exonStarts': trans['exonStarts'], 'exonEnds': trans['exonEnds'],
-                'strand': trans['strand']}
-
-            #print(toadd)
-
-            newgl.append(toadd)
-
-            gsql.add_feature(trans['loc'], trans['loc'].pointLeft(), trans['exonCounts'], trans['exonStarts'], trans['exonEnds'], new_name, trans['strand'], 'gene')
-
-            done += 1
-            if done % 10000 == 0:
-                print('Processed: {:,}'.format(done))
+            done = add_entry(trans, gsql, newgl, done)
 
         # Start a new transcript;
         gtf_dec = {}
@@ -124,7 +149,8 @@ for idx, line in enumerate(oh):
             'enst': gtf_dec['ens_transcript_id'],
             'gene_id': gtf_dec['gene_id'],
             'transcript_id': gtf_dec['transcript_id'],
-            'evidence': gtf_dec['evidence'],}
+            'evidence': gtf_dec['evidence'],
+            'tags': ''}
 
     if line[2] == 'exon':
         # Isn't this different, depending upon the strand?
@@ -133,38 +159,10 @@ for idx, line in enumerate(oh):
         trans['exonCounts'] += 1
 
 # Add the last entry;
-exon_state = '--'
-if trans['exonCounts'] > 1:
-    exon_state = 'ME'
-elif trans['exonCounts'] == 1:
-    exon_state = 'SE'
+add_entry(trans, gsql, newgl, done)
 
-# get coding potential:
-c_nc = conding_noncoding.get(key='transcript_id', value=trans['transcript_id'])
-if not c_nc:
-    print('Not found', trans['transcript_id'])
-    c_nc = 'U'
-else:
-    c_nc = coding_noncoding_map[c_nc[0]['coding']]
-
-new_name = '%s (%s;%s;%s;%s)' % (trans['name'], exon_state, c_nc, trans['evidence'], trans['decision'])
-
-if 'HSCSR.159919.3' in line:
-    print(line)
-
-toadd = {'ensg': trans['ensg'], 'enst': trans['enst'], 'name': new_name, 'loc': trans['loc'], 'transcript_id': trans['transcript_id'],
-    'exonCounts': trans['exonCounts'], 'exonStarts': trans['exonStarts'], 'exonEnds': trans['exonEnds'],
-    'strand': trans['strand']}
-
-#print(toadd)
-
-newgl.append(toadd)
-
-gsql.add_feature(trans['loc'], trans['loc'].pointLeft(), trans['exonCounts'], trans['exonStarts'], trans['exonEnds'], new_name, trans['strand'], 'gene')
-
-
-print('Processed: %s transcripts' % done)
-print('Skipped  : %s transcripts' % skipped)
+print('Processed: {:,} transcripts'.format(done))
+print('Skipped  : {:,} transcripts'.format(skipped))
 oh.close()
 gsql.finalise()
 
@@ -173,7 +171,3 @@ gl.load_list(newgl)
 gl.saveTSV('all_genes.tsv', key_order=['ensg', 'transcript_id', 'name', 'enst'])
 gl.save('all_genes.glb')
 
-#TODO: a SR and LR-only GTF;
-print('SR GTF...')
-
-print('LR GTF...')
