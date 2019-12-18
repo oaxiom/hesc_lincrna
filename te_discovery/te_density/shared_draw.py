@@ -67,8 +67,6 @@ def draw_heatmap(filename, res, dataset):
     heat_hei = 0.010*len(te_labels)
     fig.subplots_adjust(left=0.2, right=0.80, bottom=0.95-heat_hei, top=0.95, wspace=0.1)
 
-
-
     for i, k in enumerate(dataset.keys()):
         res_tab = numpy.array([res[te][k] for te in te_labels])
 
@@ -90,40 +88,16 @@ def draw_heatmap(filename, res, dataset):
     #fig.savefig(filename)
     fig.savefig(filename.replace('.png', '.pdf'))
 
-def draw_density_utrs(filename, known, novel, bkgd, TE=None):
-    data = {
-        'known': {
-            'utr5': numpy.zeros(1000), # scaled bins to put in;
-            'cds': numpy.zeros(1000),
-            'utr3': numpy.zeros(1000),
-            },
-        'novel': {
-            'utr5': numpy.zeros(1000), # scaled bins to put in;
-            'cds': numpy.zeros(1000),
-            'utr3': numpy.zeros(1000),
-            },
-        'bkgd': {
-            'utr5': numpy.zeros(1000), # scaled bins to put in;
-            'cds': numpy.zeros(1000),
-            'utr3': numpy.zeros(1000),
-            }
-        }
+def draw_density_utrs(filename, dataset_dict, TE=None):
 
-    genes = {'known': selected_genes,
-        'novel': bkgd1,
-        'bkgd': bkgd2}
+    data = {k: {'utr5': numpy.zeros(1000),'cds': numpy.zeros(1000), 'utr3': numpy.zeros(1000)} for k in dataset_dict}
 
-    for gl in genes:
-        for n, gene in enumerate(genes[gl]):
+    for glk in dataset_dict:
+        for n, gene in enumerate(dataset_dict[glk]):
             #print(gene)
             # scale the TE to the mRNA
-            if gl != 'novel':
-                pos = shared.convert_genocode_to_local(gene) # return 0, tlength, cdsl, cdsr, splice_sites
-            else:
-                # Have to get the pos from the gene entry
-                pos = (0, 100, 20, 50, [])
-                print(gene)
-            print(pos)
+            pos = shared.convert_genocode_to_local(gene) # return 0, tlength, cdsl, cdsr, splice_sites
+            #print(pos)
 
             if pos[2] == pos[3]:
                 # Bad CDS, skip this one;
@@ -155,17 +129,17 @@ def draw_density_utrs(filename, known, novel, bkgd, TE=None):
                 if s <= utr5_r:
                     ls = max([math.floor(s / utr5_r * 1000), 0])
                     le = min([math.ceil(e / utr5_r * 1000), 1000])
-                    data[gl]['utr5'][ls:le] += 1
+                    data[glk]['utr5'][ls:le] += 1
                     #print("Add 5'UTR")
                 if e >= cds_l and s <= cds_r:
                     ls = max([math.floor((s-cds_l) / cds_len * 1000), 0])
                     le = min([math.ceil((e-cds_l) / cds_len * 1000), 1000])
-                    data[gl]['cds'][ls:le] += 1
+                    data[glk]['cds'][ls:le] += 1
                     #print('Add CDS')
                 if e > utr3_l:
                     ls = max([math.floor((s-utr3_l) / utr3_len * 1000), 0])
                     le = min([math.ceil((e-utr3_l) / utr3_len * 1000), 1000])
-                    data[gl]['utr3'][ls:le] += 1
+                    data[glk]['utr3'][ls:le] += 1
                     #print("Add 3'UTR")
 
                 #print(ls, le)
@@ -173,31 +147,41 @@ def draw_density_utrs(filename, known, novel, bkgd, TE=None):
 
             if (n+1) % 1000 == 0:
                 print('Processed: {:,} transcripts'.format(n+1))
-                if n> 20: break
 
-    fig = plot.figure(figsize=[2.2,1.4])
+    fig = plot.figure(figsize=[2.8,1.3])
+    fig.subplots_adjust(left=0.15, right=0.65, bottom=0.35,)
 
-    ymax = max([utr5.max(), cds.max(), utr3.max(), 1])
+    # # norm values to the number of transcripts in total set;
+    for k in data:
+        data[k]['utr5'] /= len(dataset_dict[k])
+        data[k]['cds'] /= len(dataset_dict[k])
+        data[k]['utr3'] /= len(dataset_dict[k])
+
+    ymax = max([max(data[k]['utr5'].max(), data[k]['cds'].max(), data[k]['utr3'].max()) for k in data])
 
     ax1 = fig.add_subplot(131)
-    ax1.plot(utr5)
+    ax2 = fig.add_subplot(132)
+    ax3 = fig.add_subplot(133)
+
+    for glk in dataset_dict:
+        ax1.plot(data[glk]['utr5'], label=glk)
+        ax2.plot(data[glk]['cds'], label=glk)
+        ax3.plot(data[glk]['utr3'], label=glk)
+
     ax1.set_ylim([0, ymax])
     ax1.tick_params(labelsize=6)
     ax1.set_xticklabels('')
 
-    ax2 = fig.add_subplot(132)
-    ax2.plot(cds)
     ax2.set_ylim([0, ymax])
     ax2.set_yticklabels('', fontsize=6)
     ax2.set_xticklabels('')
 
-    ax3 = fig.add_subplot(133)
-    ax3.plot(utr3)
     ax3.set_ylim([0, ymax])
-    ax3 .set_yticklabels('')
+    ax3.set_yticklabels('')
     ax3.set_xticklabels('')
 
-
+    ax3.legend()
+    plot.legend(loc='upper left', bbox_to_anchor=(1.1, 0.8), prop={'size': 6})
     #fig.savefig(filename)
     fig.savefig(filename.replace('.png', '.pdf'))
     plot.close(fig)
