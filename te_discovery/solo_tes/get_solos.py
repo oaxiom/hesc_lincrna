@@ -32,15 +32,20 @@ for trans in all_te_transcripts:
         continue
     # add a typ_subtype key:
     ts = set([])
+    full_names = set([])
     for d in trans['doms']:
         te = dfam.get(key='name', value=d['dom'])[0]
         type_subtyp = '%s:%s' % (te['type'], te['subtype'])
         ts.add(type_subtyp)
+
+        full_names.add('{0}:{1}:{2}'.format(te['type'], te['subtype'], d['dom']))
+
         if type_subtyp not in type_subtype_counts:
             type_subtype_counts[type_subtyp] = 0
         type_subtype_counts[type_subtyp] += 1
 
     trans['te_type'] = '; '.join(ts)
+    trans['te_fullanmes'] = '; '.join(full_names)
     solotes.append(trans)
 
     # collect stats;

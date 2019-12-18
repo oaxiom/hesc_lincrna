@@ -140,8 +140,25 @@ fig.savefig('freq_enrichment.svg')
 fig.savefig('freq_enrichment.pdf')
 
 # Key classes to look at:
-ket_classes = ['Retroposon:SVA',
+key_classes = [
+    'Retroposon:SVA',
     'DNA:hAT-Tag1',
     'DNA:PiggyBac',
     'LTR:ERVK',
     'DNA:MULE-MuDR']
+
+# Split these down a level;
+res = {}
+for gene in solotes:
+    if True in [i in gene['te_type'] for i in key_classes]: # Has one of the enriched classes;
+        for TE in gene['te_fullanmes'].split('; '):
+            te_family = ':'.join(TE.split(':')[0:2])
+            print("'{0}'".format(te_family))
+
+            if te_family in key_classes:
+                print(te_family)
+                if TE not in res:
+                    res[TE] = 0
+                res[TE] += 1
+
+print(res)

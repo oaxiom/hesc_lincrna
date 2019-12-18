@@ -17,15 +17,17 @@ gllocs = glload('../../te_discovery/solo_tes/solo_tes.glb')
 for gene in gllocs:
     destination = 'none'
 
-    path = '%s/%s/' % (draw, ';'.join(sorted(gene['te_type'].split('; '))))
-    if not os.access('%s' % (path), os.R_OK | os.W_OK):
-        os.mkdir('%s' % (path))
 
-    print(gene['name'])
-    dd = len(gene['loc']) / 20.0
-    c.draw.setLocation(loc=gene['loc'].expand(dd))
-    scale = 1.0
-    if draw == 'svg':
-        scale = 0.3
+    paths = sorted(gene['te_type'].split('; '))
+    for path in paths:
+        if not os.access('%s/%s' % (draw, path), os.R_OK | os.W_OK):
+            os.mkdir('%s/%s' % (draw, path))
 
-    c.draw.exportImage("%s/%s_%s.%s" % (path, gene['name'], str(gene['loc']).replace(":", "-"), draw), scale=scale, type=draw) # Cannot draw png and svg interleaved for some reason.
+        print(gene['name'])
+        dd = len(gene['loc']) / 20.0
+        c.draw.setLocation(loc=gene['loc'].expand(dd))
+        scale = 1.0
+        if draw == 'svg':
+            scale = 0.3
+
+        c.draw.exportImage("%s/%s/%s_%s.%s" % (draw, path, gene['name'], str(gene['loc']).replace(":", "-"), draw), scale=scale, type=draw) # Cannot draw png and svg interleaved for some reason.
