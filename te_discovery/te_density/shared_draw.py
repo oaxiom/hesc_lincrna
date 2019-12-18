@@ -8,10 +8,10 @@ import shared
 
 def draw_density(filename, data_dict, TE=None, threshold=20):
 
-    res = {numpy.zeros(1000) for k in data_dict} # scaled bins to put in;
-    for k in enumerate(data_dict):
-        for n, gene in enumerate(data_dict[k]):
-            tlen = shared.convert_genocode_to_local(gene)[1]
+    res = {k: numpy.zeros(1000) for k in data_dict} # scaled bins to put in;
+    for k in data_dict:
+        for gene in data_dict[k]:
+            tlen = shared.get_transcript_length(gene)
 
             for d in gene['doms']:
                 if TE:
@@ -21,17 +21,17 @@ def draw_density(filename, data_dict, TE=None, threshold=20):
                 s = math.floor(d['span'][0] / tlen * 1000)
                 e = math.ceil(d['span'][1] / tlen * 1000)
 
-                res[ridx][s:e] += 1
+                res[k][s:e] += 1
 
-    if max(res[0]) < threshold and max(res[1]) < threshold:
+    if max([max(i) for i in res.values()]) < threshold:
         return None # stop from drawing
 
     # # norm values to the number of transcripts in total set;
-    res[0] /= len(selected_genes)
-    res[1] /= len(selected_genes2)
+    for k in res:
+        res[k] /= len(data_dict[k])
 
-    fig = plot.figure(figsize=[2,1.3])
-    fig.subplots_adjust(left=0.30, bottom=0.35,)
+    fig = plot.figure(figsize=[2.8,1.3])
+    fig.subplots_adjust(left=0.15, right=0.65, bottom=0.35,)
     ax = fig.add_subplot(111)
 
     for k in res:
@@ -42,46 +42,47 @@ def draw_density(filename, data_dict, TE=None, threshold=20):
     ax.set_xticklabels(['TSS', 'TTS'])
     #fig.savefig(filename)
     ax.legend()
+    plot.legend(loc='upper left', bbox_to_anchor=(1.1, 0.8), prop={'size': 6})
     fig.savefig(filename.replace('.png', '.pdf'))
     plot.close(fig)
 
     print('Saved %s' % filename)
     return res
 
-def draw_heatmap(filename, res):
+def draw_heatmap(filename, res, dataset):
     # should be just one set of labels...
 
-    res_labels = sorted(res.keys(), reverse=True)
+    te_labels = sorted(res.keys())
 
-    # normalise each row;
-    for k in res_labels:
-        s = max(res[k][0].std(), res[k][1].std())
-        m = max(res[k][0].mean(), res[k][1].mean())
-        res[k][0] -= m
-        res[k][0] /= s
+    # normalise each row, for the max s and max mean in any dataset
+    for te in te_labels:
+        s = max([res[te][k].std() for k in dataset])
+        m = max([res[te][k].mean() for k in dataset])
+        for k in dataset.keys():
+            res[te][k] -= m
+            res[te][k] /= s
 
-        res[k][1] -= m
-        res[k][1] /= s
+    number_of_heatmaps = len(dataset.keys())
+    fig = plot.figure(figsize=[1+((number_of_heatmaps-1)*3),9])
+    heat_hei = 0.010*len(te_labels)
+    fig.subplots_adjust(left=0.2, right=0.80, bottom=0.95-heat_hei, top=0.95, wspace=0.1)
 
-    fig = plot.figure(figsize=[8,9])
-    heat_hei = 0.010*len(res_labels)
-    fig.subplots_adjust(left=0.2, right=0.75, bottom=0.95-heat_hei, top=0.95, wspace=0.1)
 
-    for i in [0,1]: # only 2 heatmaps supported at the moment;
-        res_tab = numpy.array([res[k][i] for k in res_labels])
 
-        ax = fig.add_subplot(1,2,i+1)
+    for i, k in enumerate(dataset.keys()):
+        res_tab = numpy.array([res[te][k] for te in te_labels])
+
+        ax = fig.add_subplot(1,number_of_heatmaps,i+1)
         #ax.set_position([0.5, 0.1, 0.48, 0.8])
 
         ax.imshow(res_tab, cmap=cm.PuOr_r, aspect="auto",
-            origin='lower',
-            extent=[0, res_tab.shape[1], 0, res_tab.shape[0]])
+            origin='lower', extent=[0, res_tab.shape[1], 0, res_tab.shape[0]])
 
-        ax.set_yticklabels(res_labels)
+        ax.set_yticklabels(te_labels)
         if i>0:
             ax.set_yticklabels('')
-        ax.set_yticks(numpy.arange(len(res_labels))+0.5)
-
+        ax.set_yticks(numpy.arange(len(te_labels))+0.5)
+        ax.set_title(k, {'fontsize': 6})
         ax.set_xticklabels('')
         ax.tick_params(labelsize=6, bottom=False)
         #plot.colorbar(cax=ax)
