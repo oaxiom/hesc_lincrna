@@ -10,9 +10,9 @@ As we don't trust the short read data to assemble these, we only consider them f
 import sys, numpy, itertools, pickle
 import matplotlib.pyplot as plot
 import matplotlib.cm as cm
-from glbase3 import glload, genelist, expression, config
+from glbase3 import glload, genelist, expression, config, utils
 
-config.draw_mode = ['png', 'svg']
+config.draw_mode = ['png', 'pdf']
 
 sys.path.append('../../')
 import shared
@@ -92,6 +92,8 @@ total_tes = sum(genome_repeat_freqs.values())
 
 total_solotes = sum(res.values())
 
+fc = {}
+
 for k in sorted(res.keys()):
     if k not in genome_repeat_freqs: # Some of the names are a little different, it's some really rare ones though so just ignore
         print("Warning: couldn't find {0} in genome, number of TEs in transcripts={1}".format(k, res[k]))
@@ -100,12 +102,17 @@ for k in sorted(res.keys()):
 
     observed = res[k]
     expected = total_solotes * (genome_repeat_freqs[k] / total_tes)
-    res[k] = (observed+1)/(expected+1)
+    res[k] = (observed)/(expected)
+
+    fc[k] = utils.fold_change(expected, observed)
 
     print('obs={0:.2f}\texp={1:.2f}\tenrich={2:.2f}\t{3}'.format(observed, expected, res[k], k))
 
     #res[k] = res[k] / genome_repeat_freqs[k] * 1e6
 
+e = expression(loadable_list=[{'name': k, 'conditions': [fc[k]]} for k in fc], cond_names=['enrichment'])
+e.heatmap(filename='solo_te_enrichment.png', heat_wid=0.03, grid=True, row_cluster=False, heat_hei=0.015*len(e), bracket=[-2,2])
+print('\n'.join(reversed(e['name'])))
 fig = plot.figure(figsize=[3,4])
 
 labs = list(reversed(sorted(res.keys())))

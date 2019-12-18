@@ -8,7 +8,8 @@ As we don't trust the short read data to assemble these, we only consider them f
 '''
 
 import sys
-from glbase3 import glload, genelist
+from glbase3 import glload, genelist, config
+config.draw_mode = 'pdf'
 
 sys.path.append('../simple_summaries/')
 import pies
