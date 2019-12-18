@@ -23,21 +23,29 @@ dfam_lookup = {item['name']: '{0}:{1}:{2}'.format(item['type'], item['subtype'],
 
 delta = 1000 # bp around the splice site to look for TEs
 
-def draw_pileup(filename, es_plus, es_neg, notes_plus, notes_neg, gencode_plus, gencode_neg):
+def draw_pileup(filename,
+        enriched_plus, enriched_neg,
+        unbiased_plus, unbiased_neg,
+        depleted_plus, depleted_neg,
+        gencode_plus, gencode_neg):
+
     print('Drawing {0}'.format(filename))
     fig = plot.figure()
 
     xs = numpy.arange(0, delta*2)
 
-    datap = {'GENCODE+': gencode_plus,
-        'not-ES+': notes_plus,
-        'ES+': es_plus,
+    datap = {
+        'GENCODE     +': gencode_plus,
+        'ES-enriched +': enriched_plus,
+        'ES-unbiased +': unbiased_plus,
+        'ES-depleted +': depleted_plus
         }
 
     datam = {
-        'GENCODE-': gencode_neg,
-        'not-ES-': notes_neg,
-        'ES-': es_neg
+        'GENCODE     -': gencode_neg,
+        'ES-enriched +': enriched_neg,
+        'ES-unbiased +': unbiased_neg,
+        'ES-depleted +': depleted_neg
         }
 
     ax1 = fig.add_subplot(211)
@@ -72,13 +80,13 @@ def draw_pileup(filename, es_plus, es_neg, notes_plus, notes_neg, gencode_plus, 
 
 
 def init_res_classes_count():
-    return {'ES': 0, 'notES': 0, 'GENCODE': 0}
+    return {'ES+': 0, 'ES:': 0, 'ES-':0, 'GENCODE': 0}
 def init_res_classes():
-    return {'ES': numpy.zeros(2000), 'notES': numpy.zeros(2000), 'GENCODE': numpy.zeros(2000)}
+    return {'ES+': numpy.zeros(2000), 'ES:': numpy.zeros(2000), 'ES-': numpy.zeros(2000), 'GENCODE': numpy.zeros(2000)}
 def init_res_store():
     return {'sp+': init_res_classes(), 'sp-': init_res_classes()}
 def init_res_totals_classes():
-    return {'ES': 0, 'notES': 0, 'GENCODE': 0}
+    return {'ES+': 0, 'ES:': 0, 'ES-':0, 'GENCODE': 0}
 
 for transcriptome_type in ('ncrna', 'pc'): # change me if you want to do ncrna or protein coding;
     gencode = glload('../../te_transcripts/transcript_table_gencode_%s.glb' % transcriptome_type) # needs to be loaded based on the type
@@ -112,9 +120,12 @@ for transcriptome_type in ('ncrna', 'pc'): # change me if you want to do ncrna o
 
     # Here, later do ncrna, all and pc as a for:
 
-    data_to_process = {'ES': doms, # Using all here, for now
-        #'notES': Not available yet,
+    data_to_process = {'ES+': doms.get(key='expression', value='enriched'), # Using all here, for now
+        'ES:': doms.get(key='expression', value='unbiased'),
+        'ES-': doms.get(key='expression', value='depleted'),
         'GENCODE': gencode}
+
+    data_lens = {k: len(data_to_process[k]) for k in data_to_process}
 
     for dataset in data_to_process:
         print(dataset)
@@ -171,14 +182,27 @@ for transcriptome_type in ('ncrna', 'pc'): # change me if you want to do ncrna o
     # draw the pileups
     for te_type in res_tetype.keys():
         # normalise to the total number of TEs? Or to the number of transcripts?
-
+        '''
         draw_pileup('pile-type-{0}-{1}.png'.format(te_type, transcriptome_type),
-            res_tetype[te_type]['sp+']['ES'] / totals_all['ES'],
-            res_tetype[te_type]['sp-']['ES'] / totals_all['ES'],
-            None,
-            None,
+            res_tetype[te_type]['sp+']['ES+'] / totals_all['ES+'],
+            res_tetype[te_type]['sp-']['ES+'] / totals_all['ES+'],
+            res_tetype[te_type]['sp+']['ES:'] / totals_all['ES:'],
+            res_tetype[te_type]['sp-']['ES:'] / totals_all['ES:'],
+            res_tetype[te_type]['sp+']['ES-'] / totals_all['ES-'],
+            res_tetype[te_type]['sp-']['ES-'] / totals_all['ES-'],
             res_tetype[te_type]['sp+']['GENCODE'] / totals_all['GENCODE'],
             res_tetype[te_type]['sp-']['GENCODE'] / totals_all['GENCODE'],
+            )
+        '''
+        draw_pileup('pile-type-{0}-{1}.png'.format(te_type, transcriptome_type),
+            res_tetype[te_type]['sp+']['ES+'] / data_lens['ES+'],
+            res_tetype[te_type]['sp-']['ES+'] / data_lens['ES+'],
+            res_tetype[te_type]['sp+']['ES:'] / data_lens['ES:'],
+            res_tetype[te_type]['sp-']['ES:'] / data_lens['ES:'],
+            res_tetype[te_type]['sp+']['ES-'] / data_lens['ES-'],
+            res_tetype[te_type]['sp-']['ES-'] / data_lens['ES-'],
+            res_tetype[te_type]['sp+']['GENCODE'] / data_lens['GENCODE'],
+            res_tetype[te_type]['sp-']['GENCODE'] / data_lens['GENCODE'],
             )
 
     # draw the pileups
@@ -187,12 +211,25 @@ for transcriptome_type in ('ncrna', 'pc'): # change me if you want to do ncrna o
 
         if max(totals_tefamily_counts[te_family].values()) < 100:
             continue
-
+        '''
         draw_pileup('pileups/family-{0}-{1}.png'.format(te_family, transcriptome_type),
-            res_tefamily[te_family]['sp+']['ES'] / totals_all['ES'],
-            res_tefamily[te_family]['sp-']['ES'] / totals_all['ES'],
-            None, #res_tefamily[te_family]['sp+']['notES'] / totals_all['notES'],
-            None, #res_tefamily[te_family]['sp-']['notES'] / totals_all['notES'],
+            res_tefamily[te_family]['sp+']['ES+'] / totals_all['ES+'],
+            res_tefamily[te_family]['sp-']['ES+'] / totals_all['ES+'],
+            res_tefamily[te_family]['sp+']['ES:'] / totals_all['ES:'],
+            res_tefamily[te_family]['sp-']['ES:'] / totals_all['ES:'],
+            res_tefamily[te_family]['sp+']['ES-'] / totals_all['ES-'],
+            res_tefamily[te_family]['sp-']['ES-'] / totals_all['ES-'],
             res_tefamily[te_family]['sp+']['GENCODE'] / totals_all['GENCODE'],
             res_tefamily[te_family]['sp-']['GENCODE'] / totals_all['GENCODE'],
+            )
+        '''
+        draw_pileup('pileups/family-{0}-{1}.png'.format(te_family, transcriptome_type),
+            res_tefamily[te_family]['sp+']['ES+'] / data_lens['ES+'],
+            res_tefamily[te_family]['sp-']['ES+'] / data_lens['ES+'],
+            res_tefamily[te_family]['sp+']['ES:'] / data_lens['ES:'],
+            res_tefamily[te_family]['sp-']['ES:'] / data_lens['ES:'],
+            res_tefamily[te_family]['sp+']['ES-'] / data_lens['ES-'],
+            res_tefamily[te_family]['sp-']['ES-'] / data_lens['ES-'],
+            res_tefamily[te_family]['sp+']['GENCODE'] / data_lens['GENCODE'],
+            res_tefamily[te_family]['sp-']['GENCODE'] / data_lens['GENCODE'],
             )

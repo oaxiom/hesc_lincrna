@@ -6,11 +6,11 @@ import matplotlib.cm as cm
 sys.path.append('../../')
 import shared
 
-def draw_density(filename, selected_genes, selected_genes2, TE=None, threshold=20):
+def draw_density(filename, data_dict, TE=None, threshold=20):
 
-    res = [numpy.zeros(1000), numpy.zeros(1000)] # scaled bins to put in;
-    for ridx, sl in enumerate([selected_genes, selected_genes2]):
-        for n, gene in enumerate(sl):
+    res = {numpy.zeros(1000) for k in data_dict} # scaled bins to put in;
+    for k in enumerate(data_dict):
+        for n, gene in enumerate(data_dict[k]):
             tlen = shared.convert_genocode_to_local(gene)[1]
 
             for d in gene['doms']:
@@ -34,13 +34,14 @@ def draw_density(filename, selected_genes, selected_genes2, TE=None, threshold=2
     fig.subplots_adjust(left=0.30, bottom=0.35,)
     ax = fig.add_subplot(111)
 
-    ax.plot(res[0], label=selected_genes.name)
-    ax.plot(res[1], label=selected_genes2.name)
+    for k in res:
+        ax.plot(res[k], label=k)
+
     ax.tick_params(labelsize=6)
     ax.set_xticks([0, 1000])
     ax.set_xticklabels(['TSS', 'TTS'])
     #fig.savefig(filename)
-    #ax.legend()
+    ax.legend()
     fig.savefig(filename.replace('.png', '.pdf'))
     plot.close(fig)
 

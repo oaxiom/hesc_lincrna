@@ -19,9 +19,10 @@ draw = 'png'
 type = 'pc'
 
 doms = glload('../../te_transcripts/transcript_table_merged.mapped.glb')
-gencode = glload('../../../gencode/hg38_gencode_v30.glb').getColumns(['enst', 'cds_loc'])
+gencode = glload('../../../gencode/hg38_gencode_v32.glb').getColumns(['enst', 'cds_loc'])
 gencode_doms = glload('../../te_transcripts/transcript_table_gencode_%s.glb' % type)
 dfam = genelist('../../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
+print(doms)
 doms = doms.map(genelist=gencode, key='enst')
 
 # preprocss the doms list to remove non-coding genes;

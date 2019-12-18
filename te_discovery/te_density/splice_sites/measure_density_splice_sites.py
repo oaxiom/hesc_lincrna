@@ -32,7 +32,7 @@ for item in dfam:
 #doms = doms.map(genelist=gencode_sliced, key='enst') # Only keep those with a known gene structure. Why?
 
 def init_res_classes():
-    return {'ES': 0, 'ES:': 0, 'ES-': 0, 'GENCODE': 0}
+    return {'ES+': 0, 'ES:': 0, 'ES-': 0, 'GENCODE': 0}
 
 def init_res_store():
     return {
@@ -68,13 +68,13 @@ novel = []
 
 # Here, later do ncrna, all and pc as a for:
 
-data_to_process = {'ES+': doms, # Using all here, for now
-    'ES:': ,
-    'ES-': ,
+data_to_process = {'ES+': doms.get(key='expression', value='enriched'), # Using all here, for now
+    'ES:': doms.get(key='expression', value='unbiased'),
+    'ES-': doms.get(key='expression', value='depleted'),
     'GENCODE': gencode}
 
 for dataset in data_to_process:
-    print(dataset)
+    print(dataset, len(data_to_process[dataset]))
     for idx, gene in enumerate(data_to_process[dataset]):
         if (idx+1) % 10000 == 0:
             print('{:,}'.format(idx+1))
@@ -142,7 +142,7 @@ for dataset in ['ES+', 'ES:', 'ES-']:
     expn.heatmap('heatfreqs_{0}.png'.format(dataset), grid=True, heat_hei=0.013*len(expn), heat_wid=0.08, bracket=[0, 3], col_cluster=False)
 
 # Analyiss by TE FAMILY:
-for dataset in ['ES']:# , 'notES']:
+for dataset in ['ES+', 'ES:', 'ES-']:
     newl = []
     for te_family in res_tefamily.keys():
         enrich = []

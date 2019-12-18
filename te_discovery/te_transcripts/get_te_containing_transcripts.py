@@ -44,7 +44,7 @@ print(doms.keys())
 doms.save('transcript_table_gencode_ncrna.glb')
 doms.saveTSV('transcript_table_gencode_ncrna.tsv')
 
-doms = glload('../hmmer_dfam/data/transcript_table_gencode.v29.pc_transcripts.glb') # to fix;
+doms = glload('../hmmer_dfam/data/transcript_table_gencode.v32.pc_transcripts.glb') # to fix;
 # I need to go in and fix the transcript_id key, which is just the FASTA name;
 for g in doms:
     g['transcript_id'] = g['transcript_id'].split('|')[0].split('.')[0]
