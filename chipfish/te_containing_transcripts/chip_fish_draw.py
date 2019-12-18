@@ -23,6 +23,9 @@ for k in gllocs:
     destination, alpha = shared.classify_transcript(k['name'])
     if not os.access('%s/%s' % (draw, destination), os.R_OK | os.W_OK):
         os.mkdir('%s/%s' % (draw, destination))
+    path = '%s/%s/%s' % (draw, destination, alpha)
+    if not os.access(path, os.R_OK | os.W_OK):
+        os.mkdir(path)
 
     print(k['name'])
     dd = len(k['loc']) / 20.0
@@ -31,8 +34,4 @@ for k in gllocs:
     if draw == 'svg':
         scale = 0.3
 
-    path = '%s/%s/%s' % (draw, destination, alpha)
-
-    if not os.access(path, os.R_OK | os.W_OK):
-        os.mkdir(path)
     c.draw.exportImage("%s/%s_%s.%s" % (path, k['name'], str(k['loc']).replace(":", "-"), draw), scale=scale, type=draw) # Cannot draw png and svg interleaved for some reason.

@@ -68,24 +68,24 @@ def get_col(e):
 def get_cols(labels):
     return [get_col(e) for e in labels]
 
-part1 = {'~)': 'variant_isoform',
-    '=)': 'known_isoform',
-    '!)': 'unknown_isoform',}
+part1 = {'~)': 'variant-isoform',
+    '=)': 'known-isoform',
+    '!)': 'unknown-isoform',}
 
-part2 = {'(ME': 'multi_exon',
-    '(SE': 'single_exon'}
+part2 = {'(ME': 'multi-exon',
+    '(SE': 'single-exon'}
 
 part3 = {'C': 'coding',
     'NC': 'noncoding',
     'U': 'unknown'}
 
-part4 = {'SR': 'short_read',
-    'SR+LR': 'long_read', # Takes preference for purposes of proof
-    'LR': 'long_read'}
+part4 = {'SR': 'short-read',
+    'SR+LR': 'long-read', # Takes preference for purposes of proof
+    'LR': 'long-read'}
 
-part5 = {';ES+;': 'ES-enriched',
-    ';ES:;': 'ES-neutral',
-    ';ES-;': 'ES-depleted'}
+part5 = {'ES+': 'ES-enriched',
+    'ES:': 'ES-neutral',
+    'ES-': 'ES-depleted'}
 
 def classify_transcript(name):
     sum = name.split(' ')[1].split(';')
@@ -95,7 +95,7 @@ def classify_transcript(name):
 
     else:
         # transcript_type - coding - exon_status - evidence - expression
-        destination = '%s_%s_%s_%s' % (part1[sum[4]], part3[sum[1]], part2[sum[0]], part4[sum[3]], part5[sum[2]])
+        destination = '%s_%s_%s_%s_%s' % (part1[sum[4]], part3[sum[1]], part2[sum[0]], part4[sum[3]], part5[sum[2]])
 
         alpha = name[0]
 

@@ -10,9 +10,9 @@ draw = 'png'
 c = chipfish.app()
 c.startup(os.path.expanduser("../trk_TEs.txt"))
 
-annot = glload(os.path.expanduser('~/hg38/hg38_ensembl_v95_enst.glb'))
+#annot = glload(os.path.expanduser('~/hg38/hg38_ensembl_v95_enst.glb'))
+#annot = annot.renameKey('name', 'gene_symbol')
 gllocs = glload('../../te_discovery/te_transcripts/transcript_table_merged.mapped.glb')
-#print(gllocs)
 
 locs = ['SOX2', 'NANOG', 'SALL4', 'LIN28A', 'LIN28B', 'SALL1', 'POU5F1A',
     'DPPA2', 'DPPA3', 'DPPA5A', 'PRDM14', 'JARID2', 'SALL2', 'SALL3', 'TCF3',
@@ -49,9 +49,8 @@ locs = ['SOX2', 'NANOG', 'SALL4', 'LIN28A', 'LIN28B', 'SALL1', 'POU5F1A',
     'SCGB3A2', 'NCR1', 'KLKB1', 'IL34', 'PLP1', 'ESRG', 'RPL39L',
 
     ]
-locs = genelist(loadable_list=[{'name': k} for k in locs])
-ll = locs.map(genelist=annot, key='name')
-ll = ll.map(genelist=gllocs, key='enst')
+locs = genelist(loadable_list=[{'gene_symbol': k} for k in locs])
+ll = locs.map(genelist=gllocs, key='gene_symbol')
 
 print(ll)
 
