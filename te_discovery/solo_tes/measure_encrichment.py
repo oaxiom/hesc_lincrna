@@ -111,8 +111,11 @@ for k in sorted(res.keys()):
     #res[k] = res[k] / genome_repeat_freqs[k] * 1e6
 
 e = expression(loadable_list=[{'name': k, 'conditions': [fc[k]]} for k in fc], cond_names=['enrichment'])
-e.heatmap(filename='solo_te_enrichment.png', heat_wid=0.03, grid=True, row_cluster=False, heat_hei=0.015*len(e), bracket=[-2,2])
-print('\n'.join(reversed(e['name'])))
+e.sort_sum_expression()
+r = e.heatmap(filename='solo_te_enrichment.png', heat_wid=0.03, grid=True, row_cluster=False, heat_hei=0.015*len(e), bracket=[-2,2],
+    draw_numbers=True, draw_numbers_threshold=1, draw_numbers_fmt='*')
+print(r)
+print('\n'.join(reversed(r['reordered_rows'])))
 fig = plot.figure(figsize=[3,4])
 
 labs = list(reversed(sorted(res.keys())))
@@ -135,3 +138,10 @@ ax.set_xlim([0, 3])
 fig.savefig('freq_enrichment.png')
 fig.savefig('freq_enrichment.svg')
 fig.savefig('freq_enrichment.pdf')
+
+# Key classes to look at:
+ket_classes = ['Retroposon:SVA',
+    'DNA:hAT-Tag1',
+    'DNA:PiggyBac',
+    'LTR:ERVK',
+    'DNA:MULE-MuDR']
