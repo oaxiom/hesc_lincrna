@@ -19,6 +19,7 @@ from glbase3 import glload, utils, expression, genelist
 gtf = shared.get_pickle('current_gtf/results.pickle')
 gencode = shared.get_pickle('gencode/results.pickle')
 expn = shared.get_pickle('es_expressed/results.pickle')
+expn2 = shared.get_pickle('es_expressed-te-by-expn/results.pickle')
 
 print(gtf)
 print(gencode)
@@ -52,3 +53,6 @@ data = {
 
 pies.split_bar('bar-expn-pc.png', data, key_order=['ES+', 'ES:', 'ES-'], cols=['#d62728', '#2ca02c', '#ff7f0e', ]) #, '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'])
 
+data = {'
+
+pies.split_bar('bar-te-by-expn-pc.png', data, key_order=['ES+', 'ES:', 'ES-'], cols=['#d62728', '#2ca02c', '#ff7f0e', ]) #, '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'])
