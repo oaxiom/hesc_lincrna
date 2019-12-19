@@ -23,12 +23,17 @@ print(gtf)
 print(gencode)
 
 data = {
-    'hPSC': gtf['ncrna'],
+    'hPSC-novel': gtf['novel_ncrna'],
+    'hPSC-variant': gtf['ncrna_variant'],
+    'hPSC-known': gtf['ncrna'],
     'GENCODE': gencode['ncrna']
     }
+pies.split_bar('bar-ncrna.png', data, key_order=['TE', 'nonTE'], cols=['#ff7f0e', '#1f77b4']) #, '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'])
+
 
 data = {
-    'hPSC': gtf['pc'],
-
+    'hPSC-variant': gtf['pc_variant'],
+    'hPSC-known': gtf['pc'],
     'GENCODE': gencode['pc']
     }
+pies.split_bar('bar-pc.png', data, key_order=['TE', 'nonTE'], cols=['#ff7f0e', '#1f77b4']) #, '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'])

@@ -56,7 +56,7 @@ def split_bar(filename, data_dict, key_order=None, title='', cols=None):
         scaled[k] /= sums
         scaled[k] *= 100
 
-    plot_hei = (0.8) - (0.05*len(labs))
+    plot_hei = (0.8) - (0.04*len(labs))
 
     plot.rcParams['pdf.fonttype'] = 42
     fig = plot.figure(figsize=[4,3])
