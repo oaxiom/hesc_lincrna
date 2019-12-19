@@ -6,9 +6,14 @@ Measure the density of TE insertions, scaled across the length of the transcript
 '''
 
 import glob, sys, os, gzip, numpy, math
+import matplotlib
+matplotlib.rcParams['pdf.fonttype'] = 42
+matplotlib.rcParams['font.size'] = 6
+
 import matplotlib.pyplot as plot
 import matplotlib.cm as cm
 from glbase3 import glload, utils, expression, genelist, genome_sql
+
 
 sys.path.append('../../../')
 import shared

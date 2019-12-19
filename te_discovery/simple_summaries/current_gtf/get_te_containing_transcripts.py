@@ -7,6 +7,10 @@ Build the final annotation tables;
 
 
 import glob, sys, os, gzip
+import matplotlib
+matplotlib.rcParams['pdf.fonttype'] = 42
+matplotlib.rcParams['font.size'] = 6
+
 sys.path.append('../')
 import pies
 from glbase3 import glload, utils, expression, genelist
@@ -15,9 +19,9 @@ all_genes = glload('../../../transcript_assembly/packed/all_genes.glb')
 te = glload('../../te_transcripts/transcript_table_merged.mapped.glb')
 not_te = te.map(genelist=all_genes, key='transcript_id', logic='notright')
 
-print(all_genes)
-print()
-print(te)
+#print(all_genes)
+#print()
+#print(te)
 
 all_genes_ensg = set([g['ensg'] for g in all_genes if 'ENSG' in g['ensg']])
 has_at_least_one_coding_isoform = set([g['ensg'] for g in all_genes if ';C;' in g['name'] and 'ENSG' in g['ensg']])
@@ -25,7 +29,7 @@ has_at_least_one_coding_isoform = set([g['ensg'] for g in all_genes if ';C;' in 
 # coding and non-coding;
 pies.pie('coding_genes_with_a_noncoding_transcript.png', [len(all_genes_ensg)-len(has_at_least_one_coding_isoform), len(has_at_least_one_coding_isoform)], ['no non-coding', 'has non-coding transcript'], 'Coding genes with a noncoding transcript')
 
-print(len(te), len(not_te), len(all_genes), len(te)+len(not_te))
+#print(len(te), len(not_te), len(all_genes), len(te)+len(not_te))
 
 # Piechart, percent of transcripts containing a TE:
 pies.pie('pies/te_all.png', [len(not_te), len(te)], ['no-TE', 'TE'], 'All')
@@ -89,3 +93,4 @@ title_map = {'pc': 'protein-coding',
 for k in res:
     pies.pie('pies/te_%s.png' % k, [res[k]['nonTE'], res[k]['TE']], ['no-TE', 'TE'], title_map[k])
 
+pies.split_bar('bar.png'.format(k), res)

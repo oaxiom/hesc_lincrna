@@ -6,7 +6,7 @@ import matplotlib.cm as cm
 sys.path.append('../../')
 import shared
 
-def draw_density(filename, data_dict, TE=None, threshold=20):
+def draw_density(filename, data_dict, TE=None, threshold=5):
 
     res = {k: numpy.zeros(1000) for k in data_dict} # scaled bins to put in;
     for k in data_dict:

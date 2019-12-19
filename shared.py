@@ -211,6 +211,20 @@ def get_transcript_length(gencode):
 
     return tlength
 
+def pickle_it(filename, object):
+    import pickle
+
+    oh = open(filename, 'wb')
+    pickle.dump(object, oh, protocol=4)
+    oh.close()
+
+def get_pickle(filename):
+    import pickle
+
+    oh = open(filename, 'rb')
+    pickle.load(object, oh)
+    oh.close()
+
 if __name__ == '__main__':
     import matplotlib.pyplot as plot
 
