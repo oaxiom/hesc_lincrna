@@ -156,7 +156,7 @@ for idx, line in enumerate(oh):
             'tags': '',
             'coding': '',
             'expression': '',
-            'TPM': gtf_dec['TPM']}
+            'TPM': float(gtf_dec['TPM'])}
 
     if line[2] == 'exon':
         # Isn't this different, depending upon the strand?

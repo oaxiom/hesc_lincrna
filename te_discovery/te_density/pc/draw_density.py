@@ -31,7 +31,7 @@ dfam = genelist('../../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'na
 # preprocss the doms list to remove non-coding genes;
 newdoms = []
 for gene in doms:
-    if ';C;' in gene['name'] and 'ENST' in gene['enst']:
+    if ';C;' in gene['name']:
         newdoms.append(gene)
 doms = genelist()
 doms.load_list(newdoms)

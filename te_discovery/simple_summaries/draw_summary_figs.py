@@ -49,5 +49,6 @@ data = {
     'pc-all-TE': expn['pc-all-TE'],
     'pc-all-noTE': expn['pc-all-noTE'],
     }
+
 pies.split_bar('bar-expn-pc.png', data, key_order=['ES+', 'ES:', 'ES-'], cols=['#d62728', '#2ca02c', '#ff7f0e', ]) #, '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'])
 
