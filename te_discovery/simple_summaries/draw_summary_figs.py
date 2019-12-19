@@ -40,11 +40,11 @@ data = {
 pies.split_bar('bar-pc.png', data, key_order=['TE', 'nonTE'], cols=['#ff7f0e', '#1f77b4']) #, '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'])
 
 data = {
-    'pc-known-TE': expn['pc-known-TE'],
-    'pc-known-noTE': expn['pc-known-noTE'],
-
     'pc-variant-TE': expn['pc-variant-TE'],
     'pc-variant-noTE': expn['pc-variant-noTE'],
+
+    'pc-known-TE': expn['pc-known-TE'],
+    'pc-known-noTE': expn['pc-known-noTE'],
 
     'pc-all-TE': expn['pc-all-TE'],
     'pc-all-noTE': expn['pc-all-noTE'],
