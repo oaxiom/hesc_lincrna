@@ -7,13 +7,17 @@ Build the final annotation tables;
 
 
 import glob, sys, os, gzip
+import matplotlib
+matplotlib.rcParams['pdf.fonttype'] = 42
+matplotlib.rcParams['font.size'] = 6
 sys.path.append('../')
 import pies
+sys.path.append('../../../')
+import shared
 from glbase3 import glload, utils, expression, genelist
 
 all_genes = glload('../../../gencode/hg38_gencode_v32.glb')
 te = glload('../../te_transcripts/transcript_table_gencode_all.glb')
-
 not_te = te.map(genelist=all_genes, key='transcript_id', logic='notright')
 
 pc = glload('../../../gencode/hg38_gencode_v32.pc.glb')
@@ -67,3 +71,8 @@ title_map = {'pc': 'protein-coding',
 for k in res:
     pies.pie('pies/te_%s.png' % k, [res[k]['nonTE'], res[k]['TE']], ['no-TE', 'TE'], title_map[k])
 
+pies.split_bar('bar.png'.format(k), res, key_order=['TE', 'nonTE'])
+
+# pickle the results
+import pickle
+shared.pickle_it('results.pickle', res)

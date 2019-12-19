@@ -13,6 +13,8 @@ matplotlib.rcParams['font.size'] = 6
 
 sys.path.append('../')
 import pies
+sys.path.append('../../../')
+import shared
 from glbase3 import glload, utils, expression, genelist
 
 all_genes = glload('../../../transcript_assembly/packed/all_genes.glb')
@@ -94,3 +96,7 @@ for k in res:
     pies.pie('pies/te_%s.png' % k, [res[k]['nonTE'], res[k]['TE']], ['no-TE', 'TE'], title_map[k])
 
 pies.split_bar('bar.png'.format(k), res)
+
+# pickle the results
+import pickle
+shared.pickle_it('results.pickle', res)
