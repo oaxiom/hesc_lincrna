@@ -62,6 +62,7 @@ def add_entry(trans, gsql, newgl, done):
         'tags': '%s; %s; %s; %s; %s' % (exon_state, c_nc, e, trans['evidence'], trans['decision']),
         'coding': c_nc,
         'expression': e,
+        'TPM': trans['TPM'],
         }
 
     #print(toadd)
@@ -154,7 +155,8 @@ for idx, line in enumerate(oh):
             'evidence': gtf_dec['evidence'],
             'tags': '',
             'coding': '',
-            'expression': '',}
+            'expression': '',
+            'TPM': gtf_dec['TPM']}
 
     if line[2] == 'exon':
         # Isn't this different, depending upon the strand?
