@@ -222,8 +222,9 @@ def get_pickle(filename):
     import pickle
 
     oh = open(filename, 'rb')
-    pickle.load(object, oh)
+    res = pickle.load(oh)
     oh.close()
+    return res
 
 if __name__ == '__main__':
     import matplotlib.pyplot as plot

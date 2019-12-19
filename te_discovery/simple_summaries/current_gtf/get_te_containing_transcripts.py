@@ -95,7 +95,7 @@ title_map = {'pc': 'protein-coding',
 for k in res:
     pies.pie('pies/te_%s.png' % k, [res[k]['nonTE'], res[k]['TE']], ['no-TE', 'TE'], title_map[k])
 
-pies.split_bar('bar.png'.format(k), res)
+pies.split_bar('bar.png'.format(k), res, cols=['#ff7f0e', '#1f77b4'])
 
 # pickle the results
 import pickle
