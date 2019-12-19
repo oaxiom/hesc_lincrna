@@ -82,6 +82,8 @@ def split_bar(filename, data_dict, key_order=None, title='', cols=None):
     ax.set_xticks([0, 50, 100])
     ax.set_xticklabels(['0%', '50%', '100%'])
     ax.set_title(title, size=6)
+    ax.legend()
+    plot.legend(loc='upper left', bbox_to_anchor=(0.0, -0.4), prop={'size': 6})
     fig.savefig(filename)
     fig.savefig(filename.replace('.png', '.pdf'))
     print('Saved %s' % filename)
