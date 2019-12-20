@@ -33,7 +33,7 @@ newdoms = []
 type = {'known': [], 'novel': []}
 
 for gene in doms:
-    if ';NC;' in gene['name']:
+    if gene['coding'] == 'noncoding':
         print(gene)
         continue
     if ';~' in gene['name']: # CDS locations are not accurate in these; Can I get them from FEELnc?

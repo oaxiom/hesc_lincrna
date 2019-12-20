@@ -1,0 +1,8 @@
+#PBS -j oe
+#PBS -o results.txt
+#PBS -N gtf_to_fasta
+#PBS -V 
+cd $PBS_O_WORKDIR
+
+rsem-prepare-reference --gtf ../gtf/current_gtf.gtf hg38.fa transcripts.fa
+

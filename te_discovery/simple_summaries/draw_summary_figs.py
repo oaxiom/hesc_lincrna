@@ -53,6 +53,10 @@ data = {
 
 pies.split_bar('bar-expn-pc.png', data, key_order=['ES+', 'ES:', 'ES-'], cols=['#d62728', '#2ca02c', '#ff7f0e', ]) #, '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'])
 
-data = {'
+data = {
+    'hPSC-depleted': expn2['pc-ES-'],
+    'hPSC-unbiased': expn2['pc-ES:'],
+    'hPSC-enriched': expn2['pc-ES+'],
+    }
 
-pies.split_bar('bar-te-by-expn-pc.png', data, key_order=['ES+', 'ES:', 'ES-'], cols=['#d62728', '#2ca02c', '#ff7f0e', ]) #, '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'])
+pies.split_bar('bar-te-by-expn-pc.png', data, key_order=['TE', 'nonTE'], cols=['#ff7f0e', '#1f77b4' ]) #, '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'])

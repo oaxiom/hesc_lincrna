@@ -76,12 +76,12 @@ for datatype in data:
 gldraw = draw()
 for typ in res:
     gldraw.beanplot(filename='viol_{0}.png'.format(typ), data=res[typ], figsize=[2,1.8],
-        beans=False, ylims=[-2.5, 10])
+        beans=False, ylims=[-2.5, 8])
 
 def dict_builder():
     return {k: [] for k in class_dict()}
 
-#Below: Split by te_type; not working;
+#Below: Split by te_type;
 res_type = defaultdict(dict_builder)
 gldraw = draw()
 
@@ -120,4 +120,44 @@ for te in res_type:
         if te in ['SINE', 'LINE', 'LTR', 'Retroposon']:
             data = {te: res_type[te][t], 'noTE': res[t]['nonTE']}
             gldraw.beanplot(filename='by_type/viol_{0}-{1}.png'.format(te, t), data=data,
-                figsize=[2,1.8], beans=False, ylims=[-2.5, 6])
+                figsize=[2,1.8], beans=False, ylims=[-2.5, 8])
+
+#Below: Split by te_subtype; not working;
+res_type = defaultdict(dict_builder)
+gldraw = draw()
+
+for g in contains_te:
+    for d in g['doms']:
+        tpm = math.log2(g['TPM']+0.1)
+        TE = d['dom']
+        full_name = dfam_dict[TE]
+        tesubtype = ':'.join(full_name.split(':')[0:2])
+
+        res_type[tesubtype]['all'].append(tpm)
+
+        if g['coding'] == 'coding':
+            res_type[tesubtype]['pc-all'].append(tpm)
+
+            if ';~' in g['name']:
+                res_type[tesubtype]['pc-variant'].append(tpm)
+            elif ';=)' in g['name']:
+                res_type[tesubtype]['pc-known'].append(tpm)
+
+        elif g['coding'] == 'noncoding':
+            res_type[tesubtype]['ncrna-all'].append(tpm)
+
+            if ';=' in g['name']:
+                res_type[tesubtype]['ncrna-known'].append(tpm)
+            elif ';~' in g['name']:
+                res_type[tesubtype]['ncrna-variant'].append(tpm)
+            elif ';!' in g['name']:
+                res_type[tesubtype]['ncrna-unknown'].append(tpm)
+
+print(res_type.keys())
+for te in res_type:
+    if True in [i in te for i in ['SINE', 'LINE', 'LTR', 'Retroposon']]:
+        print(te)
+        for t in class_dict().keys(): # pc-all, ncrna-all' etc.
+            data = {te: res_type[te][t], 'noTE': res[t]['nonTE']}
+            gldraw.beanplot(filename='by_tesubtype/viol_{0}-{1}.png'.format(te, t), data=data,
+                figsize=[2,1.8], beans=False, ylims=[-2.5, 8])

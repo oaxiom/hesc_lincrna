@@ -61,6 +61,20 @@ for ts in type_subtype:
     if r:
         res[ts] = r
 
+# split them up by TE subtype
+type_subtype = {}
+for TE in dfam:
+    t_s = '%s:%s' % (TE['type'], TE['subtype'])
+    if t_s not in type_subtype:
+        type_subtype[t_s] = []
+    type_subtype[t_s].append(TE['name'])
+
+res = {}
+for ts in type_subtype:
+    r = shared_draw.draw_density('by_te_family/%s_%s.png' % (type, ts,), dataset, set(type_subtype[ts]))
+    if r:
+        res[ts] = r
+
 # turn it into a megatable:
 shared_draw.draw_heatmap('te_heat_by_type_%s.png' % (type,), res, dataset)
 
