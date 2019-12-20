@@ -25,7 +25,7 @@ print(doms)
 
 dfam = genelist('../../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
 
-doms = doms.map(genelist=gencode_sliced, key='enst')
+doms = doms.map(genelist=gencode_sliced, key='enst') # You can't do this. CDS locatinos are not garunteed to be accurate
 
 # preprocss the doms list to remove non-coding genes;
 newdoms = []
@@ -34,13 +34,13 @@ type = {'known': [], 'novel': []}
 
 for gene in doms:
     if gene['coding'] == 'noncoding':
-        print(gene)
         continue
     if ';~' in gene['name']: # CDS locations are not accurate in these; Can I get them from FEELnc?
         type['novel'].append(gene)
         continue
     if len(gene['cds_loc']) == 0:
         continue
+
     type['known'].append(gene)
 
 gltypes = {'known': genelist(), 'novel': genelist()}

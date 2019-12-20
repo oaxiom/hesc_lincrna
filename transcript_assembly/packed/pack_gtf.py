@@ -56,7 +56,9 @@ def add_entry(trans, gsql, newgl, done):
     if 'HSCSR.159919.3' in line: # Debug
         print(line)
 
-    toadd = {'ensg': trans['ensg'], 'enst': trans['enst'], 'name': new_name, 'gene_symbol': trans['name'], 'loc': trans['loc'], 'transcript_id': transcript_id,
+    toadd = {'ensg': trans['ensg'], 'enst': trans['enst'], 'name': new_name,
+        'gene_symbol': trans['name'], 'loc': trans['loc'],
+        'transcript_id': transcript_id,
         'exonCounts': trans['exonCounts'], 'exonStarts': trans['exonStarts'], 'exonEnds': trans['exonEnds'],
         'strand': trans['strand'],
         'tags': '%s; %s; %s; %s; %s' % (exon_state, c_nc, e, trans['evidence'], trans['decision']),
