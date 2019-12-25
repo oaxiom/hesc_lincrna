@@ -33,7 +33,7 @@ def add_entry(done ):
         'strand': trans['strand'],
         'exonStarts': trans['exonStarts'],
         'exonEnds': trans['exonEnds'],
-        'exonCounts': trans['exonEnds'],
+        'exonCounts': trans['exonCounts'],
         'transcript_type': trans['transcript_type'],
         }
 

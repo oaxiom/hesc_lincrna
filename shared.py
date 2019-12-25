@@ -119,26 +119,43 @@ def convert_genocode_to_local(gencode):
     and it is always on the 5' strand, and TSS (by definition) == 0
 
     '''
-    # This is wrong if the transcrip is ~
     cdsl = gencode['cds_loc']['left']
     cdsr = gencode['cds_loc']['right']
-    #print(gencode['enst'], gencode['transcript_id'], gencode['name'], gencode['strand'], gencode['loc'], gencode['cds_loc'], gencode['exonStarts'], gencode['exonEnds'])
 
-    # Work out the mRNA length from the gene length and the exons and Es:
-    tlength = 0
-    currpos = gencode['loc']['left'] # transcript position in genomic coords
+    global_left = gencode['loc']['left']
+    global_right = gencode['loc']['right']
+
     splice_sites = []
     newcdsl = 0 ; newcdsr = 0
-    for splice in zip(gencode['exonStarts'], gencode['exonEnds']):
-        if cdsl >= splice[0] and cdsl <= splice[1]:
-            newcdsl = tlength + (cdsl-splice[0])
-        if cdsr >= splice[0] and cdsr <= splice[1]:
-            newcdsr = tlength + (cdsr-splice[0])
 
-        tlength += (splice[1]-splice[0])
-        currpos = splice[1]
+    tlen = get_transcript_length(gencode)
+
+    # convert all of the positions into the spliced locations, on the + strand;
+    if gencode['strand'] == '+':
+        left = 0 # by definition;
+        rite = tlen
+
+
+    elif gencode['strand'] == '-':
+        left = 0 # by definition;
+        rite = tlen
+
+    '''
+    exonStarts = gencode['exonStarts']
+    exonEnds = gencode['exonEnds']
+
+    for exon in zip(gencode['exonStarts'], gencode['exonEnds']):
+        print(exon)
+        if cdsl >= exon[0] and cdsl <= exon[1]:
+            newcdsl = tlength + (cdsl-exon[0])
+
+        if cdsr >= exon[0] and cdsr <= exon[1]:
+            newcdsr = tlength + (cdsr-exon[0])
+
+        tlength += (exon[1]-exon[0])
+        currpos = exon[1]
         splice_sites.append(tlength)
-
+    '''
         #print(tlength, cdsl, cdsr, splice, newcdsl, newcdsr, cdsl >= splice[0] and cdsl <= splice[1], cdsr >= splice[0] and cdsr <= splice[1])
 
     #if gencode and cdsl != cdsr: # if cdsl= cdsr then it is non-coding;
