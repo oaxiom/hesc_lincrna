@@ -17,14 +17,14 @@ import matplotlib.cm as cm
 from glbase3 import glload, utils, expression, genelist, genome_sql, draw, config
 config.draw_mode = ['pdf']
 
-sys.path.append('../../')
+sys.path.append('../../../')
 import shared
 
 draw_type = 'png'
 
-all_genes = glload('../../transcript_assembly/packed/all_genes.glb')
-dfam = genelist('../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
-contains_te = glload('../te_transcripts/transcript_table_merged.mapped.glb')
+all_genes = glload('../../../transcript_assembly/packed/all_genes.glb')
+dfam = genelist('../../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
+contains_te = glload('../../te_transcripts/transcript_table_merged.mapped.glb')
 contains_not_te = contains_te.map(genelist=all_genes, key='transcript_id', logic='notright')
 
 dfam_dict = {}
@@ -33,38 +33,32 @@ for te in dfam:
 
 def class_dict():
     return {
-        'ES+': {'TE': [], 'nonTE': []},
-        'ES:': {'TE': [], 'nonTE': []},
-        'ES-': {'TE': [], 'nonTE': []},
+        'all-enriched': {'TE': [], 'nonTE': []},
+        'all-unbiased': {'TE': [], 'nonTE': []},
+        'all-depleted': {'TE': [], 'nonTE': []},
+        'pc-enriched': {'TE': [], 'nonTE': []},
+        'pc-unbiased': {'TE': [], 'nonTE': []},
+        'pc-depleted': {'TE': [], 'nonTE': []},
+        'ncrna-enriched': {'TE': [], 'nonTE': []},
+        'ncrna-unbiased': {'TE': [], 'nonTE': []},
+        'ncrna-depleted': {'TE': [], 'nonTE': []},
         }
 
 data = {'TE': contains_te, 'nonTE': contains_not_te}
+
+
 
 res = class_dict()
 
 for datatype in data:
     for g in data[datatype]:
         tpm = math.log2(max([g['TPM'], 0.1]))
-        res['all'][datatype].append(tpm)
 
+        res['all-{0}'.format(g['expression'])][datatype].append(tpm)
         if g['coding'] == 'coding':
-            res['pc-all'][datatype].append(tpm)
-
-            if ';~' in g['name']:
-                res['pc-variant'][datatype].append(tpm)
-            elif ';=)' in g['name']:
-                res['pc-known'][datatype].append(tpm)
-
+            res['pc-{0}'.format(g['expression'])][datatype].append(tpm)
         elif g['coding'] == 'noncoding':
-            res['ncrna-all'][datatype].append(tpm)
-
-            if ';=' in g['name']:
-                res['ncrna-known'][datatype].append(tpm)
-            elif ';~' in g['name']:
-                res['ncrna-variant'][datatype].append(tpm)
-            elif ';!' in g['name']:
-                res['ncrna-unknown'][datatype].append(tpm)
-
+            res['ncrna-{0}'.format(g['expression'])][datatype].append(tpm)
 
 gldraw = draw()
 for typ in res:
@@ -85,26 +79,11 @@ for g in contains_te:
         full_name = dfam_dict[TE]
         tetype = full_name.split(':')[0]
 
-        res_type[tetype]['all'].append(tpm)
-
-
+        res_type[tetype]['all-{0}'.format(g['expression'])].append(tpm)
         if g['coding'] == 'coding':
-            res_type[tetype]['pc-all'].append(tpm)
-
-            if ';~' in g['name']:
-                res_type[tetype]['pc-variant'].append(tpm)
-            elif ';=)' in g['name']:
-                res_type[tetype]['pc-known'].append(tpm)
-
+            res_type[tetype]['pc-{0}'.format(g['expression'])].append(tpm)
         elif g['coding'] == 'noncoding':
-            res_type[tetype]['ncrna-all'].append(tpm)
-
-            if ';=' in g['name']:
-                res_type[tetype]['ncrna-known'].append(tpm)
-            elif ';~' in g['name']:
-                res_type[tetype]['ncrna-variant'].append(tpm)
-            elif ';!' in g['name']:
-                res_type[tetype]['ncrna-unknown'].append(tpm)
+            res_type[tetype]['ncrna-{0}'.format(g['expression'])].append(tpm)
 
 
 for te in res_type:

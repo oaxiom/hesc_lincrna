@@ -35,6 +35,12 @@ def find_cds(seq):
 
     all_starts = [i.span()[0] for i in all_starts]
     all_ends = [i.span()[1] for i in all_stops]
+    all_ends.append(len(seq)) # Sometimes not STOP, as possible truncated, so add a hypothetical STOP in all three codon frames
+    all_ends.append(len(seq)-1)
+    all_ends.append(len(seq)-2)
+
+    if not all_starts: # There is no ATG, so best to just make no prediction
+        return False, -1, -1
 
     # All pairs of start/end;
     longest_transcripts = {}
@@ -45,18 +51,17 @@ def find_cds(seq):
             if in_same_frame(s, e):
                 temp_orfs[e-s] = (s, e)
         # get the shortest ATG -> STOP
-        shortest_orf = sorted(temp_orfs.keys())[0]
-        longest_transcripts[shortest_orf] = temp_orfs[shortest_orf]
+        if temp_orfs:
+            shortest_orf = sorted(temp_orfs.keys())[0]
+            longest_transcripts[shortest_orf] = temp_orfs[shortest_orf]
 
-    # I now need to check that
-    print(longest_transcripts)
-    for p in longest_transcripts.values():
-        print(p, split3(seq[p[0]:p[1]]))
+    lengths = sorted(list(longest_transcripts.keys()), reverse=True)
+    #print(lengths)
+    cdsl, cdsr = longest_transcripts[lengths[0]][0], longest_transcripts[lengths[0]][1]
+    #print(lengths[0], split3(seq[cdsl:cdsr]))
 
-    1/0
-
-
-    return cdsl, cdsr
+    # best guess is the longest intact transcript
+    return True, longest_transcripts[lengths[0]][0], longest_transcripts[lengths[0]][1]
 
 #gencode = glload('../te_transcripts/transcript_table_gencode_pc.glb')
 #gencode_sliced = gencode.getColumns(['cds_loc', 'transcript_id', 'loc'])
@@ -64,12 +69,28 @@ def find_cds(seq):
 
 fastas = glload('../../transcript_assembly/fasta/transcripts.glb')
 
+no_prediction = 0
 newl = []
 for f in fastas:
     if f['coding'] == 'noncoding':
         continue
     if f['tags'][-1] == '~': # variant sequence
-        cdsl, cdsr = find_cds(f['seq'])
+        status, cdsl, cdsr = find_cds(f['seq'])
         newl.append(f)
     elif f['tags'][-1] == '=': # can get this one from GENCODE
-        pass
+        status, cdsl, cdsr = find_cds(f['seq'])
+
+    if status:
+        f['cds_local_locs'] = (cdsl, cdsr)
+        del f['seq']
+        newl.append(f)
+    else:
+        no_prediction += 1
+        print('Cound not predict for {0}'.format(f['name']))
+
+print('Cound not make a ORF prediction for {0}'.format(no_prediction))
+
+newd = genelist()
+newd.load_list(newl)
+newd.save('coding_genes_with_local_CDS.glb')
+newd.saveTSV('coding_genes_with_local_CDS.tsv')

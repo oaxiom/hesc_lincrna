@@ -24,8 +24,7 @@ gencode_sliced = gencode_sliced.renameKey('transcript_id', 'enst')
 print(doms)
 
 dfam = genelist('../../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
-
-doms = doms.map(genelist=gencode_sliced, key='enst') # You can't do this. CDS locatinos are not garunteed to be accurate
+doms = doms.map(genelist=gencode_sliced, key='enst') # You can't do this. CDS locations are not garunteed to be accurate
 
 # preprocss the doms list to remove non-coding genes;
 newdoms = []
