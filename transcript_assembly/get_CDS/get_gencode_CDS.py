@@ -14,12 +14,12 @@ import shared
 fastas = genelist('gencode.v32.pc_transcripts.fa.gz', format=format.fasta, gzip=True)
 
 newl = []
-for f in fastas:
-    f = f['name'].split('|')
-    cds = [i for i in f if 'CDS:' in i][0].split(':')[1].split('-')
-    newl.append({'enst': f[0], 'cds_local_locs': (cds[0], cds[1])})
+for fasta in fastas:
+    enst = fasta['name'].split('|')
+    cds = [i for i in enst if 'CDS:' in i][0].split(':')[1].split('-')
+    newl.append({'enst': enst[0].split('.')[0], 'cds_local_locs': (int(cds[0]), int(cds[1])), 'tlength': len(fasta['seq'])})
 
 newg = genelist()
 newg.load_list(newl)
 newg.save('gencode_cds.glb')
-newg.saveTSV('gencode_cds.glb')
+newg.saveTSV('gencode_cds.tsv')

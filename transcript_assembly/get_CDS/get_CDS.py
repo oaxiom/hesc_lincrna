@@ -98,16 +98,13 @@ newd.save('coding_genes_with_local_CDS-predicted.glb')
 newd.saveTSV('coding_genes_with_local_CDS-predicted.tsv')
 
 # Now go back and put the gencode CDS into the ;= transcripts:
-gencode = glload('../../gencode/hg38_gencode_v32.glb')
+gencode = glload('gencode_cds.glb')
 gencode_map = {gene['enst']:gene for gene in gencode}
 for gene in newd:
     enst = gene['enst'].split('.')[0]
     if enst in gencode_map and ';=)' in gene['name']:
-        gencode_gene = gencode_map[enst]
-        _, _, local_cdsl, local_cdsr, _ = shared.convert_genocode_to_local(gencode_gene)
-        print(gencode_gene)
-        print(gencode_gene['name'], gencode_gene['strand'], gencode_gene['cds_local_locs'], local_cdsl, local_cdsr)
-        gene['cds_local_locs'] = (local_cdsl, local_cdsr)
+        gencode_cds = gencode_map[enst]['cds_local_locs']
+        gene['cds_local_locs'] = gencode_cds
 
 newd._optimiseData()
 newd.save('coding_genes_with_local_CDS-corrected.glb') # Now with actual CDS from GENCODE;

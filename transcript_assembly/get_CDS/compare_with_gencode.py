@@ -5,8 +5,10 @@ from glbase3 import *
 sys.path.append('../../')
 import shared
 
-gencode = glload('../../gencode/hg38_gencode_v32.glb')
-gencode_map = {gene['enst']:gene for gene in gencode}
+gencode = glload('../../gencode/hg38_gencode_v32.pc.glb')
+gencode_cds = glload('gencode_cds.glb')
+gencode_cds = gencode.map(genelist=gencode_cds, key='enst')
+gencode_map = {gene['enst']:gene for gene in gencode_cds}
 cds = glload('coding_genes_with_local_CDS-predicted.glb')
 annotations = glload('../packed/all_genes.glb')
 cds = cds.map(genelist=annotations, key='transcript_id')
@@ -35,9 +37,9 @@ for idx, gene in enumerate(cds):
     #print(gencode_gene)
 
     gene_tlength = shared.get_transcript_length(gene)
-    _, gencode_tlength, actual_cdsl, actual_cdsr, splice_sites = shared.convert_genocode_to_local(gencode_gene)
+    actual_cdsl, actual_cdsr = gencode_gene['cds_local_locs']
 
-    if len(gencode_gene['cds_loc']) == 0: # gencode doesn't know the CDS
+    if actual_cdsr-actual_cdsl == 0: # gencode doesn't know the CDS
         res['not-tested'] += 1
         continue
 
@@ -47,7 +49,7 @@ for idx, gene in enumerate(cds):
     #print(predicted_cdsl, actual_cdsl, ':', predicted_cdsr, actual_cdsr, gene['strand'], ':', gencode_tlength, gene_tlength)
     #print((predicted_cdsr-predicted_cdsl)/3.0, (actual_cdsr-actual_cdsl)/3.0)
 
-    if gencode_tlength != gene_tlength:
+    if gencode_gene['tlength'] != gene_tlength:
         # the assembly is truncated/expanded in some way relative to the GENCODE
         # Isaac allows ~25% loss of overlap at the 5' and 3' ends
         # I can still go ahead if the TSS are the same:
