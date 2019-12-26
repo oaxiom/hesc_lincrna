@@ -73,12 +73,12 @@ fastas = glload('../../transcript_assembly/fasta/transcripts.glb')
 no_prediction = 0
 newl = []
 for f in fastas:
+    status = False
     #print(f['enst'])
     if f['coding'] == 'noncoding':
         continue
     if f['tags'][-1] == '~': # variant sequence
         status, cdsl, cdsr = find_cds(f['seq'])
-        newl.append(f)
     elif f['tags'][-1] == '=': # can get this one from GENCODE
         status, cdsl, cdsr = find_cds(f['seq'])
 
@@ -100,12 +100,15 @@ newd.saveTSV('coding_genes_with_local_CDS-predicted.tsv')
 # Now go back and put the gencode CDS into the ;= transcripts:
 gencode = glload('gencode_cds.glb')
 gencode_map = {gene['enst']:gene for gene in gencode}
+newl = []
 for gene in newd:
     enst = gene['enst'].split('.')[0]
     if enst in gencode_map and ';=)' in gene['name']:
         gencode_cds = gencode_map[enst]['cds_local_locs']
         gene['cds_local_locs'] = gencode_cds
+        newl.append(gene)
 
-newd._optimiseData()
+newd = genelist()
+newd.load_list(newl)
 newd.save('coding_genes_with_local_CDS-corrected.glb') # Now with actual CDS from GENCODE;
 newd.saveTSV('coding_genes_with_local_CDS-corrected.tsv')

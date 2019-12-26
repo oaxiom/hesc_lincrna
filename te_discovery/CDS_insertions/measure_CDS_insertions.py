@@ -3,8 +3,12 @@ from glbase3 import *
 
 # These have the official GENCODE CDS, and the predicted (about ~80% accurate)
 all_genes = glload('../../transcript_assembly/packed/all_genes.glb')
-cds = glload('../../transcript_assembly/get_CDS/coding_genes_with_local_CDS-corrected.glb')
+cds = glload('../../transcript_assembly/get_CDS/coding_genes_with_local_CDS-predicted.glb')
 cds = {gene['transcript_id']: gene for gene in cds}
+
+print(cds['HPSCLR.4009.1'])
+print(cds)
+
 tes = glload('../te_transcripts/transcript_table_gencode_all.glb') # yes, all as I am measuring PC -> ncRNA as well;
 tes = {gene['transcript_id']: gene for gene in tes}
 
@@ -26,6 +30,7 @@ for gene in all_genes:
     # Get hte CDS info:
     if gene['transcript_id'] in cds:
         print(cds[gene['transcript_id']])
+        print(gene['transcript_id'])
         gene['cds_info'] = True # and presumably 'coding' == True?
         gene['cds_local_locs'] = cds[gene['transcript_id']]['cds_local_locs']
     else:
