@@ -77,4 +77,4 @@ for idx, gene in enumerate(cds):
         res['incorrect'] += 1
 
 for k in res:
-    print(k, res[k])
+    print('{0}:\t {1}\t{2:.1f}%'.format(k, res[k], res[k]/sum(res.values())*100))

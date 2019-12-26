@@ -71,7 +71,7 @@ skipped = 0
 trans = None
 transcript_types_seen = set([])
 transcript_types_dont_keep = set(['miRNA', 'snRNA', 'snoRNA', 'Mt_tRNA', 'Mt_rRNA', 'TEC', 'scRNA', 'scaRNA','vaultRNA',
-    'nonsense_mediated_decay', 'ribozyme',
+    'ribozyme',
     'IG_pseudogene', 'IG_J_gene', 'TR_J_pseudogene', 'IG_J_pseudogene', 'TR_D_gene',
     'IG_V_gene', 'IG_C_pseudogene',  'TR_J_gene','TR_V_pseudogene','sRNA', 'TR_V_gene', 'IG_D_gene', 'IG_C_gene', 'IG_V_pseudogene', 'TR_C_gene',])
 
