@@ -43,13 +43,16 @@ def add_entry(trans, gsql, newgl, done):
     if transcript_id in data_coding_noncoding:
         c_nc = data_coding_noncoding[transcript_id]
     else:
-        print('WARNING: {0} not in conding_noncoding table'.format(transcript_id))
+        print('WARNING: {0} not in conding_noncoding table, skipping'.format(transcript_id))
         c_nc = 'U'
+        return False
+
     if transcript_id in data_expression_data:
         e = data_expression_data[transcript_id]
     else:
-        print('WARNING: {0} not in data_expression_data table'.format(transcript_id))
+        print('WARNING: {0} not in data_expression_data table, skipping'.format(transcript_id))
         e = 'U'
+        return False
 
     new_name = '%s (%s;%s;%s;%s;%s)' % (trans['name'], exon_state, coding_noncoding_map[c_nc], expn_map[e], trans['evidence'], trans['decision'])
 
@@ -113,9 +116,6 @@ skipped = 0
 trans = None
 
 for idx, line in enumerate(oh):
-    if 'HSCSR.159919.3' in line:
-        print(line)
-
     if '#' in line[0]:
         continue
     line = line.strip().split('\t')
