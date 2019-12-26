@@ -61,7 +61,7 @@ def find_cds(seq):
     #print(lengths)
     #print(lengths[0], split3(seq[cdsl:cdsr]))
 
-    # best guess is the longest intact transcript
+    # best guess is the longest intact ORF
     return True, longest_transcripts[lengths[0]][0], longest_transcripts[lengths[0]][1]
 
 #gencode = glload('../te_transcripts/transcript_table_gencode_pc.glb')
@@ -107,6 +107,8 @@ for gene in newd:
         gencode_cds = gencode_map[enst]['cds_local_locs']
         gene['cds_local_locs'] = gencode_cds
         newl.append(gene)
+    else:
+        newl.append(gene) # add the prediction
 
 newd = genelist()
 newd.load_list(newl)

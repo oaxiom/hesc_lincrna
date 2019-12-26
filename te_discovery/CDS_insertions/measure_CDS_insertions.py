@@ -1,6 +1,12 @@
 import sys, os
 from glbase3 import *
 
+def qcollide(al, ar, bl, br):
+    return ar >= bl and al <= br
+
+def contained(al, ar, bl, br): # Is A in B?
+    return al >= bl and ar <= br
+
 # These have the official GENCODE CDS, and the predicted (about ~80% accurate)
 #canonical = glload('../../gencode/hg38_gencode_v32.pc.glb')
 #gencode_cds = glload('../../transcript_assembly/get_CDS/gencode_cds.glb')
@@ -49,44 +55,109 @@ bundles = newbundles
 
 print('Found {0:,} bundles of genes with at least 1 coding gene'.format(len(bundles)))
 
-res = {'insertion_no_disruption': 0, # numbers are per-transcript;
-    'insertion_truncation': 0,
-    'disrupt_coding': 0,
-    'insertion_alternate_cds': 0,
-    'no_disruption_5prime': 0,
-    'no_disruption_3prime': 0,
-    'no_variants': 0,
-    'total': 0}
+res = {'inframe_insertion': [], # Class 1 # numbers are per-transcript;
+    'insertion_truncation': [], # Class 2
+    'new_ATG': [],
+    'disrupt_coding': [], # Class 3
+    'insertion_alternate_cds': [], # Class 4
+    'no_disruption_5prime': [], # Class 5
+    'no_disruption_3prime': [], # Class 6
+    'class_not_found': []}
+
+total = 0
+no_variants = 0
 
 for idx, gene_name in enumerate(bundles):
-    res['total'] += len(bundles[gene_name])
-    if len(bundles[gene_name]) == 1:
-        # TODO: Check if it's a ~ and get the GENCODE canonical one;
-        continue
+    total += len(bundles[gene_name])
 
     all_types = [i['tags'][-1] for i in bundles[gene_name]]
 
     if '~' not in all_types: # No variants here
-        res['no_variants'] += len(all_types)
+        no_variants += len(bundles[gene_name])
         continue
 
+    if len(bundles[gene_name]) == 1 and all_types[0] == '=':
+        # TODO: Check if it's a ~ and get the GENCODE canonical one;
+        continue
+
+    if '=' not in all_types:
+        # TODO: Ugh, don't have the canonical transcript, need to add it from GENCODE
+        continue
+
+    # Add the doms key to all transcripts;
     for transcript in bundles[gene_name]:
+        if transcript['transcript_id'] in tes:
+            te = tes[transcript['transcript_id']]
+            transcript['doms'] = te['doms']
+        else:
+            transcript['doms'] = []
+    # divide into known and novel:
+    known = [t for t in bundles[gene_name] if '=' in t['tags']]
+    novel = [t for t in bundles[gene_name] if '~' in t['tags']]
+
+    #print(known, novel)
+
+    for transcript in novel:
         te = None
         if transcript['transcript_id'] in tes:
             te = tes[transcript['transcript_id']]
-
         if te:
             if transcript['coding'] == 'noncoding':
-                res['disrupt_coding'] += 1
+                res['disrupt_coding'].append(transcript)
+                continue
 
-            # find out if the TE is inside the CDS:
-            for t in te:
+            # find out if a TE overlaps the CDS:
+            for t in te['doms']:
+                if qcollide(t['span'][0], t['span'][1], transcript['cds_local_locs'][0], transcript['cds_local_locs'][1]):
+                    # See if the TE is entirely contained:
+                    if contained(t['span'][0], t['span'][1], transcript['cds_local_locs'][0], transcript['cds_local_locs'][1]):
+                        te_length = (t['span'][1] - t['span'][0])
+                        expected_cds_length_if_in_frame = (transcript['cds_local_locs'][1] - transcript['cds_local_locs'][0]) + te_length -1
+                        cds_lengths = [i['cds_local_locs'][1]-i['cds_local_locs'][0]+te_length for i in known if i['coding'] == 'coding']
+                        if expected_cds_length_if_in_frame in cds_lengths:
+                            res['inframe_insertion'].append(transcript) # what about multiple TE insertions?
+                            break
+                    else: # It is flapping over the edge of the CDS;
+                        te_length = (t['span'][1] - t['span'][0])
+                        # See if it's at the end:
+                        if t['span'][1] > transcript['cds_local_locs'][1]: # It's stopping the CDS
+                            res['insertion_truncation'].append(transcript)
+                            break
+                        elif t['span'][0] < transcript['cds_local_locs'][0]: # It's at the START;
+                            res['new_ATG'].append(transcript)
+                            break
+                        1/0 # should not be possible to get here;
+                else: # No collision; check it's 5' or 3':
+                    # Check that it still contains a CDS of the correct length:
+                    expected_cds_length_if_in_frame = ((transcript['cds_local_locs'][1] - transcript['cds_local_locs'][0])-1)
+                    cds_lengths = [i['cds_local_locs'][1]-i['cds_local_locs'][0] for i in known if i['coding'] == 'coding']
+                    print(expected_cds_length_if_in_frame, cds_lengths)
+                    if expected_cds_length_if_in_frame in cds_lengths: # It's a simple insertion 5' or 3':
+                        # I know it's not a collision, so just test the edge:
+                        if t['span'][1] < transcript['cds_local_locs'][0]: # 5'
+                            res['no_disruption_5prime'].append(transcript)
+                            break
+                        elif t['span'][0] > transcript['cds_local_locs'][1]:
+                            res['no_disruption_3prime'].append(transcript)
+                            break
+                    else:
+                        res['insertion_alternate_cds'].append(transcript)
+                        break
 
+                # If you find something you break, this should be 0 if it's all working;
+                res['class_not_found'].append(transcript)
 
-    if idx > 2000:
-        break
+    #if idx > 5000:
+    #    break
+
+for k in res:
+    gl = genelist()
+    if res[k]:
+        gl.load_list(res[k])
+        gl.saveTSV('table_{0}.tsv'.format(k))
 
 print()
 for k in res:
-    print(k, res[k])
-
+    print(k, len(res[k]))
+print('No variants', no_variants)
+print('Total', total)
