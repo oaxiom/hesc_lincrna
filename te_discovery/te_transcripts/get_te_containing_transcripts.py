@@ -12,9 +12,10 @@ all_genes = glload('../../transcript_assembly/packed/all_genes.glb')
 sam = '../hmmer_dfam/data/transcript_table_HSC_SR_PB_merged.transcripts.glb'
 print('... %s' % sam)
 doms = glload(sam)
-
+print(doms)
 doms = doms.map(all_genes, key='transcript_id')
 print(doms.keys())
+print(doms)
 doms.save('transcript_table_merged.mapped.glb') # fixed name version
 doms.saveTSV('transcript_table_merged.mapped.tsv') # fixed name version
 
