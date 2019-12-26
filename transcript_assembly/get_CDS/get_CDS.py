@@ -11,6 +11,8 @@ themselves for all transcripts, including the
 import glob, sys, os, gzip, numpy, math, re
 import matplotlib.pyplot as plot
 from glbase3 import glload, utils, expression, genelist, genome_sql
+sys.path.append('../../')
+import shared
 
 def find_cds(seq):
     '''
@@ -56,9 +58,9 @@ def find_cds(seq):
             longest_transcripts[shortest_orf] = temp_orfs[shortest_orf]
 
     lengths = sorted(list(longest_transcripts.keys()), reverse=True)
-    print(lengths)
+    #print(lengths)
     cdsl, cdsr = longest_transcripts[lengths[0]][0], longest_transcripts[lengths[0]][1]
-    print(lengths[0], split3(seq[cdsl:cdsr]))
+    #print(lengths[0], split3(seq[cdsl:cdsr]))
 
     # best guess is the longest intact transcript
     return True, longest_transcripts[lengths[0]][0], longest_transcripts[lengths[0]][1]
@@ -72,7 +74,7 @@ fastas = glload('../../transcript_assembly/fasta/transcripts.glb')
 no_prediction = 0
 newl = []
 for f in fastas:
-    print(f['enst'])
+    #print(f['enst'])
     if f['coding'] == 'noncoding':
         continue
     if f['tags'][-1] == '~': # variant sequence
@@ -93,5 +95,19 @@ print('Cound not make a ORF prediction for {0}'.format(no_prediction))
 
 newd = genelist()
 newd.load_list(newl)
-newd.save('coding_genes_with_local_CDS.glb')
-newd.saveTSV('coding_genes_with_local_CDS.tsv')
+newd.save('coding_genes_with_local_CDS-predicted.glb')
+newd.saveTSV('coding_genes_with_local_CDS-predicted.tsv')
+
+# Now go back and put the gencode CDS into the ;= transcripts:
+gencode = glload('../../gencode/hg38_gencode_v32.glb')
+gencode_map = {gene['enst']:gene for gene in gencode}
+for gene in newd:
+    enst = gene['enst'].split('.')[0]
+    if enst in gencode_map and ';=)' in gene['name']:
+        gencode_gene = gencode_map[enst]
+        _, _, local_cdsl, local_cdsr, _ = shared.convert_genocode_to_local(gencode_gene)
+        gene['cds_local_locs'] = (local_cdsl, local_cdsr)
+
+newd._optimiseData()
+newd.save('coding_genes_with_local_CDS-corrected.glb') # Now with actual CDS from GENCODE;
+newd.saveTSV('coding_genes_with_local_CDS-corrected.tsv')
