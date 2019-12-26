@@ -7,7 +7,7 @@ import shared
 
 gencode = glload('../../gencode/hg38_gencode_v32.glb')
 gencode_map = {gene['enst']:gene for gene in gencode}
-cds = glload('coding_genes_with_local_CDS.glb')
+cds = glload('coding_genes_with_local_CDS-predicted.glb')
 annotations = glload('../packed/all_genes.glb')
 cds = cds.map(genelist=annotations, key='transcript_id')
 

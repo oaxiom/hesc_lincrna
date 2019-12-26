@@ -59,7 +59,6 @@ def find_cds(seq):
 
     lengths = sorted(list(longest_transcripts.keys()), reverse=True)
     #print(lengths)
-    cdsl, cdsr = longest_transcripts[lengths[0]][0], longest_transcripts[lengths[0]][1]
     #print(lengths[0], split3(seq[cdsl:cdsr]))
 
     # best guess is the longest intact transcript
@@ -106,6 +105,8 @@ for gene in newd:
     if enst in gencode_map and ';=)' in gene['name']:
         gencode_gene = gencode_map[enst]
         _, _, local_cdsl, local_cdsr, _ = shared.convert_genocode_to_local(gencode_gene)
+        print(gencode_gene)
+        print(gencode_gene['name'], gencode_gene['strand'], gencode_gene['cds_local_locs'], local_cdsl, local_cdsr)
         gene['cds_local_locs'] = (local_cdsl, local_cdsr)
 
 newd._optimiseData()
