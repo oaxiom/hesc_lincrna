@@ -119,55 +119,62 @@ def convert_genocode_to_local(gencode):
     and it is always on the 5' strand, and TSS (by definition) == 0
 
     '''
-    cdsl = gencode['cds_loc']['left']
-    cdsr = gencode['cds_loc']['right']
-
+    global_cdsl = gencode['cds_loc']['left']
+    global_cdsr = gencode['cds_loc']['right']
     global_left = gencode['loc']['left']
     global_right = gencode['loc']['right']
+    local_cdsl = -1
+    local_cdsr = -1
+
+    # These are not garunteed to be in the correct order in the input:
+    exonStarts = sorted(gencode['exonStarts'])
+    exonEnds = sorted(gencode['exonEnds'])
+    exonCount = len(gencode['exonEnds'])
 
     splice_sites = []
     newcdsl = 0 ; newcdsr = 0
 
-    tlen = get_transcript_length(gencode)
-
     # convert all of the positions into the spliced locations, on the + strand;
     if gencode['strand'] == '+':
-        left = 0 # by definition;
-        rite = tlen
+        tlength = 0
+        for exonidx, exon in enumerate(zip(exonStarts, exonEnds)):
+            if global_cdsl >= exon[0] and global_cdsl <= exon[1]:
+                local_cdsl = tlength + (global_cdsl-exon[0])
 
+            if global_cdsr >= exon[0] and global_cdsr <= exon[1]:
+                local_cdsr = (tlength+3+exonCount) + (global_cdsr-exon[0]) # strangeness for 0-based versus 1-based and open/closed :(
+
+            #print(exon, global_cdsl, global_cdsr, local_cdsl, local_cdsr, tlength)
+            tlength += (exon[1]-exon[0])
+            splice_sites.append(tlength)
 
     elif gencode['strand'] == '-':
-        left = 0 # by definition;
-        rite = tlen
+        tlength = 0
+        exonStarts = reversed(exonStarts)
+        exonEnds = reversed(exonEnds)
+        for exon in zip(exonStarts, exonEnds):
+            if global_cdsr >= exon[0] and global_cdsr <= exon[1]:
+                local_cdsl = (exon[1]-global_cdsr) + tlength
 
-    '''
-    exonStarts = gencode['exonStarts']
-    exonEnds = gencode['exonEnds']
+            if global_cdsl >= exon[0] and global_cdsl <= exon[1]:
+                local_cdsr = (exon[1]-global_cdsl) + (tlength+3+exonCount) # strangeness for 0-based versus 1-based and open/closed :(
 
-    for exon in zip(gencode['exonStarts'], gencode['exonEnds']):
-        print(exon)
-        if cdsl >= exon[0] and cdsl <= exon[1]:
-            newcdsl = tlength + (cdsl-exon[0])
+            #print(exon, global_cdsl, global_cdsr, local_cdsl, local_cdsr, tlength)
+            tlength += (exon[1]-exon[0])
+            splice_sites.append(tlength)
 
-        if cdsr >= exon[0] and cdsr <= exon[1]:
-            newcdsr = tlength + (cdsr-exon[0])
-
-        tlength += (exon[1]-exon[0])
-        currpos = exon[1]
-        splice_sites.append(tlength)
-    '''
-        #print(tlength, cdsl, cdsr, splice, newcdsl, newcdsr, cdsl >= splice[0] and cdsl <= splice[1], cdsr >= splice[0] and cdsr <= splice[1])
-
-    #if gencode and cdsl != cdsr: # if cdsl= cdsr then it is non-coding;
-    cdsl = newcdsl
-    cdsr = newcdsr
+        # check estimate is the same:
+        if tlength != get_transcript_length(gencode):
+            print(tlength,get_transcript_length(gencode))
+            1/0
+    tlength = get_transcript_length(gencode)
 
     splice_sites = splice_sites[:-1] # last one is the termination;
 
     #ts = gene['loc']['left']
     #te = gene['loc']['right']
 
-    return 0, tlength, cdsl, cdsr, splice_sites
+    return 0, tlength, local_cdsl, local_cdsr, splice_sites
 
 def convert_genocode_to_splice_sites(gencode):
     '''

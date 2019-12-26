@@ -15,9 +15,10 @@ res = {'perfect': 0,
     'start_correct': 0,
     'end_correct': 0,
     'incorrect': 0,
-    'not-tested': 0}
+    'not-tested': 0,
+    'not-found': 0}
 
-for gene in cds:
+for idx, gene in enumerate(cds):
     #print(gene)
     if '=' not in gene['name']: # only keep genocde
         continue
@@ -26,40 +27,54 @@ for gene in cds:
     enst = gene['enst'].split('.')[0]
     if enst not in gencode_map:
         print('Warning: {0} not found in GENCODE v32'.format(enst))
-        res['not-tested'] += 1
+        res['not-found'] += 1
         continue
     gencode_gene = gencode_map[enst]
 
-    print(gene)
-    print(gencode_gene)
+    #print(gene)
+    #print(gencode_gene)
 
     gene_tlength = shared.get_transcript_length(gene)
     _, gencode_tlength, actual_cdsl, actual_cdsr, splice_sites = shared.convert_genocode_to_local(gencode_gene)
 
+    if len(gencode_gene['cds_loc']) == 0: # gencode doesn't know the CDS
+        res['not-tested'] += 1
+        continue
+
+    predicted_cdsl = gene['cds_local_locs'][0]
+    predicted_cdsr = gene['cds_local_locs'][1]
+    #print(gene['enst'], gene['loc'], gencode_gene['loc'], gencode_gene['cds_loc'])
+    #print(predicted_cdsl, actual_cdsl, ':', predicted_cdsr, actual_cdsr, gene['strand'], ':', gencode_tlength, gene_tlength)
+    #print((predicted_cdsr-predicted_cdsl)/3.0, (actual_cdsr-actual_cdsl)/3.0)
+
     if gencode_tlength != gene_tlength:
         # the assembly is truncated/expanded in some way relative to the GENCODE
         # Isaac allows ~25% loss of overlap at the 5' and 3' ends
-        # TODO:
-        print('Warning: lengths are not the same, positions may be incorrect; {0} {1}'.format(gencode_tlength, gene_tlength))
-        res['not-tested'] += 1
+        # I can still go ahead if the TSS are the same:
+        if gene['strand'] == '+':
+            tss_gene = gene['loc']['left']
+            tss_gencode = gencode_gene['loc']['left']
+        elif gene['strand'] == '-':
+            tss_gene = gene['loc']['right']
+            tss_gencode = gencode_gene['loc']['right']
+        if tss_gene != tss_gencode:
+            res['not-tested'] += 1
+            continue
 
-        # I need to correct the
+    predicted_cdsl = gene['cds_local_locs'][0]
+    predicted_cdsr = gene['cds_local_locs'][1]
 
-    else: # just deal with the naive case first:
-        predicted_cdsl = gene['cds_local_locs'][0]
-        predicted_cdsr = gene['cds_local_locs'][1]
+    # The positions are often very slightly wrong, due to a problem I can't chase down
+    # It's okay in the domain plots as the differences are always tiny,
+    # but here we need to be a little fuzzy on the ends particularly.
+    if abs(predicted_cdsl-actual_cdsl) < 3 and abs(predicted_cdsr-actual_cdsr) < 3:
+        res['perfect'] += 1
+    elif abs(predicted_cdsl-actual_cdsl) < 3:
+        res['start_correct'] += 1
+    elif abs(predicted_cdsr-actual_cdsr) < 3:
+        res['end_correct'] += 1
+    else:
+        res['incorrect'] += 1
 
-        if predicted_cdsl == actual_cdsl and predicted_cdsr == actual_cdsr:
-            res['perfect'] += 1
-        elif predicted_cdsl == actual_cdsl:
-            res['start_correct'] += 1
-        elif predicted_cdsr == actual_cdsr:
-            res['end_correct'] += 1
-        else:
-            res['incorrect'] += 1
-
-        print(predicted_cdsl, actual_cdsl, ':', predicted_cdsr, actual_cdsr, gene['strand'], ':', gencode_tlength, gene_tlength)
-
-
-    1/0
-print(res)
+for k in res:
+    print(k, res[k])

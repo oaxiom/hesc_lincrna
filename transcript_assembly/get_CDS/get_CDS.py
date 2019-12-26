@@ -56,9 +56,9 @@ def find_cds(seq):
             longest_transcripts[shortest_orf] = temp_orfs[shortest_orf]
 
     lengths = sorted(list(longest_transcripts.keys()), reverse=True)
-    #print(lengths)
+    print(lengths)
     cdsl, cdsr = longest_transcripts[lengths[0]][0], longest_transcripts[lengths[0]][1]
-    #print(lengths[0], split3(seq[cdsl:cdsr]))
+    print(lengths[0], split3(seq[cdsl:cdsr]))
 
     # best guess is the longest intact transcript
     return True, longest_transcripts[lengths[0]][0], longest_transcripts[lengths[0]][1]
@@ -72,6 +72,7 @@ fastas = glload('../../transcript_assembly/fasta/transcripts.glb')
 no_prediction = 0
 newl = []
 for f in fastas:
+    print(f['enst'])
     if f['coding'] == 'noncoding':
         continue
     if f['tags'][-1] == '~': # variant sequence
