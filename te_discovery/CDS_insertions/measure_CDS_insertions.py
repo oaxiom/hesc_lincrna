@@ -131,7 +131,7 @@ for idx, gene_name in enumerate(bundles):
                     # Check that it still contains a CDS of the correct length:
                     expected_cds_length_if_in_frame = ((transcript['cds_local_locs'][1] - transcript['cds_local_locs'][0])-1)
                     cds_lengths = [i['cds_local_locs'][1]-i['cds_local_locs'][0] for i in known if i['coding'] == 'coding']
-                    print(expected_cds_length_if_in_frame, cds_lengths)
+                    #print(expected_cds_length_if_in_frame, cds_lengths)
                     if expected_cds_length_if_in_frame in cds_lengths: # It's a simple insertion 5' or 3':
                         # I know it's not a collision, so just test the edge:
                         if t['span'][1] < transcript['cds_local_locs'][0]: # 5'
@@ -155,6 +155,7 @@ for k in res:
     if res[k]:
         gl.load_list(res[k])
         gl.saveTSV('table_{0}.tsv'.format(k))
+        gl.save('table_{0}.glb'.format(k))
 
 print()
 for k in res:

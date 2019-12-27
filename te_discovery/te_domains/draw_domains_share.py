@@ -30,52 +30,10 @@ def draw_domain(gene, filename, gencode_db, dfam):
     except KeyError:
         print('Doing %s' % gene['enst'])
 
-    # Get cdsl if it has;
-    gencode = None
-    if 'ENST' in gene['enst']:
-        gencode = gencode_db.find('%s (%s)' % (gene['name'].split(' ')[0], gene['enst']))
-        #print(gencode, '%s (%s)' % (gene['name'].split(' ')[0], gene['enst']))
-        if gencode:
-            gencode = gencode[0]  # Should be 1 or 0 found
-            # check it is not a non-coding one:
-            if len(gencode['cds_loc']) == 0: # non-coding
-                gencode = None
+    cdsl = gene['cds_local_locs'][0]
+    cdsr = gene['cds_local_locs'][1]
 
-    #TODO: replace with shared.convert_genocode_to_local()
-    cdsl = None; cdsr = None
-    if gencode:
-        # This is wrong if the transcrip is ~
-        cdsl = gencode['cds_loc']['left']
-        cdsr = gencode['cds_loc']['right']
-        if ';~' in gene['name']:
-            cdsl = 0; cdsr = 0 # triggers the non-coding code below;
-        #print(gene['enst'], gene['transcript_id'], gene['name'], gene['strand'], gencode['loc'], gencode['cds_loc'], gene['exonStarts'], gene['exonEnds'])
-    # Work out the mRNA length from the gene length and the exons and Es:
-    tlength = 0
-    currpos = gene['loc']['left'] # transcript position in genomic coords
-    splice_sites = []
-    newcdsl = 0 ; newcdsr = 0
-    for splice in zip(gene['exonStarts'], gene['exonEnds']):
-        if gencode:
-            if cdsl >= splice[0] and cdsl <= splice[1]:
-                newcdsl = tlength + (cdsl-splice[0])
-            if cdsr >= splice[0] and cdsr <= splice[1]:
-                newcdsr = tlength + (cdsr-splice[0])
-
-        tlength += (splice[1]-splice[0])
-        currpos = splice[1]
-        splice_sites.append(tlength)
-
-    if gencode and cdsl != cdsr: # if cdsl= cdsr then it is non-coding;
-        cdsl = newcdsl
-        cdsr = newcdsr
-
-    if gene['strand'] == '-': # splice sites and cds are always + strand, so would need to invert them;
-        splice_sites = [tlength-s for s in splice_sites]
-        if gencode: # Have valid cdsl, cdsr
-            cdsl = tlength - cdsl
-            cdsr = tlength - cdsr
-
+    _, tlength, splice_sites = shared.convert_genocode_to_splice_sites(gene)
     splice_sites = splice_sites[:-1] # last one is the termination;
 
     ts = gene['loc']['left']
@@ -162,12 +120,7 @@ def draw_domain(gene, filename, gencode_db, dfam):
     ax.set_frame_on(False)
     ax.tick_params(left=False)
 
-    # set xticks:
-    if gencode:
-        ax.set_xticks([0, cdsl, cdsr, tlength])
-    else:
-        ax.set_xticks([0, tlength])
-
+    ax.set_xticks([0, cdsl, cdsr, tlength])
 
     fig.savefig(filename)
     plot.close()
