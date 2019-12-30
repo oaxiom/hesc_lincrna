@@ -12,6 +12,7 @@ __pycache__
 *.Rda
 *.sql-journal
 *.pickle
+hipsci*.txt.gz
 tblout.*
 get_data.sh
 get_gtf.sh
