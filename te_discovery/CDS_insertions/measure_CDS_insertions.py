@@ -136,6 +136,9 @@ for idx, gene_name in enumerate(bundles):
                         if expected_cds_length_if_in_frame in cds_lengths:
                             res['inframe_insertion'].append(transcript) # what about multiple TE insertions?
                             break
+                        else:
+                            res['insertion_alternate_cds'].append(transcript)
+                            break
                     else: # It is flapping over the edge of the CDS;
                         te_length = (t['span'][1] - t['span'][0])
                         # See if it's at the end:
@@ -146,6 +149,7 @@ for idx, gene_name in enumerate(bundles):
                             res['new_ATG'].append(transcript)
                             break
                         1/0 # should not be possible to get here;
+                    1/0
                 else: # No collision; check it's 5' or 3':
                     # Check that it still contains a CDS of the correct length:
                     expected_cds_length_if_in_frame = ((transcript['cds_local_locs'][1] - transcript['cds_local_locs'][0])-1)
@@ -153,10 +157,10 @@ for idx, gene_name in enumerate(bundles):
                     #print(expected_cds_length_if_in_frame, cds_lengths)
                     if expected_cds_length_if_in_frame in cds_lengths: # It's a simple insertion 5' or 3':
                         # I know it's not a collision, so just test the edge:
-                        if t['span'][1] < transcript['cds_local_locs'][0]: # 5'
+                        if t['span'][1] <= transcript['cds_local_locs'][0]: # 5'
                             res['no_disruption_5prime'].append(transcript)
                             break
-                        elif t['span'][0] > transcript['cds_local_locs'][1]:
+                        elif t['span'][0] >= transcript['cds_local_locs'][1]:
                             res['no_disruption_3prime'].append(transcript)
                             break
                     else:
