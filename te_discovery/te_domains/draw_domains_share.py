@@ -105,7 +105,7 @@ def draw_domain(gene, filename, gencode_db, dfam):
     #print(gene)
 
     # CDS line:
-    if cdsl:
+    if cdsl is not None:
         cds_patch = mpatches.Rectangle([cdsl, -1.2], cdsr-cdsl, 0.4, ec="none", facecolor='black')
         ax.add_patch(cds_patch)
 
@@ -122,7 +122,10 @@ def draw_domain(gene, filename, gencode_db, dfam):
     ax.set_frame_on(False)
     ax.tick_params(left=False)
 
-    ax.set_xticks([0, cdsl, cdsr, tlength])
+    if cdsl is not None:
+        ax.set_xticks([0, cdsl, cdsr, tlength])
+    else:
+        ax.set_xticks([0, tlength])
 
     fig.savefig(filename)
     plot.close()
