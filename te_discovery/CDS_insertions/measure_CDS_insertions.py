@@ -80,12 +80,10 @@ for idx, gene_name in enumerate(bundles):
     if len(bundles[gene_name]) == 1 and all_types[0] == '=': # Only the canonical one was found, skip;
         continue
 
-    if '=' not in all_types:
-        # TODO: Ugh, don't have the canonical transcript, need to add it from GENCODE
-        canonical_not_found += 1
+    # Always add the canonical transcripts from GENCODE, otherwise you just end up guessing existing CDS that have a slightly different transcript
+    if gene_name in canonical:
         can = None
-        if gene_name in canonical:
-            can = canonical[gene_name]
+        can = canonical[gene_name]
 
         #can = canonical.getRowsByKey(key='name', values=gene_name, silent=True)
         if can:
@@ -97,6 +95,7 @@ for idx, gene_name in enumerate(bundles):
             print(gene_name)
             canonical_not_found += 1 # probably non-coding
             continue
+        # Don't worry about duplicate removal as we only care about the ~ transcripts anyways
 
     # check there is at least 1 coding in there, coming from either the GENCODE canonical, or internally
     if 'coding' not in [i['coding'] for i in bundles[gene_name]]:
@@ -131,7 +130,7 @@ for idx, gene_name in enumerate(bundles):
                     # See if the TE is entirely contained:
                     if contained(t['span'][0], t['span'][1], transcript['cds_local_locs'][0], transcript['cds_local_locs'][1]):
                         te_length = (t['span'][1] - t['span'][0])
-                        expected_cds_length_if_in_frame = (transcript['cds_local_locs'][1] - transcript['cds_local_locs'][0]) + te_length -1
+                        expected_cds_length_if_in_frame = (transcript['cds_local_locs'][1] - transcript['cds_local_locs'][0]) + te_length
                         cds_lengths = [i['cds_local_locs'][1]-i['cds_local_locs'][0]+te_length for i in known if i['coding'] == 'coding']
                         if expected_cds_length_if_in_frame in cds_lengths:
                             res['inframe_insertion'].append(transcript) # what about multiple TE insertions?
@@ -152,9 +151,9 @@ for idx, gene_name in enumerate(bundles):
                     1/0
                 else: # No collision; check it's 5' or 3':
                     # Check that it still contains a CDS of the correct length:
-                    expected_cds_length_if_in_frame = ((transcript['cds_local_locs'][1] - transcript['cds_local_locs'][0])-1)
+                    expected_cds_length_if_in_frame = ((transcript['cds_local_locs'][1] - transcript['cds_local_locs'][0]))
                     cds_lengths = [i['cds_local_locs'][1]-i['cds_local_locs'][0] for i in known if i['coding'] == 'coding']
-                    #print(expected_cds_length_if_in_frame, cds_lengths)
+
                     if expected_cds_length_if_in_frame in cds_lengths: # It's a simple insertion 5' or 3':
                         # I know it's not a collision, so just test the edge:
                         if t['span'][1] <= transcript['cds_local_locs'][0]: # 5'
@@ -164,6 +163,7 @@ for idx, gene_name in enumerate(bundles):
                             res['no_disruption_3prime'].append(transcript)
                             break
                     else:
+                        print(expected_cds_length_if_in_frame in cds_lengths, expected_cds_length_if_in_frame, sorted(cds_lengths))
                         res['insertion_alternate_cds'].append(transcript)
                         break
 
