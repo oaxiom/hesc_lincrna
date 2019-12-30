@@ -8,9 +8,16 @@ def contained(al, ar, bl, br): # Is A in B?
     return al >= bl and ar <= br
 
 # These have the official GENCODE CDS, and the predicted (about ~80% accurate)
-#canonical = glload('../../gencode/hg38_gencode_v32.pc.glb')
-#gencode_cds = glload('../../transcript_assembly/get_CDS/gencode_cds.glb')
-#canonical = canonical.map(genelist=gencode_cds, key='enst')
+canonical = glload('../../gencode/hg38_gencode_v32.pc.glb')
+gencode_cds = glload('../../transcript_assembly/get_CDS/gencode_cds.glb')
+canonical_all = canonical.map(genelist=gencode_cds, key='enst')
+
+canonical = {}# convert to a quick look up for speed
+for gene in canonical_all:
+    if gene['name'] not in canonical:
+        canonical[gene['name']] = []
+    canonical[gene['name']].append(gene)
+
 all_genes = glload('../../transcript_assembly/packed/all_genes.glb')
 cds = glload('../../transcript_assembly/get_CDS/coding_genes_with_local_CDS-corrected.glb')
 cds = {gene['transcript_id']: gene for gene in cds}
@@ -44,17 +51,6 @@ for gene in all_genes:
 
 print('Found {0:,} bundles of genes'.format(len(bundles)))
 
-# Okay, now we check each bundle has at least 1 CDS:
-newbundles = {}
-for b in bundles:
-    for gene in bundles[b]:
-        if gene['coding'] == 'coding': # Make sure there's at least 1 coding in there
-            newbundles[b] = bundles[b]
-            break
-bundles = newbundles
-
-print('Found {0:,} bundles of genes with at least 1 coding gene'.format(len(bundles)))
-
 res = {'inframe_insertion': [], # Class 1 # numbers are per-transcript;
     'insertion_truncation': [], # Class 2
     'new_ATG': [],
@@ -62,12 +58,17 @@ res = {'inframe_insertion': [], # Class 1 # numbers are per-transcript;
     'insertion_alternate_cds': [], # Class 4
     'no_disruption_5prime': [], # Class 5
     'no_disruption_3prime': [], # Class 6
-    'class_not_found': []}
+    'class_not_found': [],
+    'no_coding': []}
 
 total = 0
 no_variants = 0
+canonical_not_found = 0
 
 for idx, gene_name in enumerate(bundles):
+    if '-' in gene_name:
+        continue # Skip these
+
     total += len(bundles[gene_name])
 
     all_types = [i['tags'][-1] for i in bundles[gene_name]]
@@ -76,12 +77,30 @@ for idx, gene_name in enumerate(bundles):
         no_variants += len(bundles[gene_name])
         continue
 
-    if len(bundles[gene_name]) == 1 and all_types[0] == '=':
-        # TODO: Check if it's a ~ and get the GENCODE canonical one;
+    if len(bundles[gene_name]) == 1 and all_types[0] == '=': # Only the canonical one was found, skip;
         continue
 
     if '=' not in all_types:
         # TODO: Ugh, don't have the canonical transcript, need to add it from GENCODE
+        canonical_not_found += 1
+        can = None
+        if gene_name in canonical:
+            can = canonical[gene_name]
+
+        #can = canonical.getRowsByKey(key='name', values=gene_name, silent=True)
+        if can:
+            for i in can:
+                i['tags'] = '='
+                i['coding'] = 'coding'
+                bundles[gene_name].append(i)
+        else:
+            print(gene_name)
+            canonical_not_found += 1 # probably non-coding
+            continue
+
+    # check there is at least 1 coding in there, coming from either the GENCODE canonical, or internally
+    if 'coding' not in [i['coding'] for i in bundles[gene_name]]:
+        res['no_coding'] += bundles[gene_name]
         continue
 
     # Add the doms key to all transcripts;
@@ -162,3 +181,4 @@ for k in res:
     print(k, len(res[k]))
 print('No variants', no_variants)
 print('Total', total)
+print('canonical_not_found', canonical_not_found)

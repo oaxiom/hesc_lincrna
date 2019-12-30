@@ -32,6 +32,8 @@ def draw_domain(gene, filename, gencode_db, dfam):
 
     cdsl = gene['cds_local_locs'][0]
     cdsr = gene['cds_local_locs'][1]
+    if cdsl == -1:
+        cdsl = None
 
     _, tlength, splice_sites = shared.convert_genocode_to_splice_sites(gene)
     splice_sites = splice_sites[:-1] # last one is the termination;
