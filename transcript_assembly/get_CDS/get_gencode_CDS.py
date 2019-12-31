@@ -36,6 +36,7 @@ for fasta in fastas:
         print('3:', fasta['seq'][cds[1]:])
         print(' '.join(shared.split3(seq)))
         print()
+        truncated += 1
         continue
     '''
 
