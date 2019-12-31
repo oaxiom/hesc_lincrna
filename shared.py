@@ -272,7 +272,7 @@ table = {
 def split3(s):
     return [s[i:i+3] for i in range(0, len(s), 3)]
 
-def translateAA(seq): # should take split3()
+def translateAA(seq):
     return [table[codon.upper()] for codon in split3(seq)]
 
 if __name__ == '__main__':
