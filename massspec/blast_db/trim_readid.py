@@ -5,9 +5,11 @@ fasta = genelist('../../transcript_assembly/get_CDS/gencode.v32.pc_translations.
 
 for f in fasta:
     t = f['name'].split('|')
-    f['name'] = '_'.join([t[0], t[1], t[6]])
+    f['name'] = '|'.join([t[0], t[6]])
 
 fasta._optimiseData()
 print(fasta)
 
-fasta.saveFASTA('gencode.v32.pc_translations.fa')
+fasta = fasta.removeDuplicates('seq')
+
+fasta.saveFASTA('gencode.v32.pc_translations.fa', name='name')
