@@ -1,5 +1,7 @@
 import sys, os
 from glbase3 import *
+sys.path.append('../../')
+import shared
 
 def qcollide(al, ar, bl, br):
     return ar > bl and al < br
@@ -31,6 +33,7 @@ for gene in gencode_peptide_fastas:
 all_genes = glload('../../transcript_assembly/packed/all_genes.glb')
 cds = glload('../../transcript_assembly/get_CDS/coding_genes_with_local_CDS-corrected.glb')
 cds = {gene['transcript_id']: gene for gene in cds}
+print(cds)
 tes = glload('../te_transcripts/transcript_table_merged.mapped.glb') # yes, all as I am measuring PC -> ncRNA as well;
 tes = {gene['transcript_id']: gene for gene in tes}
 
@@ -74,7 +77,7 @@ for gene in all_genes:
 print('Found {0:,} bundles of genes'.format(len(bundles)))
 
 res = {'inframe_insertion': [], # Class 1 # numbers are per-transcript;
-    'insertion_truncation': [], # Class 2
+    'new_STOP': [], # Class 2
     'new_ATG': [],
     'disrupt_coding': [], # Class 3
     'insertion_alternate_cds': [], # Class 4
@@ -151,7 +154,7 @@ for idx, gene_name in enumerate(bundles):
             # calls:
             inframe_insertion = False
             insertion_alternate_cds = False
-            insertion_truncation = False
+            new_STOP = False
             new_ATG = False
             no_disruption_5prime = False
             no_disruption_3prime = False
@@ -184,7 +187,7 @@ for idx, gene_name in enumerate(bundles):
                             if expected_cds_length in cds_lengths: # It's probably already annotated as contained, and has no effect on the CDS
                                 pass
                             else: # probably a novel truncation
-                                insertion_truncation = True
+                                new_STOP = True
 
                         elif t['span'][0] < transcript['cds_local_locs'][0]: # It's at the START;
                             if expected_cds_length in cds_lengths: # It's probably already annotated as contained, and has no effect on the CDS
@@ -207,10 +210,12 @@ for idx, gene_name in enumerate(bundles):
             # transcripts only get called once. Add it here based ona hierarchy:
             # Use the calls above to assign to the preferred classes:
             if inframe_insertion:                                res['inframe_insertion'].append(transcript)
-            elif insertion_alternate_cds:                        res['insertion_alternate_cds'].append(transcript)
-            elif insertion_truncation:                           res['insertion_truncation'].append(transcript)
             elif new_ATG:                                        res['new_ATG'].append(transcript)
-            elif no_disruption_5prime and no_disruption_3prime : res['no_disruption_5-3prime'].append(transcript)
+            elif new_STOP:                                       res['new_STOP'].append(transcript)
+            elif insertion_alternate_cds:                        res['insertion_alternate_cds'].append(transcript)
+            elif no_disruption_5prime and no_disruption_3prime:  res['no_disruption_5-3prime'].append(transcript)
+            elif no_disruption_5prime:                           res['no_disruption_5prime'].append(transcript)
+            elif no_disruption_3prime:                           res['no_disruption_3prime'].append(transcript)
             else:                                                res['class_not_found'].append(transcript)
 
     #if idx > 5000:
