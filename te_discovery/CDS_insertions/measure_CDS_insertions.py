@@ -2,7 +2,7 @@ import sys, os
 from glbase3 import *
 
 def qcollide(al, ar, bl, br):
-    return ar >= bl and al <= br
+    return ar > bl and al < br
 
 def contained(al, ar, bl, br): # Is A in B?
     return al >= bl and ar <= br
@@ -18,11 +18,33 @@ for gene in canonical_all:
         canonical[gene['name']] = []
     canonical[gene['name']].append(gene)
 
+# get sequences for extra string literal matching;
+gencode_peptide_fastas = genelist('../../transcript_assembly/get_CDS/gencode.v32.pc_translations.fa.gz', format=format.fasta, gzip=True)
+print(gencode_peptide_fastas)
+gencode_peptide_fastas_lookup = {}
+for gene in gencode_peptide_fastas:
+    name = gene['name'].split('|')[6]
+    if name not in gencode_peptide_fastas_lookup:
+        gencode_peptide_fastas_lookup[name] = []
+    gencode_peptide_fastas_lookup[name].append(gene['seq'])
+
 all_genes = glload('../../transcript_assembly/packed/all_genes.glb')
 cds = glload('../../transcript_assembly/get_CDS/coding_genes_with_local_CDS-corrected.glb')
 cds = {gene['transcript_id']: gene for gene in cds}
 tes = glload('../te_transcripts/transcript_table_merged.mapped.glb') # yes, all as I am measuring PC -> ncRNA as well;
 tes = {gene['transcript_id']: gene for gene in tes}
+
+def check_sequence_versus_gencode(seq, gencode_peptide_fastas_lookup):
+    if name in gencode_peptide_fastas_lookup:
+        for seq in gencode_peptide_fastas_lookup[gene['name'].split(' ')[0]]:
+            if seq == aa:
+                print(name)
+                print(seq)
+                print(aa)
+                print()
+                found = True
+                return True
+    return False
 
 # First I need to bundle them up by their name;
 bundles = {}
@@ -58,6 +80,7 @@ res = {'inframe_insertion': [], # Class 1 # numbers are per-transcript;
     'insertion_alternate_cds': [], # Class 4
     'no_disruption_5prime': [], # Class 5
     'no_disruption_3prime': [], # Class 6
+    'no_disruption_5-3prime': [],
     'class_not_found': [],
     'no_coding': []}
 
@@ -119,56 +142,76 @@ for idx, gene_name in enumerate(bundles):
         te = None
         if transcript['transcript_id'] in tes:
             te = tes[transcript['transcript_id']]
+
         if te:
             if transcript['coding'] == 'noncoding':
                 res['disrupt_coding'].append(transcript)
                 continue
 
+            # calls:
+            inframe_insertion = False
+            insertion_alternate_cds = False
+            insertion_truncation = False
+            new_ATG = False
+            no_disruption_5prime = False
+            no_disruption_3prime = False
+
             # find out if a TE overlaps the CDS:
             for t in te['doms']:
-                if qcollide(t['span'][0], t['span'][1], transcript['cds_local_locs'][0], transcript['cds_local_locs'][1]):
-                    # See if the TE is entirely contained:
-                    if contained(t['span'][0], t['span'][1], transcript['cds_local_locs'][0], transcript['cds_local_locs'][1]):
-                        te_length = (t['span'][1] - t['span'][0])
-                        expected_cds_length_if_in_frame = (transcript['cds_local_locs'][1] - transcript['cds_local_locs'][0]) + te_length
-                        cds_lengths = [i['cds_local_locs'][1]-i['cds_local_locs'][0]+te_length for i in known if i['coding'] == 'coding']
-                        if expected_cds_length_if_in_frame in cds_lengths:
-                            res['inframe_insertion'].append(transcript) # what about multiple TE insertions?
-                            break
-                        else:
-                            res['insertion_alternate_cds'].append(transcript)
-                            break
-                    else: # It is flapping over the edge of the CDS;
-                        te_length = (t['span'][1] - t['span'][0])
-                        # See if it's at the end:
-                        if t['span'][1] > transcript['cds_local_locs'][1]: # It's stopping the CDS
-                            res['insertion_truncation'].append(transcript)
-                            break
-                        elif t['span'][0] < transcript['cds_local_locs'][0]: # It's at the START;
-                            res['new_ATG'].append(transcript)
-                            break
-                        1/0 # should not be possible to get here;
-                    1/0
-                else: # No collision; check it's 5' or 3':
-                    # Check that it still contains a CDS of the correct length:
-                    expected_cds_length_if_in_frame = ((transcript['cds_local_locs'][1] - transcript['cds_local_locs'][0]))
-                    cds_lengths = [i['cds_local_locs'][1]-i['cds_local_locs'][0] for i in known if i['coding'] == 'coding']
+                # Collect the parameters:
+                colliding = qcollide(t['span'][0], t['span'][1], transcript['cds_local_locs'][0], transcript['cds_local_locs'][1])
+                enclosed = contained(t['span'][0], t['span'][1], transcript['cds_local_locs'][0], transcript['cds_local_locs'][1])
+                te_length = (t['span'][1] - t['span'][0])
+                expected_cds_length = (transcript['cds_local_locs'][1] - transcript['cds_local_locs'][0])
+                cds_lengths = [(i['cds_local_locs'][1]-i['cds_local_locs'][0]) for i in known if i['coding'] == 'coding']
 
-                    if expected_cds_length_if_in_frame in cds_lengths: # It's a simple insertion 5' or 3':
+                # cut the te for partially translated TEs:
+                te_edges = (max(t['span'][0], i['cds_local_locs'][0]), min(t['span'][1], i['cds_local_locs'][1]))
+                te_span = te_edges[1] - te_edges[0]
+                cds_lengths_plus_te = [(i['cds_local_locs'][1]-i['cds_local_locs'][0])+te_span for i in known if i['coding'] == 'coding']
+
+                if colliding:
+                    if enclosed: # Te is entirely contained in the transcript
+                        if expected_cds_length in cds_lengths_plus_te: # TE is most likely in frame inserted:
+                            inframe_insertion = True
+                        elif expected_cds_length in cds_lengths: # It's probably already annotated as contained, and has no effect on the CDS
+                            pass # I suppose it could get here by chance, but chances are less than 1 in 1e5 assuming ~1000 bp for both transcript and TE.
+                        else: # probably a new CDS
+                            insertion_alternate_cds = True
+
+                    else: # It is colliding, but extends past the CDS;
+                        if t['span'][1] > transcript['cds_local_locs'][1]: # It's STOP the CDS
+                            if expected_cds_length in cds_lengths: # It's probably already annotated as contained, and has no effect on the CDS
+                                pass
+                            else: # probably a novel truncation
+                                insertion_truncation = True
+
+                        elif t['span'][0] < transcript['cds_local_locs'][0]: # It's at the START;
+                            if expected_cds_length in cds_lengths: # It's probably already annotated as contained, and has no effect on the CDS
+                                pass
+                            else: # probably a novel truncation
+                                new_ATG = True
+
+                else: # No collision with the CDS; check it's 5' or 3':
+                    # Check that it still contains a CDS of the correct length:
+                    if expected_cds_length in cds_lengths: # It's a simple insertion 5' or 3':
                         # I know it's not a collision, so just test the edge:
                         if t['span'][1] <= transcript['cds_local_locs'][0]: # 5'
-                            res['no_disruption_5prime'].append(transcript)
-                            break
+                            no_disruption_5prime = True
                         elif t['span'][0] >= transcript['cds_local_locs'][1]:
-                            res['no_disruption_3prime'].append(transcript)
-                            break
+                            no_disruption_3prime = True
                     else:
-                        print(expected_cds_length_if_in_frame in cds_lengths, expected_cds_length_if_in_frame, sorted(cds_lengths))
-                        res['insertion_alternate_cds'].append(transcript)
-                        break
+                        print(expected_cds_length in cds_lengths, expected_cds_length, sorted(cds_lengths))
+                        insertion_alternate_cds = True
 
-                # If you find something you break, this should be 0 if it's all working;
-                res['class_not_found'].append(transcript)
+            # transcripts only get called once. Add it here based ona hierarchy:
+            # Use the calls above to assign to the preferred classes:
+            if inframe_insertion:                                res['inframe_insertion'].append(transcript)
+            elif insertion_alternate_cds:                        res['insertion_alternate_cds'].append(transcript)
+            elif insertion_truncation:                           res['insertion_truncation'].append(transcript)
+            elif new_ATG:                                        res['new_ATG'].append(transcript)
+            elif no_disruption_5prime and no_disruption_3prime : res['no_disruption_5-3prime'].append(transcript)
+            else:                                                res['class_not_found'].append(transcript)
 
     #if idx > 5000:
     #    break

@@ -23,5 +23,6 @@ gencode.v30.annotation.gtf.gz
 gencode.v32.annotation.gtf
 gencode.v32.annotation.gtf.gz
 gencode.v32.pc_transcripts.fa.gz
+gencode.v32.pc_translations.fa.gz
 assembly_hPSC_FEELnc.txt
 transcripts.fa.gz
