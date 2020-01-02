@@ -22,7 +22,7 @@ for gene in canonical_all:
 
 # get sequences for extra string literal matching;
 gencode_peptide_fastas = genelist('../../transcript_assembly/get_CDS/gencode.v32.pc_translations.fa.gz', format=format.fasta, gzip=True)
-print(gencode_peptide_fastas)
+#print(gencode_peptide_fastas)
 gencode_peptide_fastas_lookup = {}
 for gene in gencode_peptide_fastas:
     name = gene['name'].split('|')[6]
@@ -33,7 +33,7 @@ for gene in gencode_peptide_fastas:
 all_genes = glload('../../transcript_assembly/packed/all_genes.glb')
 cds = glload('../../transcript_assembly/get_CDS/coding_genes_with_local_CDS-corrected.glb')
 cds = {gene['transcript_id']: gene for gene in cds}
-print(cds)
+#print(cds)
 tes = glload('../te_transcripts/transcript_table_merged.mapped.glb') # yes, all as I am measuring PC -> ncRNA as well;
 tes = {gene['transcript_id']: gene for gene in tes}
 
@@ -118,7 +118,7 @@ for idx, gene_name in enumerate(bundles):
                 i['coding'] = 'coding'
                 bundles[gene_name].append(i)
         else:
-            print(gene_name)
+            #print(gene_name)
             canonical_not_found += 1 # probably non-coding
             continue
         # Don't worry about duplicate removal as we only care about the ~ transcripts anyways
@@ -204,7 +204,7 @@ for idx, gene_name in enumerate(bundles):
                         elif t['span'][0] >= transcript['cds_local_locs'][1]:
                             no_disruption_3prime = True
                     else:
-                        print(expected_cds_length in cds_lengths, expected_cds_length, sorted(cds_lengths))
+                        #print(expected_cds_length in cds_lengths, expected_cds_length, sorted(cds_lengths))
                         insertion_alternate_cds = True
 
             # transcripts only get called once. Add it here based ona hierarchy:
