@@ -23,7 +23,13 @@ for filename in glob.glob('../blast_searches/masked/*.glb'):
         #print(peptide_fragment)
         for f in fasta:
             if peptide_fragment['seq'] in f['seq']:
+                posl = peptide_fragment['seq'].find(f['seq'])
+                posr = peptide_fragment['seq'].find(f['seq']) + len(peptide_fragment['seq'])
+
                 res_peps.append({'peptide_fragment': peptide_fragment,
+                    'context': f['seq'][max(posl-5, 0):posl].lower() + f['seq'][posl:posr] + f['seq'][posr:posr+5].lower(),
+                    'pos': (posl, posr),
+                    'peptide_score': peptide_fragment['score']
                     # and match, contect, etc.
                     })
 
