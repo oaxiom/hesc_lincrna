@@ -26,7 +26,6 @@ for filename in glob.glob('../../te_discovery/CDS_insertions/*.glb'):
         continue # skip, as no CDS!
     stub = os.path.split(filename)[1].replace('.glb', '')
 
-
     genes = glload(filename)
     with_seq = genes.map(genelist=dna_fasta, key='transcript_id')
 
