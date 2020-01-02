@@ -90,11 +90,12 @@ for filename in glob.glob('blaster/table_*.tsv'):
                         'seq': remaining_sequence,
                         'blastp_status': blastp_status})
 
-    resgl = genelist()
-    resgl.load_list(res)
-    print('Number of surviving peptides: {0}'.format(len(resgl)))
-    resgl.saveTSV('masked/masked_results-{0}.tsv'.format(stub), key_order=['name', 'blastp_status'])
-    resgl.save('masked/masked_results-{0}.glb'.format(stub) )
-    # resgl.saveFASTA
+    if res:
+        resgl = genelist()
+        resgl.load_list(res)
+        print('Number of surviving peptides: {0}'.format(len(resgl)))
+        resgl.saveTSV('masked/masked_results-{0}.tsv'.format(stub), key_order=['name', 'blastp_status'])
+        resgl.save('masked/masked_results-{0}.glb'.format(stub))
+        # resgl.saveFASTA
 
 
