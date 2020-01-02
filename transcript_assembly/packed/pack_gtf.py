@@ -39,25 +39,16 @@ def add_entry(trans, gsql, newgl, done):
     elif trans['exonCounts'] == 1:
         exon_state = 'SE'
 
-    # get coding potential:
-    if transcript_id in data_coding_noncoding:
-        c_nc = data_coding_noncoding[transcript_id]
+    # Get hte extra features;
+    if transcript_id in data_features_lookup:
+        e = data_features_lookup[transcript_id]['expn']
+        c_nc = data_features_lookup[transcript_id]['coding']
     else:
-        print('WARNING: {0} not in conding_noncoding table, skipping'.format(transcript_id))
-        c_nc = 'U'
-        return False
-
-    if transcript_id in data_expression_data:
-        e = data_expression_data[transcript_id]
-    else:
-        print('WARNING: {0} not in data_expression_data table, skipping'.format(transcript_id))
+        print('WARNING: {0} not in data_features_lookup table, skipping'.format(transcript_id))
         e = 'U'
         return False
 
     new_name = '%s (%s;%s;%s;%s;%s)' % (trans['name'], exon_state, coding_noncoding_map[c_nc], expn_map[e], trans['evidence'], trans['decision'])
-
-    if 'HSCSR.159919.3' in line: # Debug
-        print(line)
 
     toadd = {'ensg': trans['ensg'], 'enst': trans['enst'], 'name': new_name,
         'gene_symbol': trans['name'], 'loc': trans['loc'],
@@ -83,12 +74,10 @@ def add_entry(trans, gsql, newgl, done):
 
     return done
 
-data_coding_noncoding = genelist(filename='../coding_noncoding/coding_table.txt.gz', format={'force_tsv': True, 'transcript_id': 0, 'coding': 11}, gzip=True)
-data_expression_data = genelist(filename='../expression/expression_table.tsv.gz', format={'force_tsv': True, 'transcript_id': 0, 'esc_spec': 5}, gzip=True)
+data_features = genelist(filename='../feature_table/assembly_hPSC_detailed.tsv.gz', format={'force_tsv': True, 'transcript_id': 0, 'coding': 3, 'expn': 2, 'decision': 4}, gzip=True)
 
 # convert ot fast lookups:
-data_expression_data = {i['transcript_id']: i['esc_spec'] for i in data_expression_data.linearData}
-data_coding_noncoding = {i['transcript_id']: i['coding'] for i in data_coding_noncoding.linearData}
+data_features_lookup = {i['transcript_id']: i for i in data_features.linearData}
 
 #print(data_expression_data)
 #print(data_coding_noncoding)
@@ -98,7 +87,7 @@ decision = {'same': '=',
 
 coding_noncoding_map = {'coding': 'C',
     'noncoding': 'NC',
-    'U': 'U'}
+    'NA': 'U'}
 
 expn_map = {'enriched': 'ES+', 'unbiased': 'ES:', 'depleted': 'ES-'}
 
