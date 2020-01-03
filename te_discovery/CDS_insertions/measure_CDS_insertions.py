@@ -83,7 +83,7 @@ res = {'inframe_insertion': [], # Class 1 # numbers are per-transcript;
     'insertion_alternate_cds': [], # Class 4
     'no_disruption_5prime': [], # Class 5
     'no_disruption_3prime': [], # Class 6
-    'no_disruption_5-3prime': [],
+    'no_disruption_5_3prime': [],
     'class_not_found': [],
     'no_coding': []}
 
@@ -213,7 +213,7 @@ for idx, gene_name in enumerate(bundles):
             elif new_ATG:                                        res['new_ATG'].append(transcript)
             elif new_STOP:                                       res['new_STOP'].append(transcript)
             elif insertion_alternate_cds:                        res['insertion_alternate_cds'].append(transcript)
-            elif no_disruption_5prime and no_disruption_3prime:  res['no_disruption_5-3prime'].append(transcript)
+            elif no_disruption_5prime and no_disruption_3prime:  res['no_disruption_5_3prime'].append(transcript)
             elif no_disruption_5prime:                           res['no_disruption_5prime'].append(transcript)
             elif no_disruption_3prime:                           res['no_disruption_3prime'].append(transcript)
             else:                                                res['class_not_found'].append(transcript)

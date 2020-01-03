@@ -1,6 +1,6 @@
 '''
 
-For the masked peptides, see if we can find them in the MAS data;
+For the masked peptides, see if we can find them in the MS data;
 
 '''
 

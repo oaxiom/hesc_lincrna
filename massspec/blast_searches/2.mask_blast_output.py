@@ -57,7 +57,10 @@ for filename in glob.glob('blaster/table_*.tsv'):
         query_len = len(f['seq'])
         if f['name'] not in blasta_lookup:
             f['blastp_status'] = 'Not Found'
-            res.append(f) # Full sequence is uniquq
+            if len(f['seq']) < 10:
+                print('Warning: {0} <20 Amino acids, skipping'.format(hit['query_name']))
+            else:
+                res.append(f) # Full sequence is uniquq
 
         else: # Was found by BLASTP
             blastp_status = 'Found, but no good hits'
@@ -82,9 +85,11 @@ for filename in glob.glob('blaster/table_*.tsv'):
 
             if remaining_sequence:
                 # check it's not too many NNN's
-                num_N = len(remaining_sequence) - remaining_sequence.count('n')
-                if num_N < 20:
-                    print('Warning: {0}  masked to <20 Amino acids, skipping'.format(hit['query_name']))
+                num_notN = len(remaining_sequence) - remaining_sequence.count('n')
+                if num_notN < 20:
+                    print('Warning: {0} masked to <20 Amino acids, skipping'.format(hit['query_name']))
+                elif len(remaining_sequence) < 10:
+                    print('Warning: {0} <20 Amino acids, skipping'.format(hit['query_name']))
                 else:
                     res.append({'name': f['name'],
                         'seq': remaining_sequence,
