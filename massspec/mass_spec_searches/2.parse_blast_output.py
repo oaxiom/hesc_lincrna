@@ -13,16 +13,12 @@ for filename in glob.glob('../blast_searches/masked/*.glb'):
     stub = os.path.split(filename)[1].replace('.glb', '').split('-')[1]
     blasta = glload(filename)
 
-    # Parse the FASTA
-    fasta = genelist('../fasta/fasta/{0}.fasta'.format(stub), format=format.fasta)
-    fasta_lookup = {}
-
+    res_fastas = {f['name']: 0 for f in blasta}
     res_peps = []
-    res_fastas  = {} # for each fasta, a
     p = progressbar(len(ms_data))
     for idx, peptide_fragment in enumerate(ms_data):
         #print(peptide_fragment)
-        for f in fasta:
+        for f in blasta:
             if peptide_fragment['seq'] in f['seq']:
                 posl = f['seq'].find(peptide_fragment['seq'])
                 posr = posl + len(peptide_fragment['seq'])
@@ -38,8 +34,6 @@ for filename in glob.glob('../blast_searches/masked/*.glb'):
                     # and match, contect, etc.
                     })
 
-                if f['name'] not in res_fastas:
-                    res_fastas[f['name']] = 0
                 res_fastas[f['name']] += 1
         p.update(idx)
 
