@@ -37,6 +37,8 @@ form = {'query_name': 0,
     'force_tsv': True,
     }
 
+min_length = 50
+
 for filename in glob.glob('blaster/table_*.tsv'):
     stub = os.path.split(filename)[1].replace('.tsv', '')
     blasta = genelist(filename, format=form)
@@ -57,8 +59,8 @@ for filename in glob.glob('blaster/table_*.tsv'):
         query_len = len(f['seq'])
         if f['name'] not in blasta_lookup:
             f['blastp_status'] = 'Not Found'
-            if len(f['seq']) < 10:
-                print('Warning: {0} <20 Amino acids, skipping'.format(hit['query_name']))
+            if len(f['seq']) < min_length:
+                print('Warning: {0} <{1} Amino acids, skipping'.format(hit['query_name'], min_length))
             else:
                 res.append(f) # Full sequence is uniquq
 
@@ -86,10 +88,10 @@ for filename in glob.glob('blaster/table_*.tsv'):
             if remaining_sequence:
                 # check it's not too many NNN's
                 num_notN = len(remaining_sequence) - remaining_sequence.count('n')
-                if num_notN < 20:
-                    print('Warning: {0} masked to <20 Amino acids, skipping'.format(hit['query_name']))
-                elif len(remaining_sequence) < 10:
-                    print('Warning: {0} <20 Amino acids, skipping'.format(hit['query_name']))
+                if num_notN < min_length:
+                    print('Warning: {0} masked to <{1} Amino acids, skipping'.format(hit['query_name'], min_length))
+                elif len(remaining_sequence) < min_length:
+                    print('Warning: {0} <{1} Amino acids, skipping'.format(hit['query_name'], min_length))
                 else:
                     res.append({'name': f['name'],
                         'seq': remaining_sequence,
