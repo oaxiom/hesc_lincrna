@@ -67,7 +67,7 @@ for filename in glob.glob('../blast_searches/masked/*.glb'):
         print(stub)
         print('Number of matching peptides: {0}'.format(len(resgl)))
         num_matches = sum([res_fastas[i]>=1 for i in res_fastas])
-        print('Number of matching genes with >1 peptides: {0} ({1:.1f}%)'.format(num_matches, num_matches/len(resgl)*100))
+        print('Number of matching genes with >=1 peptides: {0} ({1:.1f}%)'.format(num_matches, num_matches/len(resgl)*100))
 
         #for k in sorted(res_fastas):
         #    print('{0}:\t {1}'.format(k, res_fastas[k]))

@@ -93,6 +93,8 @@ for te in res_type:
             data = {te: res_type[te][t], 'noTE': res[t]['nonTE']}
             gldraw.beanplot(filename='by_type/viol_{0}-{1}.png'.format(te, t), data=data,
                 figsize=[2,1.8], beans=False, ylims=[-2.5, 8])
+            gldraw.boxplot(filename='by_type/box_{0}-{1}.png'.format(te, t), data=data,
+                figsize=[2,1.8], beans=False, ylims=[-2.5, 8])
 
 #Below: Split by te_subtype;
 res_type = defaultdict(dict_builder)
@@ -132,4 +134,6 @@ for te in res_type:
         for t in class_dict().keys(): # pc-all, ncrna-all' etc.
             data = {te: res_type[te][t], 'noTE': res[t]['nonTE']}
             gldraw.beanplot(filename='by_tesubtype/viol_{0}-{1}.png'.format(te, t), data=data,
+                figsize=[2,1.8], beans=False, ylims=[-2.5, 8])
+            gldraw.boxplot(filename='by_tesubtype/box_{0}-{1}.png'.format(te, t), data=data,
                 figsize=[2,1.8], beans=False, ylims=[-2.5, 8])

@@ -77,6 +77,7 @@ for gene in all_genes:
 print('Found {0:,} bundles of genes'.format(len(bundles)))
 
 res = {'inframe_insertion': [], # Class 1 # numbers are per-transcript;
+    'frameshift_insertion': [],
     'new_STOP': [], # Class 2
     'new_ATG': [],
     'disrupt_coding': [], # Class 3
@@ -117,6 +118,8 @@ for idx, gene_name in enumerate(bundles):
                 i['tags'] = '='
                 i['coding'] = 'coding'
                 bundles[gene_name].append(i)
+                print(i)
+            #print(bundles[gene_name])
         else:
             #print(gene_name)
             canonical_not_found += 1 # probably non-coding
@@ -153,6 +156,7 @@ for idx, gene_name in enumerate(bundles):
 
             # calls:
             inframe_insertion = False
+            frameshift_insertion = False
             insertion_alternate_cds = False
             new_STOP = False
             new_ATG = False
@@ -180,7 +184,7 @@ for idx, gene_name in enumerate(bundles):
                         elif expected_cds_length in cds_lengths: # It's probably already annotated as contained, and has no effect on the CDS
                             pass # I suppose it could get here by chance, but chances are less than 1 in 1e5 assuming ~1000 bp for both transcript and TE.
                         else: # probably a new CDS
-                            insertion_alternate_cds = True
+                            frameshift_insertion = True
 
                     else: # It is colliding, but extends past the CDS;
                         if t['span'][1] > transcript['cds_local_locs'][1]: # It's STOP the CDS
@@ -197,6 +201,7 @@ for idx, gene_name in enumerate(bundles):
 
                 else: # No collision with the CDS; check it's 5' or 3':
                     # Check that it still contains a CDS of the correct length:
+
                     if expected_cds_length in cds_lengths: # It's a simple insertion 5' or 3':
                         # I know it's not a collision, so just test the edge:
                         if t['span'][1] <= transcript['cds_local_locs'][0]: # 5'
@@ -206,10 +211,12 @@ for idx, gene_name in enumerate(bundles):
                     else:
                         #print(expected_cds_length in cds_lengths, expected_cds_length, sorted(cds_lengths))
                         insertion_alternate_cds = True
+                        # I find this category to be a bit dubious, and almost certainly has too many False+
 
             # transcripts only get called once. Add it here based ona hierarchy:
             # Use the calls above to assign to the preferred classes:
             if inframe_insertion:                                res['inframe_insertion'].append(transcript)
+            elif frameshift_insertion:                           res['frameshift_insertion'].append(transcript)
             elif new_ATG:                                        res['new_ATG'].append(transcript)
             elif new_STOP:                                       res['new_STOP'].append(transcript)
             elif insertion_alternate_cds:                        res['insertion_alternate_cds'].append(transcript)

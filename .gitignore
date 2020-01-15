@@ -15,7 +15,8 @@ __pycache__
 *.fasta
 *.fa.*
 *.fa
-#
+# Specifics
+raw_data/
 hipsci*.txt.gz
 tblout.*
 get_data.sh

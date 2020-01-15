@@ -5,7 +5,7 @@ Measure the expression of TEs by family and then by class, plot a violin and a h
 
 '''
 
-import glob, sys, os, gzip, numpy, math
+import glob, sys, os, gzip, numpy, math, scipy.stats
 import matplotlib
 matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['font.size'] = 6
@@ -17,14 +17,14 @@ import matplotlib.cm as cm
 from glbase3 import glload, utils, expression, genelist, genome_sql, draw, config
 config.draw_mode = ['pdf']
 
-sys.path.append('../../')
+sys.path.append('../../../')
 import shared
 
 draw_type = 'png'
 
-all_genes = glload('../../transcript_assembly/packed/all_genes.glb')
-dfam = genelist('../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
-contains_te = glload('../te_transcripts/transcript_table_merged.mapped.glb')
+all_genes = glload('../../../transcript_assembly/packed/all_genes.glb')
+dfam = genelist('../../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
+contains_te = glload('../../te_transcripts/transcript_table_merged.mapped.glb')
 contains_not_te = contains_te.map(genelist=all_genes, key='transcript_id', logic='notright')
 
 dfam_dict = {}
@@ -94,35 +94,25 @@ for g in contains_te:
 
         res_type[tetype]['all'].append(tpm)
 
-
         if g['coding'] == 'coding':
             res_type[tetype]['pc-all'].append(tpm)
-
-            if ';~' in g['name']:
-                res_type[tetype]['pc-variant'].append(tpm)
-            elif ';=)' in g['name']:
-                res_type[tetype]['pc-known'].append(tpm)
-
         elif g['coding'] == 'noncoding':
             res_type[tetype]['ncrna-all'].append(tpm)
-
-            if ';=' in g['name']:
-                res_type[tetype]['ncrna-known'].append(tpm)
-            elif ';~' in g['name']:
-                res_type[tetype]['ncrna-variant'].append(tpm)
-            elif ';!' in g['name']:
-                res_type[tetype]['ncrna-unknown'].append(tpm)
-
 
 for te in res_type:
     print(te)
     for t in class_dict().keys(): # pc-all, ncrna-all' etc.
         if te in ['SINE', 'LINE', 'LTR', 'Retroposon']:
             data = {te: res_type[te][t], 'noTE': res[t]['nonTE']}
-            gldraw.beanplot(filename='by_type/viol_{0}-{1}.png'.format(te, t), data=data,
-                figsize=[2,1.8], beans=False, ylims=[-2.5, 8])
 
-#Below: Split by te_subtype; not working;
+            p = scipy.stats.mannwhitneyu()
+
+            gldraw.beanplot(filename='by_type/viol_{0}-{1}.png'.format(te, t), data=data,
+                figsize=[2,1.8], beans=False, ylims=[-4, 8])
+            gldraw.boxplot(filename='by_type/box_{0}-{1}.png'.format(te, t), data=data.values(), labels=data.keys(),
+                figsize=[2,1.8], ylims=[-4, 8])
+
+
 res_type = defaultdict(dict_builder)
 gldraw = draw()
 
@@ -160,4 +150,8 @@ for te in res_type:
         for t in class_dict().keys(): # pc-all, ncrna-all' etc.
             data = {te: res_type[te][t], 'noTE': res[t]['nonTE']}
             gldraw.beanplot(filename='by_tesubtype/viol_{0}-{1}.png'.format(te, t), data=data,
-                figsize=[2,1.8], beans=False, ylims=[-2.5, 8])
+                figsize=[2,1.8], beans=False, ylims=[-4, 8])
+            gldraw.boxplot(filename='by_tesubtype/box_{0}-{1}.png'.format(te, t), data=data.values(), labels=data.keys(),
+                figsize=[2,1.8], ylims=[-4, 8])
+
+\
