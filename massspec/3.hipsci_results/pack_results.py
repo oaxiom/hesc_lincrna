@@ -1,12 +1,13 @@
 
 import glob
 from glbase3 import *
+import gzip as gzipfile
 
 res_peps = {} # Peptides that pass
 res_genes = [] # Genes that pass
 
-for filename in glob.glob('PT*.tsv'):
-    oh = open(filename)
+for filename in glob.glob('PT*.tsv.gz'):
+    oh = gzipfile.open(filename, 'rt')
     print(filename)
 
     for idx, line in enumerate(oh):

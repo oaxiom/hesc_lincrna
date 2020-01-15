@@ -75,7 +75,7 @@ for filename in glob.glob('blaster/table_*.tsv'):
                     print('Warning: {0} 100% blast match, skipping'.format(hit['query_name']))
                     remaining_sequence = None
                     break
-                if hit['pident'] > 90.0:
+                if hit['pident'] > 95.0:
                     # I just keep masking it from all the hits
                     hit_len = ''.join(['n'] * (hit['match_len']-1))
                     remaining_sequence = remaining_sequence[0:hit['qstart']] + hit_len + remaining_sequence[hit['qend']:]
@@ -95,8 +95,8 @@ for filename in glob.glob('blaster/table_*.tsv'):
                 elif len(remaining_sequence) < min_length:
                     print('Warning: {0} <{1} Amino acids, skipping'.format(hit['query_name'], min_length))
                 else:
-                    # Often the starting M fails to get masked;
-                    if remaining_sequence[0] == 'M':
+                    # Sometimes the starting M fails to get masked;
+                    if remaining_sequence[0:2] == 'Mn':
                         remaining_sequence = remaining_sequence[1:]
                     res.append({'name': f['name'],
                         'seq': remaining_sequence,
@@ -105,7 +105,23 @@ for filename in glob.glob('blaster/table_*.tsv'):
                     # save a version for DB searching
                     if 'no_disruption' not in stub and 'class_not_found' not in stub:
                         oh_all_seqs.write('>{0}|{1}\n'.format(stub, f['name']))
-                        oh_all_seqs.write(''.join([a for a in remaining_sequence if a not in ('_', 'n')]))
+
+                        # tr -s 'n', and replace with a '-' to signify a gap, and stop the ability to search back across peptides that have a matching segment(s) in the middle.
+                        squeeze_ns = [] # probably a 1-liner could do this...
+                        last = None
+                        for c in remaining_sequence:
+                            if last == 'n':
+                                last = c
+                                continue
+                            last = c
+                            to_add = c
+                            if to_add == 'n':
+                                to_add = '-'
+                            squeeze_ns.append(to_add)
+
+                        print(squeeze_ns)
+                        if squeeze_ns[0] == '-': squeeze_ns =squeeze_ns[1:]
+                        oh_all_seqs.write(''.join([a for a in squeeze_ns if a not in ('_')]))
                         oh_all_seqs.write('\n')
 
     if res:
