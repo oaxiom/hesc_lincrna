@@ -9,6 +9,7 @@ from glbase3 import *
 import matplotlib.pyplot as plot
 
 res = {}
+'''
 for filename in glob.glob('mass_spec_searches/per_transcript_hits*.tsv'):
     if 'prime' in filename:
         continue
@@ -19,14 +20,46 @@ for filename in glob.glob('mass_spec_searches/per_transcript_hits*.tsv'):
     num_hits = sum([i>=1 for i in pep_hits['hits']])
 
     res[stub] = [num_hits, len(pep_hits)]
+'''
 
-fig = plot.figure(figsize=[2.5,1.4])
+all_matches = glload('hipsci_results/results_gene.glb')
+
+print(all_matches)
+# I need to get tables for all of the peptides put into the search
+
+res_per_gene = {}
+for filename in glob.glob('2.blast_searches/masked/*.glb'):
+    if 'prime' in filename:
+        continue
+    if 'class' in filename:
+        continue
+    stub = os.path.split(filename)[1].replace('.glb', '').split('-')[1]
+    pep_hits = glload(filename).getColumns(['name'])
+
+    res_per_gene[stub] = {k: 0 for k in pep_hits['name']}
+
+for transcript in all_matches:
+    full_name = '|'.join([transcript['name'], transcript['transcript_id'], transcript['enst']])
+    res_per_gene[transcript['class']][full_name] += 1
+
+res = {}
+# final result histogram
+for stub in res_per_gene:
+    pep_hits = res_per_gene[stub].keys()
+    num_hits = sum([i>=1 for i in res_per_gene[stub].values()])
+
+    res[stub] = [num_hits, len(pep_hits)]
+print(res)
+
+fig = plot.figure(figsize=[5,1.4])
+fig.subplots_adjust(left=0.5)
 ax = fig.add_subplot(111)
-ax
+
 ys = numpy.arange(len(res))
 
 print(res.keys())
-order = ['table_new_STOP', 'table_new_ATG', 'table_frameshift_insertion',  ] # bottom to top
+order = ['table_insertion_alternate_cds', 'table_new_STOP', 'table_new_ATG', 'table_frameshift_insertion',
+    ] # bottom to top
 
 num_hits = numpy.array([res[k][0] for k in order])
 len_hits = numpy.array([res[k][1] for k in order]) # starts at 0 so no need to subtract
@@ -38,13 +71,12 @@ ax.barh(ys, len_hits)
 
 ax.barh(ys, num_hits)
 print(res.keys())
-ax.set_xlabel('Number of proteins with >50 Amino acids')
+ax.set_xlabel('Number of proteins with >20 Amino acids')
 ax.set_yticks(ys)
 ax.set_yticklabels(order)
 
 for y, p, x in zip(ys, percs, num_hits):
     ax.text(x+4, y, s='{:.1f}%'.format(p), va='center')
-
 
 fig.savefig('summary.png')
 fig.savefig('summary.pdf')
