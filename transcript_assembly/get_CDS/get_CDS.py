@@ -102,7 +102,7 @@ gencode = glload('gencode_cds.glb')
 gencode_map = {gene['enst']:gene for gene in gencode}
 newl = []
 for gene in newd:
-    enst = gene['enst'].split('.')[0]
+    enst = gene['enst']
     if enst in gencode_map and ';=)' in gene['name']:
         gencode_cds = gencode_map[enst]['cds_local_locs']
         gene['cds_local_locs'] = gencode_cds

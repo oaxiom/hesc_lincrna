@@ -94,27 +94,28 @@ def draw_density_utrs(filename, dataset_dict, TE=None):
 
     for glk in dataset_dict:
         for n, gene in enumerate(dataset_dict[glk]):
-            #print(gene)
             # scale the TE to the mRNA
-            pos = shared.convert_genocode_to_local(gene) # return 0, tlength, cdsl, cdsr, splice_sites
-            #print(pos)
+            pos = gene['cds_local_locs'] # return 0, tlength, cdsl, cdsr, splice_sites
 
-            if pos[2] == pos[3]:
+            if pos[0] == pos[1]:
                 # Bad CDS, skip this one;
                 continue
 
+            if 'tlength' not in gene:
+                gene['tlength'] = shared.get_transcript_length(gene)
+            print(gene)
+
             utr5_l = 0
-            utr5_r = pos[2]
+            utr5_r = pos[0]
 
-            cds_l = pos[2]
-            cds_r = pos[3]
-            cds_len  = pos[3] - pos[2]
+            cds_l = pos[0]
+            cds_r = pos[1]
+            cds_len  = pos[1] - pos[0]
 
-            utr3_l = pos[3]
-            utr3_r = pos[1]
-            utr3_len = (pos[1] - pos[3]) +1 # in case some utr = 0
-
-            tlen = len(gene['loc'])
+            utr3_l = pos[1]
+            utr3_r = gene['tlength']
+            utr3_len = (utr3_r - utr3_l)+1 # in case some utr = 0
+            print(utr3_len)
 
             for d in gene['doms']:
                 if TE:
@@ -137,8 +138,8 @@ def draw_density_utrs(filename, dataset_dict, TE=None):
                     data[glk]['cds'][ls:le] += 1
                     #print('Add CDS')
                 if e > utr3_l:
-                    ls = max([math.floor((s-utr3_l) / utr3_len * 1000), 0])
-                    le = min([math.ceil((e-utr3_l) / utr3_len * 1000), 1000])
+                    ls = max([math.floor((s-utr3_l) / (utr3_len * 1000)), 0])
+                    le = min([math.ceil((e-utr3_l) / (utr3_len * 1000)), 1000])
                     data[glk]['utr3'][ls:le] += 1
                     #print("Add 3'UTR")
 

@@ -223,15 +223,10 @@ def get_transcript_length(gencode):
     '''
     # Work out the mRNA length from the gene length and the exons and Es:
     tlength = 0
-    currpos = gencode['loc']['left'] # transcript position in genomic coords
-    splice_sites = []
-    newcdsl = 0 ; newcdsr = 0
     for splice in zip(gencode['exonStarts'], gencode['exonEnds']):
         tlength += (splice[1]-splice[0])
-        currpos = splice[1]
-        splice_sites.append(tlength)
 
-    splice_sites = splice_sites[:-1] # last one is the termination;
+    tlength = tlength + (gencode['loc']['right'] - splice[1]) # add the last segment
 
     return tlength
 

@@ -17,45 +17,60 @@ import shared_draw
 draw = 'png'
 
 doms = glload('../../te_transcripts/transcript_table_merged.mapped.glb')
-
-print(doms)
-
 dfam = genelist('../../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
-doms = doms.map(genelist=gencode_sliced, key='enst') # You can't do this. CDS locations are not garunteed to be accurate
+cds = glload('../../../transcript_assembly/get_CDS/coding_genes_with_local_CDS-corrected.glb')
+cds = {i['name']: i for i in cds}
+newl = []
+#for g in doms:
+#    g['enst'] = g['enst'].split('.')[0]
+#    newl.append(g)
+#doms.load_list(newl)
+gencode = glload('../../../transcript_assembly/get_CDS/gencode_cds.glb').map(genelist=doms, key='enst')
 
-gencode_cds = glload('../../transcript_assembly/get_CDS/gencode_cds.glb')
-gencode_cds = {i['']: }
+print(gencode)
+print(doms)
 
 # preprocss the doms list to remove non-coding genes;
 newdoms = []
 
-type = {'known': [], 'novel': []}
+type = {'all': [], 'known': [], 'novel': []}
 
 for gene in doms:
     if gene['coding'] == 'noncoding':
         continue
-    if ';~' in gene['name']: # CDS locations are not accurate in these; Can I get them from FEELnc?
+
+    if '!' in gene['tags']: # I am not considering these, as they look dubious;
+        continue
+
+    if gene['name'] not in cds:
+        print('Warning {0} not found'.format(gene['name']))
+        continue
+    gene['cds_local_locs'] = cds[gene['name']]['cds_local_locs']
+
+    if gene['cds_local_locs'][0] == gene['cds_local_locs'][1]: # I am unsure about the cds_loc;
+        continue
+
+    if '=' in gene['tags']:
+        type['known'].append(gene)
+    if '~' in gene['tags']: # CDS locations are not accurate in these; Can I get them from FEELnc?
         type['novel'].append(gene)
-        continue
-    if len(gene['cds_loc']) == 0:
-        continue
 
-    type['known'].append(gene)
+    type['all'].append(gene)
 
-gltypes = {'known': genelist(), 'novel': genelist()}
+gltypes = {'known': genelist(), 'novel': genelist(), 'all': genelist()}
 [gltypes[k].load_list(type[k]) for k in gltypes]
 print(gltypes)
 
 dataset_all = {
-    'GENCODE': gencode_sliced,
+    'GENCODE': gencode,
     'ES-': doms.get(key='expression', value='depleted'),
     'ES:': doms.get(key='expression', value='unbiased'),
     'ES+': doms.get(key='expression', value='enriched'),
     }
 
-for t in ['known']: # Novel is currently empty;
+for t in ['known', 'novel', 'all']: # Novel is currently empty;
     dataset = {
-        'GENCODE': dataset_all['GENCODE'].map(key='enst', genelist=gltypes[t]),
+        'GENCODE': dataset_all['GENCODE'], #.map(key='enst', genelist=gltypes[t]),
         'ES-': dataset_all['ES-'].map(key='enst', genelist=gltypes[t]),
         'ES:': dataset_all['ES:'].map(key='enst', genelist=gltypes[t]),
         'ES+': dataset_all['ES+'].map(key='enst', genelist=gltypes[t]),

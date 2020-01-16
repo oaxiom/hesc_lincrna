@@ -19,7 +19,7 @@ for fasta in fastas:
     enst = fasta['name'].split('|')
     cds = [i for i in enst if 'CDS:' in i][0].split(':')[1].split('-')
     cds = (int(cds[0])-1, int(cds[1]))
-    newl.append({'enst': enst[0].split('.')[0], 'cds_local_locs': (cds[0], cds[1]), 'tlength': len(fasta['seq'])})
+    newl.append({'enst': enst[0], 'cds_local_locs': (cds[0], cds[1]), 'tlength': len(fasta['seq'])})
 
     if fasta['seq'][cds[0]:cds[0]+3] != 'ATG':
         print('! Warning: {0} does not have an ATG'.format(fasta['name']))
