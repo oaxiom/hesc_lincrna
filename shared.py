@@ -275,6 +275,33 @@ def split3(s):
 def translateAA(seq):
     return [table[codon.upper()] for codon in split3(seq)]
 
+def nice_scatter(x=None, y=None, filename=None, do_best_fit_line=False, spot_cols='grey',
+    print_correlation=False, spot_size=4, label_fontsize=14, label=False,
+    **kargs):
+    """
+    **Purpose**
+        Draw a nice simple scatter plot
+
+        Extended from glbase3
+    """
+    from glbase3 import draw
+
+    draw = draw()
+
+    fig = draw.getfigure(**kargs)
+    ax = fig.add_subplot(111)
+
+    ax.scatter(x, y, s=spot_size, c=spot_cols, alpha=0.2, edgecolors="none")
+
+    if label:
+        for x, y, t in zip(x, y, label):
+            if y > 1.301: # q=0.05
+                ax.text(x, y, t, fontsize=5)
+
+    draw.do_common_args(ax, **kargs)
+
+    return(draw.savefigure(fig, filename))
+
 if __name__ == '__main__':
     import matplotlib.pyplot as plot
 

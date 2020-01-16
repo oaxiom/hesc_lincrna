@@ -15,6 +15,8 @@ __pycache__
 *.fasta
 *.fa.*
 *.fa
+PT*.tsv.gz
+
 # Specifics
 raw_data/
 hipsci*.txt.gz

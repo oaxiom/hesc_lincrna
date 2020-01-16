@@ -154,4 +154,4 @@ for te in res_type:
             gldraw.boxplot(filename='by_tesubtype/box_{0}-{1}.png'.format(te, t), data=data.values(), labels=data.keys(),
                 figsize=[2,1.8], ylims=[-4, 8])
 
-\
+
