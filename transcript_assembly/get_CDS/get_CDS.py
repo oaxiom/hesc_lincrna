@@ -84,6 +84,7 @@ for f in fastas:
 
     if status:
         f['cds_local_locs'] = (cdsl, cdsr)
+        f['tlength'] = len(f['seq'])
         del f['seq']
         newl.append(f)
     else:

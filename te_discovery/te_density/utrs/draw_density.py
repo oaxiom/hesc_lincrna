@@ -19,16 +19,13 @@ draw = 'png'
 doms = glload('../../te_transcripts/transcript_table_merged.mapped.glb')
 dfam = genelist('../../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
 cds = glload('../../../transcript_assembly/get_CDS/coding_genes_with_local_CDS-corrected.glb')
-cds = {i['name']: i for i in cds}
+cds = {i['transcript_id']: i for i in cds}
 newl = []
 #for g in doms:
 #    g['enst'] = g['enst'].split('.')[0]
 #    newl.append(g)
 #doms.load_list(newl)
 gencode = glload('../../../transcript_assembly/get_CDS/gencode_cds.glb').map(genelist=doms, key='enst')
-
-print(gencode)
-print(doms)
 
 # preprocss the doms list to remove non-coding genes;
 newdoms = []
@@ -42,10 +39,12 @@ for gene in doms:
     if '!' in gene['tags']: # I am not considering these, as they look dubious;
         continue
 
-    if gene['name'] not in cds:
-        print('Warning {0} not found'.format(gene['name']))
+    if gene['transcript_id'] not in cds:
+        print('Warning {0} not found'.format(gene['transcript_id']))
         continue
-    gene['cds_local_locs'] = cds[gene['name']]['cds_local_locs']
+
+    gene['cds_local_locs'] = cds[gene['transcript_id']]['cds_local_locs']
+    gene['tlength'] = cds[gene['transcript_id']]['tlength']
 
     if gene['cds_local_locs'][0] == gene['cds_local_locs'][1]: # I am unsure about the cds_loc;
         continue
@@ -59,7 +58,6 @@ for gene in doms:
 
 gltypes = {'known': genelist(), 'novel': genelist(), 'all': genelist()}
 [gltypes[k].load_list(type[k]) for k in gltypes]
-print(gltypes)
 
 dataset_all = {
     'GENCODE': gencode,
@@ -68,7 +66,7 @@ dataset_all = {
     'ES+': doms.get(key='expression', value='enriched'),
     }
 
-for t in ['known', 'novel', 'all']: # Novel is currently empty;
+for t in ['known', 'novel', 'all']:
     dataset = {
         'GENCODE': dataset_all['GENCODE'], #.map(key='enst', genelist=gltypes[t]),
         'ES-': dataset_all['ES-'].map(key='enst', genelist=gltypes[t]),

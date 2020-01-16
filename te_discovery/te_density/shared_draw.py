@@ -101,9 +101,8 @@ def draw_density_utrs(filename, dataset_dict, TE=None):
                 # Bad CDS, skip this one;
                 continue
 
-            if 'tlength' not in gene:
-                gene['tlength'] = shared.get_transcript_length(gene)
-            print(gene)
+            #if 'tlength' not in gene:
+            #    gene['tlength'] = shared.get_transcript_length(gene)
 
             utr5_l = 0
             utr5_r = pos[0]
@@ -114,8 +113,8 @@ def draw_density_utrs(filename, dataset_dict, TE=None):
 
             utr3_l = pos[1]
             utr3_r = gene['tlength']
-            utr3_len = (utr3_r - utr3_l)+1 # in case some utr = 0
-            print(utr3_len)
+            utr3_len = (utr3_r - utr3_l) # in case some utr = 0
+            #print(utr5_l, utr5_r, pos, utr3_l, utr3_r, utr3_len)
 
             for d in gene['doms']:
                 if TE:
@@ -137,16 +136,16 @@ def draw_density_utrs(filename, dataset_dict, TE=None):
                     le = min([math.ceil((e-cds_l) / cds_len * 1000), 1000])
                     data[glk]['cds'][ls:le] += 1
                     #print('Add CDS')
-                if e > utr3_l:
-                    ls = max([math.floor((s-utr3_l) / (utr3_len * 1000)), 0])
-                    le = min([math.ceil((e-utr3_l) / (utr3_len * 1000)), 1000])
+                if utr3_len > 1 and e > utr3_l: # there are a bunch of messages with UTR3' = 1
+                    ls = max([math.floor((s-utr3_l) / utr3_len * 1000), 0])
+                    le = min([math.ceil((e-utr3_l) / utr3_len * 1000), 1000])
                     data[glk]['utr3'][ls:le] += 1
                     #print("Add 3'UTR")
 
                 #print(ls, le)
                 #print()
 
-            if (n+1) % 1000 == 0:
+            if (n+1) % 10000 == 0:
                 print('Processed: {:,} transcripts'.format(n+1))
 
     fig = plot.figure(figsize=[2.8,1.3])
