@@ -130,23 +130,17 @@ def draw_density_utrs(filename, dataset_dict, TE=None):
                     ls = max([math.floor(s / utr5_r * 1000), 0])
                     le = min([math.ceil(e / utr5_r * 1000), 1000])
                     data[glk]['utr5'][ls:le] += 1
-                    #print("Add 5'UTR")
                 if e >= cds_l and s <= cds_r:
                     ls = max([math.floor((s-cds_l) / cds_len * 1000), 0])
                     le = min([math.ceil((e-cds_l) / cds_len * 1000), 1000])
                     data[glk]['cds'][ls:le] += 1
-                    #print('Add CDS')
                 if utr3_len > 1 and e > utr3_l: # there are a bunch of messages with UTR3' = 1
                     ls = max([math.floor((s-utr3_l) / utr3_len * 1000), 0])
                     le = min([math.ceil((e-utr3_l) / utr3_len * 1000), 1000])
                     data[glk]['utr3'][ls:le] += 1
-                    #print("Add 3'UTR")
 
-                #print(ls, le)
-                #print()
-
-            if (n+1) % 10000 == 0:
-                print('Processed: {:,} transcripts'.format(n+1))
+    if max([max([data[k]['utr5'].max(), data[k]['cds'].max(), data[k]['utr3'].max()]) for k in dataset_dict]) < 10:
+        return
 
     fig = plot.figure(figsize=[2.8,1.3])
     fig.subplots_adjust(left=0.15, right=0.65, bottom=0.35,)
@@ -175,10 +169,12 @@ def draw_density_utrs(filename, dataset_dict, TE=None):
     ax2.set_ylim([0, ymax])
     ax2.set_yticklabels('', fontsize=6)
     ax2.set_xticklabels('')
+    ax2.tick_params(left=False)
 
     ax3.set_ylim([0, ymax])
     ax3.set_yticklabels('')
     ax3.set_xticklabels('')
+    ax3.tick_params(left=False)
 
     ax3.legend()
     plot.legend(loc='upper left', bbox_to_anchor=(1.1, 0.8), prop={'size': 6})

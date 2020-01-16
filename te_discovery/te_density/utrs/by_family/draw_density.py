@@ -9,23 +9,23 @@ import glob, sys, os, gzip, numpy, math
 import matplotlib.pyplot as plot
 from glbase3 import glload, utils, expression, genelist, genome_sql
 
-sys.path.append('../../../')
+sys.path.append('../../../../')
 import shared
-sys.path.append('../')
+sys.path.append('../../')
 import shared_draw
 
 draw = 'png'
 
-doms = glload('../../te_transcripts/transcript_table_merged.mapped.glb')
-dfam = genelist('../../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
-cds = glload('../../../transcript_assembly/get_CDS/coding_genes_with_local_CDS-corrected.glb')
+doms = glload('../../../te_transcripts/transcript_table_merged.mapped.glb')
+dfam = genelist('../../../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
+cds = glload('../../../../transcript_assembly/get_CDS/coding_genes_with_local_CDS-corrected.glb')
 cds = {i['transcript_id']: i for i in cds}
 newl = []
 #for g in doms:
 #    g['enst'] = g['enst'].split('.')[0]
 #    newl.append(g)
 #doms.load_list(newl)
-gencode = glload('../../../transcript_assembly/get_CDS/gencode_cds.glb').map(genelist=doms, key='enst')
+gencode = glload('../../../../transcript_assembly/get_CDS/gencode_cds.glb').map(genelist=doms, key='enst')
 
 # preprocss the doms list to remove non-coding genes;
 newdoms = []
@@ -51,7 +51,7 @@ for gene in doms:
 
     if '=' in gene['tags']:
         type['known'].append(gene)
-    if '~' in gene['tags']: # CDS locations are not accurate in these; Can I get them from FEELnc?
+    if '~' in gene['tags']:
         type['novel'].append(gene)
 
     type['all'].append(gene)
@@ -67,6 +67,11 @@ dataset_all = {
     }
 
 for t in ['known', 'novel', 'all']:
+    if os.path.exists(t):
+        [os.remove(f) for f in glob.glob('{0}/*.p*'.format(t))]
+    else:
+        os.mkdir(t)
+
     dataset = {
         'GENCODE': dataset_all['GENCODE'], #.map(key='enst', genelist=gltypes[t]),
         'ES-': dataset_all['ES-'].map(key='enst', genelist=gltypes[t]),
@@ -89,5 +94,5 @@ for t in ['known', 'novel', 'all']:
         type_subtype[t_s].append(TE['name'])
 
     for ts in type_subtype:
-        shared_draw.draw_density_utrs('by_te_family/all_genes_{0}-{1}.png'.format(t, ts,), dataset, set(type_subtype[ts]))
+        shared_draw.draw_density_utrs('{0}/all_genes_{0}-{1}.png'.format(t, ts,), dataset, set(type_subtype[ts]))
 

@@ -36,6 +36,13 @@ def class_dict():
     return {
         'pc-all': {'TE': [], 'nonTE': []},
         'ncrna-all': {'TE': [], 'nonTE': []},
+
+        'pc-known': {'TE': [], 'nonTE': []},
+        'pc-variant': {'TE': [], 'nonTE': []},
+
+        'ncrna-known': {'TE': [], 'nonTE': []},
+        'ncrna-variant': {'TE': [], 'nonTE': []},
+        'ncrna-unknown': {'TE': [], 'nonTE': []},
         }
 
 def dict_builder():
@@ -51,8 +58,21 @@ for datatype in data:
 
         if g['coding'] == 'coding':
             res['pc-all'][datatype].append(tpm)
+
+            if ';~' in g['name']:
+                res['pc-variant'][datatype].append(tpm)
+            elif ';=)' in g['name']:
+                res['pc-known'][datatype].append(tpm)
+
         elif g['coding'] == 'noncoding':
             res['ncrna-all'][datatype].append(tpm)
+
+            if ';=' in g['name']:
+                res['ncrna-known'][datatype].append(tpm)
+            elif ';~' in g['name']:
+                res['ncrna-variant'][datatype].append(tpm)
+            elif ';!' in g['name']:
+                res['ncrna-unknown'][datatype].append(tpm)
 
 #Below: Split by te_family;
 res_type = defaultdict(dict_builder)
@@ -66,16 +86,36 @@ for g in contains_te:
 
         if g['coding'] == 'coding':
             res_type[full_name]['pc-all'].append(tpm)
+
+            if ';~' in g['name']:
+                res_type[full_name]['pc-variant'].append(tpm)
+            elif ';=)' in g['name']:
+                res_type[full_name]['pc-known'].append(tpm)
+
         elif g['coding'] == 'noncoding':
             res_type[full_name]['ncrna-all'].append(tpm)
 
-p_scatter = {'pc-all': [], 'ncrna-all': []}
+            if ';=' in g['name']:
+                res_type[full_name]['ncrna-known'].append(tpm)
+            elif ';~' in g['name']:
+                res_type[full_name]['ncrna-variant'].append(tpm)
+            elif ';!' in g['name']:
+                res_type[full_name]['ncrna-unknown'].append(tpm)
+
+p_scatter = {
+    'pc-all': [], 'ncrna-all': [],
+    'pc-known': [],
+    'pc-variant': [],
+
+    'ncrna-known': [],
+    'ncrna-variant': [],
+    'ncrna-unknown': [],
+    }
 
 for te in sorted(res_type):
     for t in class_dict().keys(): # pc-all, ncrna-all' etc.
         if True in [typ in te for typ in ['SINE', 'LINE', 'LTR', 'Retroposon']]:
             data = {te: res_type[te][t], 'noTE': res[t]['nonTE']}
-            #print(data)
 
             if len(data[te]) <= 20:
                 continue
