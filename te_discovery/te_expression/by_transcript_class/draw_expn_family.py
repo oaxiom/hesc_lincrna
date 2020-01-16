@@ -104,9 +104,9 @@ for t in class_dict().keys():
     gl.saveTSV('tab_{0}.tsv'.format(t), key_order=['name', 'p', 'q'])
 
     spot_cols = []
-    for q, M in zip(gl['q'], gl['M']):
-        if q < 1.301: # q=0.05
-            if M < 0.58: #~1.5 fold
+    for q, M in zip(gl['-log10q'], gl['M']):
+        if q > 1.301: # q=0.05
+            if M > 0.58: #~1.5 fold
                 spot_cols.append('red')
             elif M <-0.58:
                 spot_cols.append('blue')
@@ -115,9 +115,11 @@ for t in class_dict().keys():
         else:
             spot_cols.append('grey')
 
+    config.draw_mode = 'svg'
     shared.nice_scatter(y=gl['-log10q'], x=gl['M'], figsize=[2,2], spot_size=12,
         spot_cols=spot_cols,
         filename='MA-{0}.png'.format(t), label=gl['name'], hlines=[1.301], vlines=[0])
+    config.draw_mode = 'pdf'
 
     if os.path.exists(t):
         [os.remove(f) for f in glob.glob('{0}/*.pdf'.format(t))]
