@@ -271,7 +271,7 @@ def translateAA(seq):
     return [table[codon.upper()] for codon in split3(seq)]
 
 def nice_scatter(x=None, y=None, filename=None, do_best_fit_line=False, spot_cols='grey',
-    print_correlation=False, spot_size=4, label_fontsize=14, label=False,
+    print_correlation=False, spot_size=4, label_fontsize=14, label=False, label_t=1.301,
     **kargs):
     """
     **Purpose**
@@ -290,7 +290,7 @@ def nice_scatter(x=None, y=None, filename=None, do_best_fit_line=False, spot_col
 
     if label:
         for x, y, t in zip(x, y, label):
-            if y > 1.301: # q=0.05
+            if y > label_t: # q=0.05
                 ax.text(x, y, t, fontsize=5)
 
     draw.do_common_args(ax, **kargs)
