@@ -171,8 +171,10 @@ for t in class_dict().keys():
         if te['q'] < 0.05:
             data = {te['name']: res_type[te['name']][t], 'noTE': res[t]['nonTE']}
             gldraw.boxplot(filename='{0}/box_{1}-{2}.png'.format(t, te['name'], t), data=data.values(), labels=data.keys(),
-                figsize=[2,1.8], ylims=[-4, 8], title='q={0:.2e} n={1}'.format(te['q'], te['n']))
+                figsize=[2,1.8], ylims=[-4, 8], title='q={0:.2e} n={1}'.format(te['q'], te['n']),
+                showfliers=False)
         if True in [i in te['name'] for i in ('HERVH', 'HERVFH21', 'LTR7', 'AluSp', 'AluY', 'HERVK')]:
             data = {te['name']: res_type[te['name']][t], 'noTE': res[t]['nonTE']}
             gldraw.boxplot(filename='{0}-box_{1}-{2}.png'.format(t, te['name'], t), data=data.values(), labels=data.keys(),
-                figsize=[2,1.8], ylims=[-4, 8], title='q={0:.2e} n={1}'.format(te['q'], te['n']))
+                figsize=[2,1.8], ylims=[-4, 8], title='q={0:.2e} n={1}'.format(te['q'], te['n']),
+                showfliers=False)

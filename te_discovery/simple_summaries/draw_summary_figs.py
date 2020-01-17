@@ -41,14 +41,14 @@ data = {
 pies.split_bar('bar-pc.png', data, key_order=['TE', 'nonTE'], cols=['#ff7f0e', '#1f77b4']) #, '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'])
 
 data = {
-    'pc-variant-TE': expn['pc-variant-TE'],
-    'pc-variant-noTE': expn['pc-variant-noTE'],
+    'Variant with TE': expn['pc-variant-TE'],
+    'Variant no TE': expn['pc-variant-noTE'],
 
-    'pc-known-TE': expn['pc-known-TE'],
-    'pc-known-noTE': expn['pc-known-noTE'],
+    'Known with TE': expn['pc-known-TE'],
+    'Known no TE': expn['pc-known-noTE'],
 
-    'pc-all-TE': expn['pc-all-TE'],
-    'pc-all-noTE': expn['pc-all-noTE'],
+    #'pc-all-TE': expn['pc-all-TE'],
+    #'pc-all-noTE': expn['pc-all-noTE'],
     }
 
 pies.split_bar('bar-expn-pc.png', data, key_order=['ES+', 'ES:', 'ES-'], cols=['#d62728', '#2ca02c', '#ff7f0e', ]) #, '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'])
@@ -60,3 +60,28 @@ data = {
     }
 
 pies.split_bar('bar-te-by-expn-pc.png', data, key_order=['TE', 'nonTE'], cols=['#ff7f0e', '#1f77b4' ]) #, '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'])
+
+# And the ncrna versions:
+data = {
+    'Novel with TE': expn['ncrna-unknown-TE'],
+    'Novel no TE': expn['ncrna-unknown-noTE'],
+
+    'Variant with TE': expn['ncrna-variant-TE'],
+    'Variant no TE': expn['ncrna-variant-noTE'],
+
+    'Known with TE': expn['ncrna-known-TE'],
+    'Known no TE': expn['ncrna-known-noTE'],
+
+    #'ncrna-all-TE': expn['ncrna-all-TE'],
+    #'ncrna-all-noTE': expn['ncrna-all-noTE'],
+    }
+
+pies.split_bar('bar-expn-ncrna.png', data, key_order=['ES+', 'ES:', 'ES-'], cols=['#d62728', '#2ca02c', '#ff7f0e', ]) #, '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'])
+
+data = {
+    'hPSC-depleted': expn2['ncrna-ES-'],
+    'hPSC-unbiased': expn2['ncrna-ES:'],
+    'hPSC-enriched': expn2['ncrna-ES+'],
+    }
+
+pies.split_bar('bar-te-by-expn-ncrna.png', data, key_order=['TE', 'nonTE'], cols=['#ff7f0e', '#1f77b4' ]) #, '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'])
