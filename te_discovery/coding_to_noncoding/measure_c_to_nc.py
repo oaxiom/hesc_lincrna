@@ -1,5 +1,7 @@
 import sys, os
 from glbase3 import *
+import matplotlib.pyplot as plot
+
 
 # These have the official GENCODE CDS, and the predicted (about ~80% accurate)
 all_genes = glload('../../transcript_assembly/packed/all_genes.glb')
@@ -11,7 +13,7 @@ tes = {gene['transcript_id']: gene for gene in tes}
 # First I need to bundle them up by their name;
 bundles = {}
 for gene in all_genes:
-    symbol = gene['name'].split(' ')[0]
+    symbol = gene['name'].split(' ')[0].strip()
 
     if symbol not in bundles:
         bundles[symbol] = []
@@ -33,7 +35,20 @@ for gene in all_genes:
 
     bundles[symbol].append(gene)
 
-print('Found {0:,} bundles of genes'.format(len(bundles)))
+print('Found {0:,} genes'.format(len(bundles)))
+bundles = {b: bundles[b] for b in bundles if len(bundles[b]) > 1}
+print('Found {0:,} genes with >1 transcript'.format(len(bundles)))
+transcript_variants_per_gene = [len(bundles[gene]) for gene in bundles]
+# limit to 10+
+transcript_variants_per_gene = [min(b, 11) for b in transcript_variants_per_gene]
+
+# histogram;
+fig = plot.figure()
+ax = fig.add_subplot(111)
+n, bins, patches = ax.hist(transcript_variants_per_gene, max(transcript_variants_per_gene), facecolor='blue', alpha=0.5)
+ax.set_xlim([0, 11])
+fig.savefig('trasncripts_per_gene.png')
+
 
 # Okay, now we check each bundle has at least 1 CDS:
 newbundles = {}
@@ -42,7 +57,7 @@ for b in bundles:
     has_noncoding = False
     for gene in bundles[b]:
         if gene['coding'] == 'coding':
-            has_coding =True
+            has_coding = True
         if gene['coding'] == 'noncoding':
             has_noncoding = True
 
