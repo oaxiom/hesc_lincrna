@@ -26,7 +26,7 @@ all_genes = glload('../../../transcript_assembly/packed/all_genes.glb')
 dfam = genelist('../../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
 contains_te = glload('../../te_transcripts/transcript_table_merged.mapped.glb')
 contains_not_te = contains_te.map(genelist=all_genes, key='transcript_id', logic='notright')
-
+contains_not_te.saveTSV('notTE.tsv')
 dfam_dict = {}
 for te in dfam:
     dfam_dict[te['name']] = '{0}:{1}:{2}'.format(te['type'], te['subtype'], te['name'])

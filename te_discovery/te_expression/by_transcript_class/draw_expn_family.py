@@ -48,7 +48,7 @@ def class_dict():
 def dict_builder():
     return {k: [] for k in class_dict()}
 
-data = {'TE': contains_te, 'nonTE': contains_not_te}
+data = {'nonTE': contains_not_te}
 res = class_dict()
 
 # Fill the data tables
@@ -61,7 +61,7 @@ for datatype in data:
 
             if ';~' in g['name']:
                 res['pc-variant'][datatype].append(tpm)
-            elif ';=)' in g['name']:
+            elif ';=' in g['name']:
                 res['pc-known'][datatype].append(tpm)
 
         elif g['coding'] == 'noncoding':
@@ -79,9 +79,11 @@ res_type = defaultdict(dict_builder)
 gldraw = draw()
 
 for g in contains_te:
-    for d in g['doms']:
-        tpm = math.log2(g['TPM']+0.1)
-        TE = d['dom']
+    # Get a unique set of dom names to stop double counting;
+    unq_doms = set([d['dom'] for d in g['doms']])
+    tpm = math.log2(g['TPM']+0.1)
+    for TE in unq_doms:
+        
         full_name = dfam_dict[TE]
 
         if g['coding'] == 'coding':
@@ -89,7 +91,7 @@ for g in contains_te:
 
             if ';~' in g['name']:
                 res_type[full_name]['pc-variant'].append(tpm)
-            elif ';=)' in g['name']:
+            elif ';=' in g['name']:
                 res_type[full_name]['pc-known'].append(tpm)
 
         elif g['coding'] == 'noncoding':
@@ -121,13 +123,33 @@ for te in sorted(res_type):
                 continue
 
             p = scipy.stats.mannwhitneyu(data[te], data['noTE'], alternative='two-sided')[1]
-            M = utils.fold_change(2**numpy.mean(data['noTE']), 2**numpy.mean(data[te]), pad=0.01)# fold-change
+            
+            # This M is really dubious, as if you move the average slightly then the overall will be a mess.
+            #M = utils.fold_change(2**numpy.mean(data['noTE']), 2**numpy.mean(data[te]), pad=0.01)# fold-change
+            # Convert M to a rank score from 0 -> 1 instead
+            #total = len(data['noTE'])
+            #mm = numpy.mean(data[te])
+            # Find rank in list;
+            #for rank, v in enumerate(sorted(data['noTE'])):
+            #    if mm < v:
+            #        break 
+            #M = rank / total
+            
+            # Just call it a Z-score:
+            #m = numpy.mean(data[te])
+            m = numpy.mean(data['noTE'])
+            s = numpy.std(data['noTE'])
+            mm = (data[te] - m) / s
+            M = numpy.mean(mm) # mean Z-score
+            
             A = numpy.mean(data[te]) # average expression;
 
             p_scatter[t].append({'name': te, 'p': p, 'M': M, 'A': A, 'n': len(data[te])})
 
 # adjust the p values pls
 #print(p_scatter)
+
+label_tester = ['HERVH', 'LTR7', 'L1M2_orf2']
 
 for t in class_dict().keys():
     gl = genelist()
@@ -146,9 +168,9 @@ for t in class_dict().keys():
     spot_cols = []
     for q, M in zip(gl['-log10q'], gl['M']):
         if q > 1.301: # q=0.05
-            if M > 0.58: #~1.5 fold
+            if M > 0.5: #~1.5 fold
                 spot_cols.append('red')
-            elif M <-0.58:
+            elif M <-0.5:
                 spot_cols.append('blue')
             else:
                 spot_cols.append('grey')
@@ -157,7 +179,7 @@ for t in class_dict().keys():
 
     config.draw_mode = 'svg'
     shared.nice_scatter(y=gl['-log10q'], x=gl['M'], figsize=[2,2], spot_size=12,
-        spot_cols=spot_cols,
+        spot_cols=spot_cols, label_tester=label_tester,
         filename='MA-{0}.png'.format(t), label=gl['name'], hlines=[1.301], vlines=[0])
     config.draw_mode = 'pdf'
 
