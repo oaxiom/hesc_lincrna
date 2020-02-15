@@ -16,6 +16,7 @@ __pycache__
 *.fa.*
 *.fa
 PT*.tsv.gz
+ends.gtf
 
 # Specifics
 raw_data/
