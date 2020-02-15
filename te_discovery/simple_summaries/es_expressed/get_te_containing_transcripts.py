@@ -11,8 +11,6 @@ import matplotlib
 matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['font.size'] = 6
 
-sys.path.append('../')
-import pies
 sys.path.append('../../../')
 import shared
 from glbase3 import glload, utils, expression, genelist
@@ -77,9 +75,9 @@ title_map = {'pc-te': 'protein-coding with TE',
 
 for k in res:
     if k in title_map:
-        pies.pie('pies/te_%s.png' % k, [res[k]['ES+'], res[k]['ES:'], res[k]['ES-']], ['ES+', 'ES:', 'ES-'], title_map[k])
+        shared.pie('pies/te_%s.png' % k, [res[k]['ES+'], res[k]['ES:'], res[k]['ES-']], ['ES+', 'ES:', 'ES-'], title_map[k])
 
-pies.split_bar('bar.png'.format(k), res, cols=['#d62728', '#2ca02c', '#ff7f0e', ])
+shared.split_bar('bar.png'.format(k), res, cols=['#d62728', '#2ca02c', '#ff7f0e', ])
 
 # pickle the results
 import pickle

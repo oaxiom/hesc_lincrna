@@ -10,8 +10,6 @@ import glob, sys, os, gzip
 import matplotlib
 matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['font.size'] = 6
-sys.path.append('../')
-import pies
 sys.path.append('../../../')
 import shared
 from glbase3 import glload, utils, expression, genelist
@@ -28,12 +26,12 @@ pc_genes_ensg = set(pc['ensg'])
 has_at_least_one_coding_isoform = set([g['ensg'] for g in all_genes if g['ensg'] in pc_genes_ensg])
 
 # coding and non-coding;
-pies.pie('coding_genes_with_a_noncoding_transcript.png', [len(all_genes_ensg)-len(has_at_least_one_coding_isoform), len(has_at_least_one_coding_isoform)], ['no non-coding', 'has non-coding transcript'], 'Coding genes with a noncoding transcript')
+shared.pie('coding_genes_with_a_noncoding_transcript.png', [len(all_genes_ensg)-len(has_at_least_one_coding_isoform), len(has_at_least_one_coding_isoform)], ['no non-coding', 'has non-coding transcript'], 'Coding genes with a noncoding transcript')
 
 print(len(te), len(not_te), len(all_genes), len(te)+len(not_te))
 
 # Piechart, percent of transcripts containing a TE:
-pies.pie('pies/te_all.png', [len(not_te), len(te)], ['no-TE', 'TE'], 'All')
+shared.pie('pies/te_all.png', [len(not_te), len(te)], ['no-TE', 'TE'], 'All')
 
 # collect stats:
 res = {
@@ -69,9 +67,9 @@ title_map = {'pc': 'protein-coding',
     'non_coding_version_of_coding_gene': 'non-coding version of coding gene'}
 
 for k in res:
-    pies.pie('pies/te_%s.png' % k, [res[k]['nonTE'], res[k]['TE']], ['no-TE', 'TE'], title_map[k])
+    shared.pie('pies/te_%s.png' % k, [res[k]['nonTE'], res[k]['TE']], ['no-TE', 'TE'], title_map[k])
 
-pies.split_bar('bar.png'.format(k), res, key_order=['TE', 'nonTE'], cols=['#ff7f0e', '#1f77b4']) #, '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'])
+shared.split_bar('bar.png'.format(k), res, key_order=['TE', 'nonTE'], cols=['#ff7f0e', '#1f77b4']) #, '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'])
 
 # pickle the results
 import pickle
