@@ -23,15 +23,19 @@ import shared
 
 draw = 'png'
 
-def draw_domain(gene, filename, gencode_db, dfam):
+def draw_domain(gene, filename, dfam):
     #print(gene)
     try:
         print('Doing %s' % gene['name'])
     except KeyError:
         print('Doing %s' % gene['enst'])
 
-    cdsl = gene['cds_local_locs'][0]
-    cdsr = gene['cds_local_locs'][1]
+    if 'cds_local_locs' in gene:
+        cdsl = gene['cds_local_locs'][0]
+        cdsr = gene['cds_local_locs'][1]
+    else:
+        cdsl = None
+    
     if cdsl == -1:
         cdsl = None
 
@@ -41,20 +45,20 @@ def draw_domain(gene, filename, gencode_db, dfam):
     ts = gene['loc']['left']
     te = gene['loc']['right']
 
-    fig = plot.figure(figsize=[8,4])
-    fig.subplots_adjust(left=0.2, right=0.95, bottom=0.18, top=0.8)
+    fig = plot.figure(figsize=[3,1.3])
+    fig.subplots_adjust(left=0.2, right=0.96, bottom=0.18, top=0.8)
     ax = fig.add_subplot(111)
 
     # three row markers
     line = []
-    line.append(mlines.Line2D([0, tlength], [1, 1], lw=1, alpha=1.0, color='grey', zorder=0))
+    #line.append(mlines.Line2D([0, tlength], [1, 1], lw=1, alpha=1.0, color='grey', zorder=0))
     # TE lines:
     line.append(mlines.Line2D([0, tlength], [0.45, 0.45], lw=1, alpha=1.0, color='grey', zorder=0))
     line.append(mlines.Line2D([0, tlength], [0.15, 0.15], lw=1, alpha=1.0, color='grey', zorder=0))
     line.append(mlines.Line2D([0, tlength], [-0.15, -0.15], lw=1, alpha=1.0, color='grey', zorder=0))
     line.append(mlines.Line2D([0, tlength], [-0.45, -0.45], lw=1, alpha=1.0, color='grey', zorder=0))
-
-    line.append(mlines.Line2D([0, tlength], [-1, -1], lw=5, alpha=1.0, color='black', zorder=0))
+    # gene line:
+    line.append(mlines.Line2D([0, tlength], [-0.8, -0.8], lw=5, alpha=1.0, color='black', zorder=0))
 
     # TEs:
     patches = []
@@ -94,19 +98,20 @@ def draw_domain(gene, filename, gencode_db, dfam):
         rect = mpatches.Rectangle([s, posy], e-s, strand, ec="none", facecolor=color)
         ax.add_patch(rect)
 
-        ax.text(posx, posy + (strand*2.1), dom['dom'], fontsize=6, ha=ha, va='center')
+        ax.text(posx, posy + (strand*2.1), dom['dom'], fontsize=5, ha=ha, va='center')
 
     # Draw splice markers;
     pad = (tlength / 120)
     for s in splice_sites:
-        line.append(mlines.Line2D([s-pad, s, s+pad], [1.1, 1.0, 1.1], lw=1.5, alpha=0.8, color='r'))
+        #line.append(mlines.Line2D([s-pad, s, s+pad], [-1.1, -1.0, -1.1], lw=1., alpha=0.8, color='r'))
+        line.append(mlines.Line2D([s-pad, s+pad], [-0.85, -0.75], lw=1., alpha=0.8, color='r'))
 
     #del gene['doms']
     #print(gene)
 
     # CDS line:
     if cdsl is not None:
-        cds_patch = mpatches.Rectangle([cdsl, -1.2], cdsr-cdsl, 0.4, ec="none", facecolor='black')
+        cds_patch = mpatches.Rectangle([cdsl, -0.95], cdsr-cdsl, 0.3, ec="none", facecolor='black')
         ax.add_patch(cds_patch)
 
     # Finish drawing;
@@ -115,12 +120,16 @@ def draw_domain(gene, filename, gencode_db, dfam):
     [ax.add_line(l) for l in line]
 
     ax.set_xlim([0, tlength])
-    ax.set_ylim([-1.5, 1.5])
-    ax.set_yticks([-1.0, -0.45, -0.15, 0, 0.15, 0.45, 1.0])
-    ax.set_yticklabels(['Coding Seq', 'Retroposons', 'LTRs', 'TEs              ', 'SINEs', 'LINEs', 'Splice Junctions'])
-    ax.set_title('%s(%s) %s %s' % (gene['enst'], gene['strand'], gene['transcript_id'], gene['name']))
+    ax.set_ylim([-0.95, 0.55])
+    ax.set_yticks([-0.8, -0.45, -0.15, 0, 0.15, 0.45])
+    ax.set_yticklabels(['Coding Seq', 'Retroposons', 'LTRs', 'TEs              ', 'SINEs', 'LINEs'])
+    ax.set_title('%s(%s) %s %s' % (gene['enst'], gene['strand'], gene['transcript_id'], gene['name']), fontsize=6)
+    
+    ax.xaxis.set_tick_params(labelsize=6)
+    ax.yaxis.set_tick_params(labelsize=6)
+    
     ax.set_frame_on(False)
-    ax.tick_params(left=False)
+    ax.tick_params(left=False, bottom=False)
 
     if cdsl is not None:
         ax.set_xticks([0, cdsl, cdsr, tlength])

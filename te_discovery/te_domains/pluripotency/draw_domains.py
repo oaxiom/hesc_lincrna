@@ -17,12 +17,13 @@ import draw_domains_share
 sys.path.append('../../../')
 import shared
 
-draw = 'png'
+draw = 'pdf'
 
 #[os.remove(f) for f in glob.glob('%s/*.%s' % (draw, draw))]
 
 doms = glload('../../te_transcripts/transcript_table_merged.mapped.glb')
-gencode_db = genome_sql(filename=os.path.expanduser('~/hg38/hg38_gencode_v29.sql'))
+CDSs = glload('../../../transcript_assembly/get_CDS/coding_genes_with_local_CDS-corrected.glb')
+CDSs = {i['transcript_id']: i for i in CDSs}
 dfam = genelist('../../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
 
 genes = set(['SOX2', 'NANOG', 'SALL4', 'LIN28A', 'LIN28B', 'SALL1', 'POU5F1A',
@@ -50,8 +51,12 @@ for n, gene in enumerate(doms):
     #print(gene['name'].split(' ')[0])
     if gene['name'].split(' ')[0] not in genes:
         continue
+    
+    if gene['transcript_id'] in CDSs:
+        gene['cds_local_locs'] = CDSs[gene['transcript_id']]['cds_local_locs']
 
-    draw_domains_share.draw_domain(gene, '%s/%s.%s.%s.%s' % (draw, gene['name'], gene['transcript_id'], gene['enst'], draw), gencode_db, dfam)
+    draw_domains_share.draw_domain(gene, '%s/%s.%s.%s.%s' % (draw, gene['name'], gene['transcript_id'], gene['enst'], draw), 
+        dfam)
 
     if (n+1) % 1000 == 0:
         print('Processed: {:,} domains'.format(n+1))
