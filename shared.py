@@ -323,3 +323,16 @@ if __name__ == '__main__':
     fig.savefig('legend.pdf')
 
     print('\n'.join(list(col_keys.keys())))
+
+def pie(filename, data, labels, title=''):
+    fig = plot.figure(figsize=[1,1])
+    ax = fig.add_subplot(111)
+
+    wedges, texts, autotexts = ax.pie(data, labels=labels, autopct=lambda pct: lab_func(pct, data))#, colors=['tomato', 'deepskyblue'])
+    plot.setp(autotexts, size=6)
+    plot.setp(texts, size=6)
+
+    ax.set_title(title, size=6)
+    fig.savefig(filename)
+    fig.savefig(filename.replace('.png', '.pdf'))
+    print('Saved %s' % filename)

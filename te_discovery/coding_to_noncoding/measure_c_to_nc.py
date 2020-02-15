@@ -1,7 +1,8 @@
 import sys, os
 from glbase3 import *
 import matplotlib.pyplot as plot
-
+os.path.append('../../')
+import shared
 
 # These have the official GENCODE CDS, and the predicted (about ~80% accurate)
 all_genes = glload('../../transcript_assembly/packed/all_genes.glb')
