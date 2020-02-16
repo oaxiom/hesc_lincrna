@@ -33,20 +33,16 @@ for gene in solotes:
         res[te_type] += 1
 
 # work out the pair-wise frequency:
-print(res.keys())
 paired = {k2: {k:0 for k in res.keys()} for k2 in res.keys()}
 for gene in solotes:
     tes = [i for i in gene['te_type'].split('; ') if '.' not in i]
     te_types = list(set(tes))
 
     pairs = list(set(itertools.product(tes, tes)))
-    print(pairs)
     for p in pairs:
         if p[0] == p[1]:
             continue
         paired[p[0]][p[1]] += 1
-
-print(paired)
 
 newe = [{'name': k, 'conditions': [paired[k][k2] for k2 in paired.keys()]} for k in paired.keys()]
 e = expression()
@@ -90,7 +86,7 @@ total_tes = sum(genome_repeat_freqs.values())
 total_solotes = sum(res.values())
 
 fc = {}
-
+print(res.keys())
 for k in sorted(res.keys()):
     if k not in genome_repeat_freqs: # Some of the names are a little different, it's some really rare ones though so just ignore
         print("Warning: couldn't find {0} in genome, number of TEs in transcripts={1}".format(k, res[k]))
@@ -111,7 +107,6 @@ e = expression(loadable_list=[{'name': k, 'conditions': [fc[k]]} for k in fc], c
 e.sort_sum_expression()
 r = e.heatmap(filename='solo_te_enrichment.png', heat_wid=0.03, grid=True, row_cluster=False, heat_hei=0.015*len(e), bracket=[-2,2],
     draw_numbers=True, draw_numbers_threshold=1, draw_numbers_fmt='*')
-print(r)
 print('\n'.join(reversed(r['reordered_rows'])))
 fig = plot.figure(figsize=[3,4])
 
@@ -142,20 +137,37 @@ key_classes = [
     'DNA:hAT-Tag1',
     'DNA:PiggyBac',
     'LTR:ERVK',
+    'LTR:ERV1',
+    'LINE:L1',
+    'SINE:Alu',
     'DNA:MULE-MuDR']
 
-# Split these down a level;
-res = {}
-for gene in solotes:
-    if True in [i in gene['te_type'] for i in key_classes]: # Has one of the enriched classes;
-        for TE in gene['te_fullanmes'].split('; '):
-            te_family = ':'.join(TE.split(':')[0:2])
-            print("'{0}'".format(te_family))
+# Split these down a level for specific classes
+for cls in key_classes:
+    res = {}
+    for gene in solotes:
+        if cls in gene['te_type']: # Has one of the enriched classes;
+            for TE in gene['te_fullanmes'].split('; '):
+                te_family = ':'.join(TE.split(':')[0:2])
+                #print("'{0}'".format(te_family))
 
-            if te_family in key_classes:
-                print(te_family)
-                if TE not in res:
-                    res[TE] = 0
-                res[TE] += 1
+                if cls in te_family:
+                    print(te_family)
+                    if TE not in res:
+                        res[TE] = 0
+                    res[TE] += 1
+    fc = {}
+    for TE in res:
+        observed = res[k]
+        expected = total_solotes * (genome_repeat_freqs[k] / total_tes)
+        res[k] = (observed)/(expected)
+        fc[k] = utils.fold_change(expected, observed)
+        print('obs={0:.2f}\texp={1:.2f}\tenrich={2:.2f}\t{3}'.format(observed, expected, res[k], k))
 
-print(res)
+        #res[k] = res[k] / genome_repeat_freqs[k] * 1e6
+
+    e = expression(loadable_list=[{'name': k, 'conditions': [fc[k]]} for k in fc], cond_names=['enrichment'])
+    e.sort_sum_expression()
+    r = e.heatmap(filename='solo_te_enrichment_by_class.png', heat_wid=0.03, grid=True, row_cluster=False, heat_hei=0.015*len(e), bracket=[-2,2],
+        draw_numbers=True, draw_numbers_threshold=1, draw_numbers_fmt='*')
+    print(res)

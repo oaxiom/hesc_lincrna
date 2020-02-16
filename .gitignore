@@ -19,6 +19,7 @@ PT*.tsv.gz
 ends.gtf
 
 # Specifics
+hg38_rmsk.txt.gz
 raw_data/
 hipsci*.txt.gz
 tblout.*

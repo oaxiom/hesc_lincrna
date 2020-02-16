@@ -21,6 +21,7 @@ genome_repeats = delayedlist(os.path.expanduser('~/hg38/repeats/hg38_rmsk.tsv'),
 print(genome_repeats)
 
 res = defaultdict(int)
+res_by_full_name = defaultdict(int)
 
 keeps = set(['LTR', 'LINE', 'SINE', 'DNA', 'Retroposon'])
 
@@ -28,15 +29,14 @@ for idx, gene in enumerate(genome_repeats):
     if gene['class'] not in keeps:
         continue
 
-    #if gene['class'] == 'LTR':
-    #    te_type = '{g[class]}:{g[family]}:{g[name]}'.format(g=gene)
-    #else:
     te_type = '{g[class]}:{g[family]}'.format(g=gene)
+    full_name = '{g[class]}:{g[family]}:{g[name]}'.format(g=gene)
 
     if '?' in te_type:
         continue
 
     res[te_type] += 1
+    res_by_full_name[te_type] += 1
     if (idx+1) % 1e5 == 0:
         print(idx+1)
         #break
