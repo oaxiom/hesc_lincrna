@@ -5,7 +5,7 @@ Measure the number of each class; type of TE in the genome, and output a frequen
 
 '''
 
-import os, sys, numpy, itertools, pickle
+import os, sys, numpy, itertools, pickle, gzip
 from collections import defaultdict
 import matplotlib.pyplot as plot
 import matplotlib.cm as cm
@@ -16,7 +16,8 @@ config.draw_mode = ['png', 'svg', 'pdf']
 sys.path.append('../')
 import shared
 
-genome_repeats = delayedlist(os.path.expanduser('~/hg38/repeats/hg38_rmsk.tsv'), format={'force_tsv': True, 'name': 10, 'class': 11, 'family': 12})
+genome_repeats = delayedlist('hg38_rmsk.txt.gz', format={'force_tsv': True, 'name': 10, 'class': 11, 'family': 12},
+    gzip=True)
 
 print(genome_repeats)
 
@@ -36,9 +37,10 @@ for idx, gene in enumerate(genome_repeats):
         continue
 
     res[te_type] += 1
-    res_by_full_name[te_type] += 1
+    res_by_full_name[full_name] += 1
+    
     if (idx+1) % 1e5 == 0:
-        print(idx+1)
+        print('{:,}'.format(idx+1))
         #break
 
 
@@ -54,7 +56,16 @@ oh = open('te_freqs.pickle', 'wb')
 pickle.dump(res, oh)
 oh.close()
 
-print(res)
+# And by full name;
+oh = open('te_freqs_by_full_name.txt', 'w')
+oh.write('name\tfreq\n')
+for k in sorted(res_by_full_name.keys()):
+    oh.write('{0}\t{1}\n'.format(k, res_by_full_name[k]))
+oh.close()
+
+oh = open('te_freqs_by_full_name.pickle', 'wb')
+pickle.dump(res_by_full_name, oh)
+oh.close()
 
 fig = plot.figure(figsize=[3,4])
 
@@ -65,8 +76,6 @@ cols = [shared.get_col(k) for k in labs]
 ax = fig.add_subplot(1,1,1)
 fig.subplots_adjust(left=0.3, top=0.92)
 
-print(vals)
-
 ax.barh(numpy.arange(len(labs)), width=vals, height=0.8, color=cols)
 ax.set_yticklabels(labs)
 ax.set_yticks(numpy.arange(len(labs)))
@@ -74,7 +83,22 @@ ax.set_yticks(numpy.arange(len(labs)))
 [t.set_fontsize(6) for t in ax.get_xticklabels()]
 ax.yaxis.label.set_size(6)
 
-fig.savefig('freq.png')
-fig.savefig('freq.svg')
 fig.savefig('freq.pdf')
+
+# And by full name;
+fig = plot.figure(figsize=[3,15])
+fig.subplots_adjust(top=0.99, left=0.5, right=0.95, bottom=0.01)
+labs = list(reversed(sorted(res_by_full_name.keys())))
+vals = [res_by_full_name[k] for k in labs]
+cols = [shared.get_col(k) for k in labs]
+
+ax = fig.add_subplot(1,1,1)
+ax.barh(numpy.arange(len(labs)), width=vals, height=0.8, color=cols)
+ax.set_ylim([-1, len(labs)+1])
+ax.set_yticklabels(labs)
+ax.set_yticks(numpy.arange(len(labs)))
+[t.set_fontsize(2) for t in ax.get_yticklabels()]
+[t.set_fontsize(2) for t in ax.get_xticklabels()]
+
+fig.savefig('freq_res_by_full_name.pdf')
 
