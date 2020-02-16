@@ -11,8 +11,8 @@ import sys
 from glbase3 import glload, genelist, config
 config.draw_mode = 'pdf'
 
-sys.path.append('../simple_summaries/')
-import pies
+sys.path.append('../../')
+import shared
 
 all_te_transcripts = glload('../te_transcripts/transcript_table_merged.mapped.glb')
 dfam = genelist('../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
@@ -68,4 +68,4 @@ newgl.saveTSV('solo_tes.tsv', key_order=['ensg', 'enst', 'te_type',])
 
 # collect some stats and pies;
 for k in stats:
-    pies.pie('pie_%s.png' % k, stats[k].values(), stats[k].keys(), k)
+    shared.pie('pie_%s.png' % k, stats[k].values(), stats[k].keys(), k)

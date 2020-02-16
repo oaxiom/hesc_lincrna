@@ -17,9 +17,6 @@ config.draw_mode = ['png', 'pdf']
 sys.path.append('../../')
 import shared
 
-sys.path.append('../simple_summaries/')
-import pies
-
 all_te_transcripts = glload('../te_transcripts/transcript_table_merged.mapped.glb')
 dfam = genelist('../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
 
