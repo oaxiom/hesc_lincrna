@@ -19,6 +19,13 @@ import shared
 
 all_te_transcripts = glload('../te_transcripts/transcript_table_merged.mapped.glb')
 dfam = genelist('../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
+oh = open('../../genome_repeats/te_freqs.pickle', 'rb')
+genome_repeat_freqs = pickle.load(oh)
+oh.close()
+oh = open('../../genome_repeats/te_freqs_by_full_name.pickle', 'rb')
+genome_repeat_freqs_by_full_name = pickle.load(oh)
+oh.close()
+
 
 solotes = glload('solo_tes.glb')
 
@@ -77,10 +84,6 @@ fig.savefig('freq.pdf')
 
 # Measure enrichment versus the genome:
 
-oh = open('../../genome_repeats/te_freqs.pickle', 'rb')
-genome_repeat_freqs = pickle.load(oh)
-oh.close()
-
 total_tes = sum(genome_repeat_freqs.values())
 
 total_solotes = sum(res.values())
@@ -133,41 +136,45 @@ fig.savefig('freq_enrichment.pdf')
 
 # Key classes to look at:
 key_classes = [
-    'Retroposon:SVA',
-    'DNA:hAT-Tag1',
-    'DNA:PiggyBac',
-    'LTR:ERVK',
-    'LTR:ERV1',
-    'LINE:L1',
-    'SINE:Alu',
-    'DNA:MULE-MuDR']
+    'Retroposon',
+    'LTR',
+    'LINE',
+    'SINE'
+    ]
 
 # Split these down a level for specific classes
-for cls in key_classes:
+for cls in res:
+    if True not in [c in cls for c in key_classes]:
+        continue
     res = {}
     for gene in solotes:
-        if cls in gene['te_type']: # Has one of the enriched classes;
+        if '{0}:'.format(cls) in gene['te_fullanmes']: # Has one of the enriched classes;
             for TE in gene['te_fullanmes'].split('; '):
                 te_family = ':'.join(TE.split(':')[0:2])
                 #print("'{0}'".format(te_family))
-
+                TE = TE.replace('_5end', '').replace('_3end', '')
                 if cls in te_family:
-                    print(te_family)
                     if TE not in res:
                         res[TE] = 0
                     res[TE] += 1
     fc = {}
     for TE in res:
-        observed = res[k]
-        expected = total_solotes * (genome_repeat_freqs[k] / total_tes)
-        res[k] = (observed)/(expected)
-        fc[k] = utils.fold_change(expected, observed)
-        print('obs={0:.2f}\texp={1:.2f}\tenrich={2:.2f}\t{3}'.format(observed, expected, res[k], k))
+        if TE not in genome_repeat_freqs_by_full_name: # Some of the names are a little different, it's some really rare ones though so just ignore
+            print("Warning: couldn't find {0} in genome, number of TEs in transcripts={1}".format(TE, res[TE]))
+            continue
+        observed = res[TE]
+        if observed < 10: # not reliabel below this;
+            continue
+        expected = total_solotes * (genome_repeat_freqs_by_full_name[TE] / total_tes)
+        res[TE] = (observed)/(expected)
+        fc[TE] = utils.fold_change(expected, observed)
+        print('obs={0:.2f}\texp={1:.2f}\tenrich={2:.2f}\t{3}'.format(observed, expected, res[TE], TE))
 
         #res[k] = res[k] / genome_repeat_freqs[k] * 1e6
 
     e = expression(loadable_list=[{'name': k, 'conditions': [fc[k]]} for k in fc], cond_names=['enrichment'])
-    e.sort_sum_expression()
-    r = e.heatmap(filename='solo_te_enrichment_by_class.png', heat_wid=0.03, grid=True, row_cluster=False, heat_hei=0.015*len(e), bracket=[-2,2],
-        draw_numbers=True, draw_numbers_threshold=1, draw_numbers_fmt='*')
-    print(res)
+    if e:
+        e.sort_sum_expression()
+        r = e.heatmap(filename='figures/solo_te_enrichment_{0}.png'.format(cls), heat_wid=0.03, 
+            grid=True, row_cluster=False, heat_hei=0.015*len(e), bracket=[-4,4],
+            draw_numbers=True, draw_numbers_threshold=1, draw_numbers_fmt='*')

@@ -21,8 +21,8 @@ genome_repeats = delayedlist('hg38_rmsk.txt.gz', format={'force_tsv': True, 'nam
 
 print(genome_repeats)
 
-res = defaultdict(int)
-res_by_full_name = defaultdict(int)
+res = {} # defaultdicts can be dangerous
+res_by_full_name = {}
 
 keeps = set(['LTR', 'LINE', 'SINE', 'DNA', 'Retroposon'])
 
@@ -31,19 +31,22 @@ for idx, gene in enumerate(genome_repeats):
         continue
 
     te_type = '{g[class]}:{g[family]}'.format(g=gene)
-    full_name = '{g[class]}:{g[family]}:{g[name]}'.format(g=gene)
+    full_name = '{g[class]}:{g[family]}:{g[name]}'.format(g=gene).replace('-int', '')
+    # the -int suffix is deprecated in the dfam
 
     if '?' in te_type:
         continue
-
+    
+    if te_type not in res:
+        res[te_type] = 0
     res[te_type] += 1
+    if full_name not in res_by_full_name:
+        res_by_full_name[full_name] = 0
     res_by_full_name[full_name] += 1
     
     if (idx+1) % 1e5 == 0:
         print('{:,}'.format(idx+1))
         #break
-
-
 # output the table;
 
 oh = open('te_freqs.txt', 'w')

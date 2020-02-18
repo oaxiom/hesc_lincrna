@@ -15,9 +15,9 @@ for idx, item in enumerate(gtf):
         #break
 
     if item['strand'] == '+':
-        end = (item['loc']['chr'], item['loc']['right']-800, item['loc']['right']+200, item['strand'])
+        end = (item['loc']['chr'], item['loc']['right']-1000, item['loc']['right']+500, item['strand'])
     elif item['strand'] == '-':
-        end = (item['loc']['chr'], item['loc']['left']-200, item['loc']['left']+800, item['strand'])
+        end = (item['loc']['chr'], item['loc']['left']-500, item['loc']['left']+1000, item['strand'])
     else:
         print('WARNING: no strand {0}'.format(item['name']))
 
