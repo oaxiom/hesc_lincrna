@@ -77,7 +77,9 @@ for f in fastas:
     #print(f['enst'])
     if f['coding'] == 'noncoding':
         continue
-    if f['tags'][-1] == '~': # variant sequence
+    if 'LR' in f['tags'] and f['tags'][-1] == '!': # novel C, I want these for the solo TEs;
+        status, cdsl, cdsr = find_cds(f['seq'])
+    elif f['tags'][-1] == '~': # variant sequence
         status, cdsl, cdsr = find_cds(f['seq'])
     elif f['tags'][-1] == '=': # can get this one from GENCODE
         status, cdsl, cdsr = find_cds(f['seq'])
