@@ -15,8 +15,12 @@ __pycache__
 *.fasta
 *.fa.*
 *.fa
+*.h5ad
+*.idx
 PT*.tsv.gz
 ends.gtf
+ss.*
+version*.txt
 
 # Specifics
 hg38_rmsk.txt.gz
