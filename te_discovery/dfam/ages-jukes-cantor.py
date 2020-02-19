@@ -39,3 +39,8 @@ gl.load_list(ll)
 gl.sort('TE')
 gl.save('te_ages.glb')
 gl.saveTSV('te_ages.tsv', key_order=['TE', 'age'])
+
+# Just for speed;
+# Note that this version has not been filtered; For that, see the one in
+dfam = genelist('../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
+dfam.save('dfam_annotation.glb')
