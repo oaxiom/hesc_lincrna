@@ -26,10 +26,9 @@ for filename in glob.glob('hipsci_results/PT*.tsv.gz'):
 
         # delete peptides matching to two peptides or more with the same name;
         matches = matches.split(');')
-        hsc_names = [m.split('|')[2] for m in matches]
-        enst_names = [m.split('|')[3].split('(')[0] for m in matches]
-        symbol_names = [m.split('|')[1] for m in matches]
-        class_names = [m.split('|')[0] for m in matches]
+        hsc_names = [m.split('|')[1] for m in matches]
+        enst_names = [m.split('|')[2].split('(')[0] for m in matches]
+        symbol_names = [m.split('|')[0] for m in matches]
 
         if (idx+1) % 1000 == 0:
             print('{:,}'.format(idx))
@@ -38,11 +37,10 @@ for filename in glob.glob('hipsci_results/PT*.tsv.gz'):
             res_peps[peptide] = 0
         res_peps[peptide] += 1
 
-        for hsc, enst, symbol, class_ in zip(hsc_names, enst_names, symbol_names, class_names):
+        for hsc, enst, symbol in zip(hsc_names, enst_names, symbol_names):
             res_genes.append({'transcript_id': hsc,
                 'enst': enst,
                 'name': symbol,
-                'class': class_,
                 'peptide': peptide,
                 'e': e,
                 })
