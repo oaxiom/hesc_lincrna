@@ -5,6 +5,6 @@
 #PBS -V 
 cd $PBS_O_WORKDIR
 
-te_count -m custom -g 3ends_only.idx -i $inp -o ${out}.tsv --sc --se -w ${white}
+te_count -m custom -g 3ends_only.idx -i $inp -o ${out}.tsv --sc --se --strand -w ${white}
 gzip ${out}.tsv
 
