@@ -50,7 +50,7 @@ print('Non-unique ends: {0}'.format(non_unique))
 # Remove multiple ends:
 all_ends = genelist()
 all_ends.load_list(lines)
-all_ends = all_ends.removeDuplicatesByLoc(mode='overlap', delta=0, use_strand=True, delete_any_matches=True) # I then need to remove the ends that have multiple hits
+all_ends = all_ends.removeDuplicatesByLoc(mode='overlap', delta=0, use_strand=True)# keep the first entry you come across, delete_any_matches=True) # I then need to remove the ends that have multiple hits
 
 oh = open('ends.gtf', 'w')
 for item in all_ends:
