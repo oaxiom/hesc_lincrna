@@ -6,7 +6,7 @@ import gzip as gzipfile
 res_peps = {} # Peptides that pass
 res_genes = [] # Genes that pass
 
-for filename in glob.glob('PT*.tsv.gz'):
+for filename in glob.glob('3.hipsci_results/PT*.tsv.gz'):
     oh = gzipfile.open(filename, 'rt')
     print(filename)
 
