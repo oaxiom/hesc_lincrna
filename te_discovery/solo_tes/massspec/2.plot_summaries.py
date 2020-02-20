@@ -7,78 +7,99 @@ For the masked peptides, see if we can find them in the MS data;
 import glob, sys, os, numpy
 from glbase3 import *
 import matplotlib.pyplot as plot
+sys.path.append('../../../')
+import shared
 
 res = {}
-'''
-for filename in glob.glob('mass_spec_searches/per_transcript_hits*.tsv'):
-    if 'prime' in filename:
-        continue
-    if 'class' in filename:
-        continue
-    stub = os.path.split(filename)[1].replace('.tsv', '').split('-')[1]
-    pep_hits = genelist(filename, format={'name': 0, 'hits': 1, 'force_tsv': True})
-    num_hits = sum([i>=1 for i in pep_hits['hits']])
 
-    res[stub] = [num_hits, len(pep_hits)]
-'''
+all_matches = glload('results_gene.glb')
+all_solo_tes = glload('../solo_tes.glb')
+all_data = all_matches.map(genelist=all_solo_tes, key='transcript_id')
+print(all_data)
 
-all_matches = glload('3.hipsci_results/results_gene.glb')
-
-print(all_matches)
-# I need to get tables for all of the peptides put into the search
+all_fastas = genelist('../get_fastas/solo_tes.fasta', format=format.fasta) # Just for getting the positions;
+all_fastas = {i['name']: i['seq'] for i in all_fastas}
+dfam = genelist('../../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
 
 res_per_gene = {}
-for filename in glob.glob('2.blast_searches/masked/*.glb'):
-    if 'prime' in filename:
-        continue
-    if 'class' in filename:
-        continue
-    stub = os.path.split(filename)[1].replace('.glb', '').split('-')[1]
-    pep_hits = glload(filename).getColumns(['name'])
+for solo_te in all_data:
+    res_per_gene[solo_te['transcript_id']] = {'te_derived_peptide': [],
+        'derived_peptide': []}
 
-    res_per_gene[stub] = {k: 0 for k in pep_hits['name']}
+delete_chars = set('0123456789.+')
+# I need to go through, work out where the peptide is positioned, and then see if it is coming out of a TE:
+res_per_TE_type = {}
+for m in all_data:
+    # Sanitise the peptide for searching
+    peptide = ''.join([i for i in m['peptide'] if i not in delete_chars])
+    res_per_gene[m['transcript_id']]['derived_peptide'].append(peptide)
 
-for transcript in all_matches:
-    full_name = '|'.join([transcript['name'], transcript['transcript_id'], transcript['enst']])
-    res_per_gene[transcript['class']][full_name] += 1
+    # Get the position in the Peptide_fasta
+    name = '|'.join([m['name'].replace(' ', ''), m['transcript_id'], m['enst']])
+    aa_seq = all_fastas[name]
+    left = aa_seq.index(peptide) * 3
+    rite = left+len(peptide) * 3
 
-res = {}
-# final result histogram
-for stub in res_per_gene:
-    pep_hits = res_per_gene[stub].keys()
-    num_hits = sum([i>=1 for i in res_per_gene[stub].values()])
+    # see if it's in a TE domain:
+    for d in m['doms']:
+        if d['span'][1] >= left and d['span'][0] <= rite:
+            res_per_gene[m['transcript_id']]['te_derived_peptide'].append(peptide)
 
-    res[stub] = [num_hits, len(pep_hits)]
-print(res)
+            te = dfam.get(key='name', value=d['dom'])[0]
+            fullname = '{0}:{1}:{2}'.format(te['type'], te['subtype'], d['dom'])
 
-fig = plot.figure(figsize=[5,1.4])
-fig.subplots_adjust(left=0.5)
+            if fullname not in res_per_TE_type:
+                res_per_TE_type[fullname] = 0
+            res_per_TE_type[fullname] += 1
+
+res_unq_pep = {}
+for k in res_per_gene:
+    # Collapse to number of unique peptides
+    res_per_gene[k]['num_unq_derived_peptide'] = len(set(res_per_gene[k]['derived_peptide']))
+    res_per_gene[k]['num_unq_te_derived_peptide'] = len(set(res_per_gene[k]['te_derived_peptide']))
+    #print(res_per_gene[k]['num_unq_derived_peptide'], res_per_gene[k]['num_unq_te_derived_peptide'])
+
+
+res = {
+    'TE-derived': {'2 or more unique peptides': 0, '1 Unique peptide': 0, 'No peptides': 0},
+    'detected': {'2 or more unique peptides': 0, '1 Unique peptide': 0, 'No peptides': 0},
+    }
+for k in res_per_gene:
+    if res_per_gene[k]['num_unq_derived_peptide'] >= 2:
+        res['detected']['2 or more unique peptides'] += 1
+    elif res_per_gene[k]['num_unq_derived_peptide'] == 1:
+        res['detected']['1 Unique peptide'] += 1
+    else:
+        res['detected']['No peptides'] += 1
+
+    if res_per_gene[k]['num_unq_te_derived_peptide'] >= 2:
+        res['TE-derived']['2 or more unique peptides'] += 1
+    elif res_per_gene[k]['num_unq_derived_peptide'] == 1:
+        res['TE-derived']['1 Unique peptide'] += 1
+    else:
+        res['TE-derived']['No peptides'] += 1
+
+# Plot 1:
+shared.split_bar('peptides.png', res,
+    key_order=['2 or more unique peptides', '1 Unique peptide', 'No peptides'],
+    cols=['#d62728', '#ff7f0e', '#2ca02c',  ]) #, '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'])
+
+# Plot 2: Peptide-derived TEs:
+fig = plot.figure(figsize=[3,5.8])
+fig.subplots_adjust(left=0.6, right=0.98, top=0.998, bottom=0.03)#, hspace=0.2, wspace=0.2)
+#ax = plot.subplot2grid((2,2), (0,0), rowspan=2)
+
 ax = fig.add_subplot(111)
-
-ys = numpy.arange(len(res))
-
-print(res.keys())
-order = ['table_insertion_alternate_cds', 'table_new_STOP', 'table_new_ATG', 'table_frameshift_insertion',
-    ] # bottom to top
-
-num_hits = numpy.array([res[k][0] for k in order])
-len_hits = numpy.array([res[k][1] for k in order]) # starts at 0 so no need to subtract
-percs = (num_hits / len_hits) * 100.0
-print(num_hits)
-print(len_hits)
-print(percs)
-ax.barh(ys, len_hits)
-
-ax.barh(ys, num_hits)
-print(res.keys())
-ax.set_xlabel('Number of proteins with >20 Amino acids')
+res_per_TE_type = {k: res_per_TE_type[k] for k in sorted(res_per_TE_type, key=res_per_TE_type.get, reverse=False)}
+print(res_per_TE_type)
+ys = numpy.arange(len(res_per_TE_type))
+ax.barh(ys, list(res_per_TE_type.values()))
 ax.set_yticks(ys)
-ax.set_yticklabels(order)
-
-for y, p, x in zip(ys, percs, num_hits):
-    ax.text(x+4, y, s='{:.1f}%'.format(p), va='center')
-
-fig.savefig('summary.png')
-fig.savefig('summary.pdf')
+ax.set_yticklabels(res_per_TE_type.keys())
+[t.set_fontsize(6) for t in ax.get_yticklabels()]
+[t.set_fontsize(6) for t in ax.get_xticklabels()]
+ax.set_ylim([-1, len(ys)])
+fig.savefig('detected_TEs.png')
+fig.savefig('detected_TEs.pdf')
 
 

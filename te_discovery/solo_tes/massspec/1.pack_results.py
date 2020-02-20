@@ -48,7 +48,6 @@ for filename in glob.glob('hipsci_results/PT*.tsv.gz'):
 gl = genelist()
 gl.load_list(res_genes)
 gl.sort('name')
-gl.sort('class')
 gl.saveTSV('results_gene.tsv', key_order=['transcript_id', 'enst', 'name'])
 gl.save('results_gene.glb')
 
