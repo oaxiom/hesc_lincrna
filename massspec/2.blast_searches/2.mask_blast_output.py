@@ -88,12 +88,14 @@ for filename in glob.glob('blaster/table_*.tsv'):
                     blastp_status = 'Found, masked'
 
             if remaining_sequence:
-                # check it's not too many NNN's
+                # check it could still be found in MS data:
                 num_notN = len(remaining_sequence) - remaining_sequence.count('n')
                 if num_notN < min_length:
                     print('Warning: {0} masked to <{1} Amino acids, skipping'.format(hit['query_name'], min_length))
                 elif len(remaining_sequence) < min_length:
                     print('Warning: {0} <{1} Amino acids, skipping'.format(hit['query_name'], min_length))
+                elif True not in [aa in remaining_sequence for aa in ('K', 'R')]: # Lys-C/Trypsin mix cutters
+                    print('Warning: {0} no Lys-C cleavage sites'.format(hit['query_name'], min_length))
                 else:
                     # Sometimes the starting M fails to get masked;
                     if remaining_sequence[0:2] == 'Mn':
@@ -107,6 +109,8 @@ for filename in glob.glob('blaster/table_*.tsv'):
                         oh_all_seqs.write('>{0}|{1}\n'.format(stub, f['name']))
 
                         # tr -s 'n', and replace with a '-' to signify a gap, and stop the ability to search back across peptides that have a matching segment(s) in the middle.
+                        # Don't do this, and just replace the 'n' with a '-'. This allows me to keep the actual position, and so
+                        '''
                         squeeze_ns = [] # probably a 1-liner could do this...
                         last = None
                         for c in remaining_sequence:
@@ -121,7 +125,11 @@ for filename in glob.glob('blaster/table_*.tsv'):
 
                         print(squeeze_ns)
                         if squeeze_ns[0] == '-': squeeze_ns =squeeze_ns[1:]
+
                         oh_all_seqs.write(''.join([a for a in squeeze_ns if a not in ('_')]))
+                        '''
+                        oh_all_seqs.write(''.join([a for a in remaining_sequence.replace('n', '-') if a not in ('_')]))
+
                         oh_all_seqs.write('\n')
 
     if res:

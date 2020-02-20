@@ -397,7 +397,7 @@ def split_bar(filename, data_dict, key_order=None, title='', cols=None):
     for k in vals:
         ax.barh(ypos, scaled[k], 0.7, label=k, left=bots)
         for y, v, s, b in zip(ypos, vals[k], scaled[k], bots):
-            ax.text(b+(s//2), y, '{0:,.0f} ({1:.0f}%)'.format(v, s), ha='center', va='center')
+            ax.text(b+(s//2), y, '{0:,.0f} ({1:.0f}%)'.format(v, s), ha='center', va='center', fontsize=6)
         bots += scaled[k]
 
     ax.set_yticks(ypos)

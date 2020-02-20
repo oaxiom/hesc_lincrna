@@ -22,7 +22,7 @@ for filename in glob.glob('mass_spec_searches/per_transcript_hits*.tsv'):
     res[stub] = [num_hits, len(pep_hits)]
 '''
 
-all_matches = glload('3.hipsci_results/results_gene.glb')
+all_matches = glload('results_gene.glb')
 
 print(all_matches)
 # I need to get tables for all of the peptides put into the search
