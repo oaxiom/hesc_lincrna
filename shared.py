@@ -403,12 +403,16 @@ def split_bar(filename, data_dict, key_order=None, title='', cols=None):
     ax.set_yticks(ypos)
     ax.set_yticklabels(labs)
 
+
+
     ax.set_xlim([-2, 102])
     ax.set_xticks([0, 50, 100])
     ax.set_xticklabels(['0%', '50%', '100%'])
     ax.set_title(title, size=6)
     ax.legend()
     plot.legend(loc='upper left', bbox_to_anchor=(0.0, -0.4), prop={'size': 6})
+    [t.set_fontsize(6) for t in ax.get_yticklabels()]
+    [t.set_fontsize(6) for t in ax.get_xticklabels()]
     fig.savefig(filename)
     fig.savefig(filename.replace('.png', '.pdf'))
     print('Saved %s' % filename)

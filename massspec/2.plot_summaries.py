@@ -74,9 +74,10 @@ print(res.keys())
 ax.set_xlabel('Number of proteins with >20 Amino acids')
 ax.set_yticks(ys)
 ax.set_yticklabels(order)
-
+[t.set_fontsize(6) for t in ax.get_yticklabels()]
+[t.set_fontsize(6) for t in ax.get_xticklabels()]
 for y, p, x in zip(ys, percs, num_hits):
-    ax.text(x+4, y, s='{:.1f}%'.format(p), va='center')
+    ax.text(x+4, y, s='{:.1f}%'.format(p), va='center', fontsize=6)
 
 fig.savefig('summary.png')
 fig.savefig('summary.pdf')
