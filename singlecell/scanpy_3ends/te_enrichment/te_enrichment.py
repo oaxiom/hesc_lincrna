@@ -29,7 +29,8 @@ for filename in glob.glob('../gls/*.glb'):
     for gene in genes:
         tags = gene['name'].split(' ')[1].split(';')
         res_esc_expn[stub][tags[2]] += 1
-        print(tags)
+        if tags[1] == 'U':
+            continue
         res_coding[stub][tags[1]] += 1
 
         if gene['transcript_id'] not in TE_lookup:

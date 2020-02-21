@@ -32,9 +32,9 @@ adata = sc.read('raw_data.h5ad')
 sc.pl.violin(adata, ['n_genes', 'n_counts'], groupby='replicate', size=0, log=False, cut=0, show=False, save='qc1-pre-norm-replicates.pdf')
 
 # Base filtering for QC failures:
-sc.pp.filter_cells(adata, min_genes=1000)
+sc.pp.filter_cells(adata, min_genes=1500)
 sc.pp.filter_cells(adata, max_genes=8000)
-sc.pp.filter_cells(adata, min_counts=5000)
+sc.pp.filter_cells(adata, min_counts=3000)
 sc.pp.filter_cells(adata, max_counts=100000)
 sc.pp.filter_genes(adata, min_cells=100) # Only filter genes here;
 #adata = adata[adata.obs['percent_mito'] < 0.2, :]
