@@ -59,6 +59,9 @@ for filename in glob.glob('../gls/*.glb'):
 
 print(res)
 
+tab10 = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
+          '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
+
 for grp in res:
     fig = plot.figure(figsize=[5,2])
     fig.subplots_adjust(left=0.07, right=0.98, top=0.98, bottom=0.1)#, hspace=0.2, wspace=0.2)
@@ -69,14 +72,14 @@ for grp in res:
     gs.update(wspace=1.5, hspace=0.5)
 
     ax = plot.subplot(gs[0, 0])
-    ax.barh([0, 1], list(res[grp].values()))
+    ax.barh([0, 1], list(res[grp].values()), color=tab10[0:2])
     ax.set_yticks([0, 1])
     ax.set_yticklabels(res[grp].keys())
     [t.set_fontsize(6) for t in ax.get_yticklabels()]
     [t.set_fontsize(6) for t in ax.get_xticklabels()]
 
     ax = plot.subplot(gs[1, 0])
-    ax.barh([0, 1, 2], list(res_esc_expn[grp].values()))
+    ax.barh([0, 1, 2], list(res_esc_expn[grp].values()), color=tab10[1:4][::-1])
     ax.set_yticks([0, 1, 2])
     ax.set_yticklabels(res_esc_expn[grp].keys())
     [t.set_fontsize(6) for t in ax.get_yticklabels()]
