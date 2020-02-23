@@ -1,5 +1,4 @@
 
-# This is the enst variant
 library(goseq)
 library(geneLenDataBase)
 library(org.Hs.eg.db)
@@ -11,12 +10,12 @@ setwd("/Users/andrew/Projects/linc_te/hesc_lincrna/singlecell/scanpy_3ends/gls/G
 filenames = list.files(path=".", pattern="*.tsv$")
 
 #all = read.delim("all_genes.tsv")$ensg
-all = read.delim("../../../../genocde/hg38_ensembl_v95_ensg.tsv")$ensg
+all = read.delim("../../../../gencode/hg38_ensembl_v95_ensg.tsv")$ensg
 
 for (filename in filenames) {
   print(filename)
   
-  data = read.delim(filename, row.names=1)$ensg # id for deseq
+  data = read.delim(filename, row.names=1) # id for deseq
   ensg = rownames(data)
   
   vec = as.integer(all%in%ensg)
