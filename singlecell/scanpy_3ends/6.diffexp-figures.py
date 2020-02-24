@@ -15,9 +15,9 @@ from glbase3 import genelist, glload
 
 sc.settings.figdir = 'diffexp'
 
-[os.remove(f) for f in glob.glob('{0}/*.pdf'.format(sc.settings.figdir))]
-[os.remove(f) for f in glob.glob('gls/*.glb'.format(sc.settings.figdir))]
-[os.remove(f) for f in glob.glob('gls/*.tsv'.format(sc.settings.figdir))]
+[os.remove(f) for f in glob.glob('{0}/umap*.pdf'.format(sc.settings.figdir))]
+[os.remove(f) for f in glob.glob('gls/*.glb')]
+[os.remove(f) for f in glob.glob('gls/*.tsv')]
 
 transcript_id = glload('../../transcript_assembly/packed/all_genes.glb')
 transcript_id = {i['transcript_id']: i for i in transcript_id}
@@ -30,10 +30,6 @@ sc.pl.rank_genes_groups(adata, n_genes=25, sharey=True, show=False, save='genes-
 sc.pl.rank_genes_groups(adata, key='rank_genes_groups', show=False, save='genes.pdf')
 sc.pl.rank_genes_groups_dotplot(adata, key='rank_genes_groups', show=False, save='genes-top25.pdf')
 
-#print(pd.DataFrame(adata.uns['rank_genes_groups']))
-print(pd.DataFrame(adata.uns['rank_genes_groups']['names']))
-
-print()
 topall = pd.DataFrame(adata.uns['rank_genes_groups']['names']) # get all;
 fcs = pd.DataFrame(adata.uns['rank_genes_groups']['logfoldchanges'])
 padj = pd.DataFrame(adata.uns['rank_genes_groups']['pvals_adj'])
@@ -50,7 +46,6 @@ for group in groups:
     t = zip([i[group] for i in adata.uns['rank_genes_groups']['names']], [i[group] for i in adata.uns['rank_genes_groups']['logfoldchanges']], [i[group] for i in adata.uns['rank_genes_groups']['pvals_adj']])
 
     print('Group: {0}'.format(group))
-    print(t)
 
     for item in t:
         if item[1] < 1: # fold change
@@ -63,7 +58,7 @@ for group in groups:
 
 # join all and draw a dotplot:
 for group in newcols:
-    print(newcols[group])
+    print('Top 10:\n', newcols[group][0:10])
     if newcols[group]:
         gl = genelist()
         gl.load_list(newcols[group])
