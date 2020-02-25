@@ -13,7 +13,7 @@ matplotlib.rcParams['font.size']=10
 
 from glbase3 import genelist, glload
 
-sc.settings.figdir = 'diffexp'
+sc.settings.figdir = 'diffexp-summaries'
 
 [os.remove(f) for f in glob.glob('{0}/*.pdf'.format(sc.settings.figdir))]
 [os.remove(f) for f in glob.glob('gls/*.glb'.format(sc.settings.figdir))]

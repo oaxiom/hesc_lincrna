@@ -15,6 +15,10 @@ from glbase3 import genelist, glload
 
 sc.settings.figdir = 'diffexp'
 
+[os.remove(f) for f in glob.glob('{0}/*.pdf'.format(sc.settings.figdir))]
+[os.remove(f) for f in glob.glob('gls/*.glb'.format(sc.settings.figdir))]
+[os.remove(f) for f in glob.glob('gls/*.tsv'.format(sc.settings.figdir))]
+
 transcript_id = glload('../../transcript_assembly/packed/all_genes.glb')
 transcript_id = {i['transcript_id']: i for i in transcript_id}
 
@@ -44,7 +48,7 @@ for group in groups:
     print('Group: {0}'.format(group))
 
     for item in t:
-        if item[1] < 1: # fold change
+        if item[1] < 2: # fold change
             continue
         if item[2] > 0.01: # just in case
             continue

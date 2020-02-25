@@ -28,7 +28,7 @@ for (filename in filenames) {
   # make a pwf, with no bias data
   pwf = data.frame(DEgenes=vec, bias.data=rep(1, length(all)), pwf=rep(1, length(all)), row.names=all)                
   GO.sig = goseq(pwf, "hg38", "ensGene", method='Wallenius', use_genes_without_cat=FALSE) # Hypergeometric
-  trimmedGO = GO.sig[GO.sig$numInCat > 50 & GO.sig$numInCat < 500,]# & GO.sig$numDEInCat>=4,]
+  trimmedGO = GO.sig[GO.sig$numInCat > 50 & GO.sig$numInCat < 300,]# & GO.sig$numDEInCat>=4,]
   
   #trimmedGO$over_represented_pvalue = p.adjust(trimmedGO$over_represented_pvalue, method="BH")+1e-40
   enriched = trimmedGO[trimmedGO$over_represented_pvalue <0.01,] # q-value
