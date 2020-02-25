@@ -15,10 +15,6 @@ from glbase3 import genelist, glload
 
 sc.settings.figdir = 'diffexp'
 
-[os.remove(f) for f in glob.glob('{0}/umap*.pdf'.format(sc.settings.figdir))]
-[os.remove(f) for f in glob.glob('gls/*.glb')]
-[os.remove(f) for f in glob.glob('gls/*.tsv')]
-
 transcript_id = glload('../../transcript_assembly/packed/all_genes.glb')
 transcript_id = {i['transcript_id']: i for i in transcript_id}
 
