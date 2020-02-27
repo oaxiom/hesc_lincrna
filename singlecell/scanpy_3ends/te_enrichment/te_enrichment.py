@@ -23,7 +23,7 @@ for filename in glob.glob('../gls/*.glb'):
     res[stub] = {'noTE': 0, 'TE': 0}
     res_TEs[stub] = {}
     res_TEs_type[stub] = {}
-    res_esc_expn[stub] = {'ES+': 0, 'ES:': 0, 'ES-': 0}
+    res_esc_expn[stub] = {'ES-': 0, 'ES:': 0,  'ES+': 0,}
     res_coding[stub] = {'C': 0, 'NC': 0}
 
     for gene in genes:
@@ -57,8 +57,6 @@ for filename in glob.glob('../gls/*.glb'):
                     res_TEs[stub][TE] = 0
                 res_TEs[stub][TE] += 1
 
-print(res)
-
 tab10 = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
           '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
 
@@ -79,7 +77,7 @@ for grp in res:
     [t.set_fontsize(6) for t in ax.get_xticklabels()]
 
     ax = plot.subplot(gs[1, 0])
-    ax.barh([0, 1, 2], list(res_esc_expn[grp].values()), color=tab10[1:4][::-1])
+    ax.barh([0, 1, 2], list(res_esc_expn[grp].values()), color=tab10[1:4])
     ax.set_yticks([0, 1, 2])
     ax.set_yticklabels(res_esc_expn[grp].keys())
     [t.set_fontsize(6) for t in ax.get_yticklabels()]
@@ -111,6 +109,8 @@ for grp in res:
     ax.barh(ys, list(res_TEs[grp].values()))
     ax.set_yticks(ys)
     ax.set_yticklabels(res_TEs[grp].keys())
+    print('\n', grp)
+    print('\n'.join(reversed(list(res_TEs[grp].keys()))))
     [t.set_fontsize(6) for t in ax.get_yticklabels()]
     [t.set_fontsize(6) for t in ax.get_xticklabels()]
 
