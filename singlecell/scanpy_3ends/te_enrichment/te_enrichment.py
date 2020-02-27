@@ -63,13 +63,13 @@ tab10 = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
           '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
 
 for grp in res:
-    fig = plot.figure(figsize=[5,2])
-    fig.subplots_adjust(left=0.07, right=0.98, top=0.98, bottom=0.1)#, hspace=0.2, wspace=0.2)
+    fig = plot.figure(figsize=[4,1.5])
+    fig.subplots_adjust(left=0.07, right=0.98, top=0.99, bottom=0.12)#, hspace=0.2, wspace=0.2)
 
     #ax = plot.subplot2grid((2,2), (0,0), rowspan=2)
 
     gs = gridspec.GridSpec(3, 3)
-    gs.update(wspace=1.5, hspace=0.5)
+    gs.update(wspace=1.5, hspace=0.9)
 
     ax = plot.subplot(gs[0, 0])
     ax.barh([0, 1], list(res[grp].values()), color=tab10[0:2])
@@ -86,7 +86,7 @@ for grp in res:
     [t.set_fontsize(6) for t in ax.get_xticklabels()]
 
     ax = plot.subplot(gs[2, 0])
-    ax.barh([0, 1], list(res_coding[grp].values()))
+    ax.barh([0, 1], list(res_coding[grp].values()), color=tab10[0:2])
     ax.set_yticks([0, 1])
     ax.set_yticklabels(res_coding[grp].keys())
     [t.set_fontsize(6) for t in ax.get_yticklabels()]
