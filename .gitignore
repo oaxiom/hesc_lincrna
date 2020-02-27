@@ -22,7 +22,8 @@ ends.gtf
 ss.*
 version*.txt
 
-# Specifics
+# Specifics, these are mostly very large data set files that can ge generated and so don't need to be committed
+cell_data.csv
 hg38_rmsk.txt.gz
 raw_data/
 hipsci*.txt.gz
