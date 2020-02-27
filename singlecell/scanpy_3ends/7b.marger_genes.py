@@ -47,7 +47,6 @@ sc.pl.heatmap(adata, marker_genes_dict, groupby='leiden_r0.60', show=False, save
 
 genes_to_do = ['POU5F1', 'SOX2', 'UTF1', 'NANOG', 'DPPA2', 'LEFTY2', 'KLF4', 'LIN28A',
     'HNRNPU', 'TFCP2L1', # Naive;
-
     'EOMES', 'OTX2', 'MIXL1', 'DKK1','SOX17', 'SOX7',  # DE markers
     'SOX1', # EC makers;
     'GATA3', 'GATA2', # ME markers
