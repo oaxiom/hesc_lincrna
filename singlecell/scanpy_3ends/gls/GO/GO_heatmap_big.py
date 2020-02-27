@@ -21,7 +21,7 @@ for ont in ('BP', 'CC', 'MF'):
         clus_number = int(os.path.split(filename)[1].split('.')[0].split('-')[-1].replace('grp', ''))
 
         #go.sort('1')
-        top5 = go[0:20] # Make sure to add blastocyst and stem cell terms:
+        top5 = go[0:20]
 
         for item in top5:
             if item['pvalue'] < 0.01:
@@ -41,12 +41,10 @@ for ont in ('BP', 'CC', 'MF'):
         for k in go_store:
             this_k = go.get(key='name', value=k, mode='lazy') # by default
             if this_k:
-                print(k, clus_number)
+                #print(k, clus_number)
                 go_store[k][clus_number] = -math.log10(float(this_k[0]['pvalue']))
 
     newe = []
-
-    print(go_store)
 
     for k in go_store:
         newe.append({'name': k, 'conditions': go_store[k]})
@@ -56,9 +54,9 @@ for ont in ('BP', 'CC', 'MF'):
     #goex = goex.sliceConditions(clus_order)
     goex = goex.filter_low_expressed(1.9, 1)
 
-    goex.heatmap(filename='atmap_big_%s.png' % ont,
+    res = goex.heatmap(filename='atmap_big_%s.png' % ont,
         size=[9, 12], bracket=[1.0,10],
-        row_cluster=True, col_cluster=False, imshow=False,
+        row_cluster=True, col_cluster=True, imshow=False,
         heat_wid=0.06, cmap=cm.Reds, border=True,
         row_font_size=7, heat_hei=0.007*len(goex), grid=True,
         draw_numbers=True, draw_numbers_fmt='*',
@@ -66,3 +64,4 @@ for ont in ('BP', 'CC', 'MF'):
         draw_numbers_font_size=6) # 1.30 = 0.05
 
 
+    print('\n'.join(reversed(res['reordered_rows'])))

@@ -15,9 +15,9 @@ from glbase3 import genelist, glload
 
 sc.settings.figdir = 'diffexp-summaries'
 
-[os.remove(f) for f in glob.glob('{0}/*.pdf'.format(sc.settings.figdir))]
-[os.remove(f) for f in glob.glob('gls/*.glb'.format(sc.settings.figdir))]
-[os.remove(f) for f in glob.glob('gls/*.tsv'.format(sc.settings.figdir))]
+#[os.remove(f) for f in glob.glob('{0}/*.pdf'.format(sc.settings.figdir))]
+#[os.remove(f) for f in glob.glob('gls/*.glb'.format(sc.settings.figdir))]
+#[os.remove(f) for f in glob.glob('gls/*.tsv'.format(sc.settings.figdir))]
 
 de_leiden = 'leiden_r0.70'
 
@@ -49,6 +49,8 @@ adata.obs['de_clusters'] = (
     .map(old_to_new)
     .astype('category')
     )
+
+adata.obs.
 
 # I merge some unimportant clusters:
 sc.pl.umap(adata, color=[de_leiden, 'de_clusters'], size=10, legend_loc='on data', show=False, save='-new-umap.pdf')

@@ -21,7 +21,7 @@ for ont in ('BP', 'CC', 'MF'):
         clus_number = int(os.path.split(filename)[1].split('.')[0].split('-')[-1].replace('grp', ''))
 
         #go.sort('1')
-        top5 = go[0:8] # Make sure to add blastocyst and stem cell terms:
+        top5 = go[0:8]
 
         for item in top5:
             if item['pvalue'] < 0.01:
