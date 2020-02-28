@@ -92,7 +92,7 @@ part5 = {'ES+': 'ES-enriched',
 def classify_transcript(name):
     sum = name.split(' ')[1].split(';')
     if 'HSC' in name: # and hence ';!)'
-        destination = 'novel_transcript_%s_%s_%s' % (part3[sum[1]], part2[sum[0]], part4[sum[3]], part5[sum[2]])
+        destination = 'novel_transcript_%s_%s_%s_%s' % (part3[sum[1]], part2[sum[0]], part4[sum[3]], part5[sum[2]])
         alpha = '.'
 
     else:

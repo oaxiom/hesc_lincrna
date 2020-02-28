@@ -17,7 +17,7 @@ import draw_domains_share
 sys.path.append('../../../')
 import shared
 
-draw = 'png'
+draw = 'pdf'
 
 #[os.remove(f) for f in glob.glob('%s/*.%s' % (draw, draw))]
 
@@ -37,8 +37,24 @@ for n, gene in enumerate(doms):
     if gene['name'].split(' ')[0] not in genes:
         continue
 
-    draw_domains_share.draw_domain(gene, '%s/%s.%s.%s.%s' % (draw, gene['name'], gene['transcript_id'], gene['enst'], draw), gencode_db, dfam)
+    draw_domains_share.draw_domain(gene, '%s/%s.%s.%s.%s' % (draw, gene['name'], gene['transcript_id'], gene['enst'], draw), dfam)
 
     if (n+1) % 1000 == 0:
         print('Processed: {:,} domains'.format(n+1))
         #break
+
+transcript_ids = [
+    'HPSCSR.72619.1',
+    'HPSCSR.276998.297',
+    ]
+
+gl = genelist()
+gl.load_list([{'transcript_id': i} for i in transcript_ids])
+tids = doms.map(genelist=gl, key='transcript_id')
+
+for gene in tids:
+    draw_domains_share.draw_domain(gene, '%s/%s.%s.%s.%s' % (draw, gene['name'], gene['transcript_id'], gene['enst'], draw), dfam)
+
+    if (n+1) % 1000 == 0:
+        print('Processed: {:,} domains'.format(n+1))
+
