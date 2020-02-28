@@ -74,7 +74,7 @@ for grp in newcols:
         continue
     for k in newcols[grp]:
         title = k['name']
-        sc.pl.umap(adata, color=k['transcript_id'], size=30, legend_loc='on data',
+        sc.pl.umap(adata, color=k['transcript_id'], size=10, legend_loc='on data',
             title=title,
             vmin=0, vmax=3,
             show=False, save='-markers-grp{0}-{1}-{2}.pdf'.format(grp, k['transcript_id'], k['name']))

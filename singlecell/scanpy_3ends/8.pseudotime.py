@@ -15,13 +15,16 @@ sc.settings.figdir = 'pseudotime'
 
 adata = sc.read('de.h5ad')
 
+adata.uns['iroot'] = np.flatnonzero(adata.obs['de_clusters'] == '0')[0]
+
 # UMAP is already in the neighbours, so don't regenerate;
 #sc.pp.neighbors(adata, n_neighbors=20, use_rep='X', method='umap')
 sc.tl.diffmap(adata)
 sc.tl.dpt(adata, n_branchings=1, n_dcs=10)
 sc.pl.diffmap(adata, color=['dpt_pseudotime', 'dpt_groups', 'de_clusters'], show=False, save='-diffmap-umap.pdf')
-sc.pl.dpt_timeseries(adata, show=False, save='-diffmap-umap.pdf')
 sc.pl.dpt_timeseries(adata, show=False, save='-timeseries-umap.pdf')
+
+sc.pl.dpt_timeseries
 
 sc.pp.neighbors(adata, n_neighbors=20, use_rep='X', method='gauss')
 sc.tl.diffmap(adata)

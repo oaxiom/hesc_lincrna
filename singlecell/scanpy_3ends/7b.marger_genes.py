@@ -26,7 +26,6 @@ for ti in transcript_id:
     transcript_id_lookup[gene_symbol].append({'name': ti['name'], 'transcript_id': ti['transcript_id']})
 
 adata = sc.read('learned.h5ad') # You can skip the script 3 if using te 2b.
-#sc.pp.log1p(adata)
 
 print(adata.var_names)
 
@@ -62,7 +61,7 @@ for gene_name in genes_to_do:
 
     for transcript in transcript_id_lookup[gene_name]:
         try:
-            sc.pl.umap(adata, color=transcript['transcript_id'], size=30, legend_loc='on data', vmax=3, show=False, save='markers-{0}-{1}.pdf'.format(transcript['transcript_id'], transcript['name']))
+            sc.pl.umap(adata, color=transcript['transcript_id'], size=10, legend_loc='on data', vmax=3, show=False, save='markers-{0}-{1}.pdf'.format(transcript['transcript_id'], transcript['name']))
         except KeyError: # this specific transcript_id is missing;
             print('{0} {1} not found'.format(transcript['transcript_id'], transcript['name']))
         #sc.pl.umap(adata, color=marker_genes_dict[k], color_map='plasma', size=10, vmax=3, legend_loc='on data', show=False, save='markers-{0}.pdf'.format(k))
