@@ -50,8 +50,8 @@ genes_to_do = ['POU5F1', 'SOX2', 'UTF1', 'NANOG', 'DPPA2', 'LEFTY2', 'KLF4', 'LI
     'SOX1', # EC makers;
     'GATA3', 'GATA2', # ME markers
     # PGC markers;
-    'CDH1', 'EPCAM', 'PECAM1', 'OCLN', 'PKP1', 'TCF4',# E markers
-    'CDH2', 'VIM', 'SNAI1', 'SNAI2', 'ZEB1', 'ZEB2', 'TGFBR1', 'TWIST2', 'TWIST1', 'TGFB1', 'KLF8'# M markers;
+    'CDH1', 'EPCAM', 'PECAM1', 'OCLN', 'PKP1', 'TCF4', 'CDH11',# E markers
+    'CDH2', 'VIM', 'SNAI1', 'SNAI2', 'ZEB1', 'ZEB2', 'TGFBR1', 'TWIST2', 'TWIST1', 'KLF8'# M markers;
     ]
 
 for gene_name in genes_to_do:
@@ -61,8 +61,25 @@ for gene_name in genes_to_do:
 
     for transcript in transcript_id_lookup[gene_name]:
         try:
-            sc.pl.umap(adata, color=transcript['transcript_id'], size=10, legend_loc='on data', vmax=3, show=False, save='markers-{0}-{1}.pdf'.format(transcript['transcript_id'], transcript['name']))
+            sc.pl.umap(adata, color=transcript['transcript_id'], size=10, legend_loc='on data',
+            vmax=3, show=False, save='markers-{0}-{1}.pdf'.format(transcript['transcript_id'], transcript['name']))
         except KeyError: # this specific transcript_id is missing;
             print('{0} {1} not found'.format(transcript['transcript_id'], transcript['name']))
-        #sc.pl.umap(adata, color=marker_genes_dict[k], color_map='plasma', size=10, vmax=3, legend_loc='on data', show=False, save='markers-{0}.pdf'.format(k))
+
+# These cytokines have very low expression, so move the scale down a bit;
+genes_to_do = [
+    'WNT4', 'BMP4', 'TGFB1'
+    ]
+
+for gene_name in genes_to_do:
+    if gene_name not in transcript_id_lookup:
+        print('{0} gene name not found in lookup!'.format(gene_name))
+        continue
+
+    for transcript in transcript_id_lookup[gene_name]:
+        try:
+            sc.pl.umap(adata, color=transcript['transcript_id'], size=10, legend_loc='on data',
+            vmax=2, show=False, save='markers-{0}-{1}.pdf'.format(transcript['transcript_id'], transcript['name']))
+        except KeyError: # this specific transcript_id is missing;
+            print('{0} {1} not found'.format(transcript['transcript_id'], transcript['name']))
 
