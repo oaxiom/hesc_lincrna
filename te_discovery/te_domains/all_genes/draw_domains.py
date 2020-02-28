@@ -36,7 +36,7 @@ for n, gene in enumerate(doms):
     if not os.access(path, os.R_OK | os.W_OK):
         os.mkdir(path)
 
-    draw_domains_share.draw_domain(gene, '%s/%s.%s.%s.%s' % (path, gene['name'], gene['transcript_id'], gene['enst'], draw), gencode_db, dfam)
+    draw_domains_share.draw_domain(gene, '%s/%s.%s.%s.%s' % (path, gene['name'], gene['transcript_id'], gene['enst'], draw), dfam)
 
     if (n+1) % 1000 == 0:
         print('Processed: {:,} domains'.format(n+1))

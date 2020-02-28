@@ -34,5 +34,5 @@ for filename in glob.glob('../../CDS_insertions/*.glb'):
     #tes = all_genes.map(genelist=tes, key='transcript_id')
 
     for n, gene in enumerate(tes):
-        draw_domains_share.draw_domain(gene, '{0}/{1}_{2}_{3}.{4}'.format(typ, gene['name'], gene['transcript_id'], gene['enst'], draw), gencode_db, dfam)
+        draw_domains_share.draw_domain(gene, '{0}/{1}_{2}_{3}.{4}'.format(typ, gene['name'], gene['transcript_id'], gene['enst'], draw), dfam)
 
