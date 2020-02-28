@@ -45,7 +45,12 @@ sc.pl.heatmap(adata, marker_genes_dict, groupby='leiden_r0.60', show=False, save
 '''
 
 genes_to_do = ['POU5F1', 'SOX2', 'UTF1', 'NANOG', 'DPPA2', 'LEFTY2', 'KLF4', 'LIN28A',
-    'HNRNPU', 'TFCP2L1', # Naive;
+    'DPPA2', 'DPPA3', 'DPPA5A', 'PRDM14', 'JARID2', 'SALL2', 'SALL3', 'TCF3',
+    'ZFP42', 'C9ORF135', 'ST6GAL1', 'LRP4', 'MSTO1', 'PRODH',# From Pontis et al., 2019 CSC
+    'ESRRB', 'LIN28A', 'LIN28B', 'PRDM14',
+    'SALL1', 'KLF4', 'SALL1', 'NR5A1', 'NR5A2', 'NR5A3',
+    'KLF2', 'KLF5', 'LEFTY1', 'LEFTY2', 'FGF4', 'NODAL',
+    'ESRRB',  'TFCP2L1', 'ZFP42', 'MT1H', 'DPPA3', 'DPPA4', 'DPPA5A', 'ZNF486', 'CR1L', 'DNMT3L', 'ZNF534',# Naive;
     'EOMES', 'OTX2', 'MIXL1', 'DKK1','SOX17', 'SOX7',  # DE markers
     'SOX1', # EC makers;
     'GATA3', 'GATA2', # ME markers
@@ -62,13 +67,14 @@ for gene_name in genes_to_do:
     for transcript in transcript_id_lookup[gene_name]:
         try:
             sc.pl.umap(adata, color=transcript['transcript_id'], size=10, legend_loc='on data',
-            vmax=3, show=False, save='markers-{0}-{1}.pdf'.format(transcript['transcript_id'], transcript['name']))
+            vmax=3, show=False, save='markers-{1}-{0}.pdf'.format(transcript['transcript_id'], transcript['name']))
         except KeyError: # this specific transcript_id is missing;
             print('{0} {1} not found'.format(transcript['transcript_id'], transcript['name']))
 
 # These cytokines have very low expression, so move the scale down a bit;
 genes_to_do = [
-    'WNT4', 'BMP4', 'TGFB1'
+    'WNT4', 'BMP4', 'TGFB1',
+    'AURKB', 'TOP2A',
     ]
 
 for gene_name in genes_to_do:
@@ -79,7 +85,7 @@ for gene_name in genes_to_do:
     for transcript in transcript_id_lookup[gene_name]:
         try:
             sc.pl.umap(adata, color=transcript['transcript_id'], size=10, legend_loc='on data',
-            vmax=2, show=False, save='markers-{0}-{1}.pdf'.format(transcript['transcript_id'], transcript['name']))
+            vmax=2, show=False, save='markers-{1}-{0}.pdf'.format(transcript['transcript_id'], transcript['name']))
         except KeyError: # this specific transcript_id is missing;
             print('{0} {1} not found'.format(transcript['transcript_id'], transcript['name']))
 

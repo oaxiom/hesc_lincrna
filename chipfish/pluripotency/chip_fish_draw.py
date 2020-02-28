@@ -60,4 +60,4 @@ for gene in ll:
     scale = 1.0
     if draw == 'svg':
         scale = 0.3
-    c.draw.exportImage("%s/%s_%s.%s" % (draw, gene['name'], gene['enst'], draw), scale=scale, type=draw) # Cannot draw png and svg interleaved for some reason.
+    c.draw.exportImage("%s/%s_%s.%s" % (draw, gene['name'], gene['transcript_id'], draw), scale=scale, type=draw) # Cannot draw png and svg interleaved for some reason.
