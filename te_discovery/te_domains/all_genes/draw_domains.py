@@ -17,7 +17,7 @@ import draw_domains_share
 sys.path.append('../../../')
 import shared
 
-draw = 'png'
+draw = 'pdf'
 
 [os.remove(f) for f in glob.glob('%s/*/*/*.%s' % (draw, draw))]
 [os.remove(f) for f in glob.glob('%s/*/*.%s' % (draw, draw))]
