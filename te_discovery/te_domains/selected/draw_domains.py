@@ -46,6 +46,17 @@ for n, gene in enumerate(doms):
 transcript_ids = [
     'HPSCSR.72619.1',
     'HPSCSR.276998.297',
+    'HPSCSR.327312.6',
+    'HPSCSR.19279.1',
+    'HPSCSR.21764.4',
+    'HPSCSR.216914.100',
+    'HPSCSR.300037.3',
+    'HPSCSR.23832.77',
+    'HPSCSR.300037.3',
+    'HPSCSR.304643.1',
+    'HPSCSR.4844.3',
+    'HPSCSR.162330.3',
+    'HPSCSR.216914.100',
     ]
 
 gl = genelist()
