@@ -8,6 +8,7 @@ ends = set([])
 # Make a list of all the 'ensgs' that can be unambiguosly identified from their 3'ends:
 
 lines = []
+non_unique_ends = []
 non_unique = 0
 for idx, item in enumerate(gtf):
     if (idx+1) % 10000 == 0:
@@ -42,6 +43,12 @@ for idx, item in enumerate(gtf):
         lines.append({'loc': location(chr=end[0], left=end[1], right=end[2]), 'strand': item['strand'], 'line': '{0}\n'.format('\t'.join(line))})
     else:
         non_unique += 1
+        # I also want to store a file with all of the ends, to make life easier for ../3ends/
+        non_unique_ends.append({'loc': location(chr=end[0], left=end[1], right=end[2]), 'strand': item['strand'], 'line': '{0}\n'.format('\t'.join(line))})
+
+all_ends = genelist()
+all_ends.load_list(lines + non_unique_ends)
+all_ends.save('all_3ends.glb')
 
 print('Exact end duplicates:')
 print('Unique ends: {0}'.format(len(ends)))
