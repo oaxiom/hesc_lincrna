@@ -12,7 +12,7 @@ import matplotlib.pyplot as plot
 import matplotlib.cm as cm
 from glbase3 import glload, genelist, expression, config, utils
 
-config.draw_mode = ['png', 'pdf']
+config.draw_mode = ['pdf']
 
 sys.path.append('../../')
 import shared
@@ -152,20 +152,34 @@ for cls in res:
             for TE in gene['te_fullanmes'].split('; '):
                 te_family = ':'.join(TE.split(':')[0:2])
                 #print("'{0}'".format(te_family))
-                TE = TE.replace('_5end', '').replace('_3end', '')
+                TE = TE.replace('_5end', '').replace('_3end', '') #?#?#
                 if cls in te_family:
                     if TE not in res:
                         res[TE] = 0
                     res[TE] += 1
     fc = {}
     for TE in res:
+        repmaskTE = TE # The dfam and RepMas don't always agree on names
         if TE not in genome_repeat_freqs_by_full_name: # Some of the names are a little different, it's some really rare ones though so just ignore
-            print("Warning: couldn't find {0} in genome, number of TEs in transcripts={1}".format(TE, res[TE]))
-            continue
+            if '-int' in TE:
+                if TE.replace('-int', '') in genome_repeat_freqs_by_full_name:
+                    repmaskTE = TE.replace('-int', '')
+                    print('Renamed {0}-int -> {0}'.format(TE))
+                else:
+                    print("Warning: couldn't find {0} in genome, number of TEs in transcripts={1}".format(TE, res[TE]))
+                    continue
+            else:
+                if '{0}-int'.format(TE) in genome_repeat_freqs_by_full_name:
+                    print('Renamed {0} -> {0}-int'.format(TE))
+                    repmaskTE = '{0}-int'.format(TE)
+                else:
+                    print("Warning: couldn't find {0} in genome, number of TEs in transcripts={1}".format(TE, res[TE]))
+                    continue
         observed = res[TE]
-        if observed < 10: # not reliabel below this;
+        if observed < 10: # not reliable below this;
             continue
-        expected = total_solotes * (genome_repeat_freqs_by_full_name[TE] / total_tes)
+
+        expected = total_solotes * (genome_repeat_freqs_by_full_name[repmaskTE] / total_tes)
         res[TE] = (observed)/(expected)
         fc[TE] = utils.fold_change(expected, observed)
         print('obs={0:.2f}\texp={1:.2f}\tenrich={2:.2f}\t{3}'.format(observed, expected, res[TE], TE))
@@ -175,6 +189,6 @@ for cls in res:
     e = expression(loadable_list=[{'name': k, 'conditions': [fc[k]]} for k in fc], cond_names=['enrichment'])
     if e:
         e.sort_sum_expression()
-        r = e.heatmap(filename='figures/solo_te_enrichment_{0}.png'.format(cls), heat_wid=0.03, 
+        r = e.heatmap(filename='figures/solo_te_enrichment_{0}.png'.format(cls), heat_wid=0.03,
             grid=True, row_cluster=False, heat_hei=0.015*len(e), bracket=[-4,4],
             draw_numbers=True, draw_numbers_threshold=1, draw_numbers_fmt='*')

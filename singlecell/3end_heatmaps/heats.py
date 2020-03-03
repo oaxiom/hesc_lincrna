@@ -7,10 +7,10 @@ import matplotlib.cm as cm
 config.draw_mode = 'pdf'
 
 trks = {
-    'scRNA-seq (+ strand)': flat_track(filename='../../chipfish/single_cell.str1.flat', name='scRNA-seq (+ strand)'),
-    'scRNA-seq (- strand)': flat_track(filename='../../chipfish/single_cell.str2.flat', name='scRNA-seq (- strand)'),
-    'scRNA-seq (+ strand) (genes on - strand)': flat_track(filename='../../chipfish/single_cell.str1.flat', name='scRNA-seq (+ strand)'),
-    'scRNA-seq (- strand) (genes on + strand)': flat_track(filename='../../chipfish/single_cell.str2.flat', name='scRNA-seq (- strand)'),
+    'scRNA-seq (+ strand)': flat_track(filename='../flats/scrnaseq_strp.flat', name='scRNA-seq (+ strand)'),
+    'scRNA-seq (- strand)': flat_track(filename='../flats/scrnaseq_strm.flat', name='scRNA-seq (- strand)'),
+    'scRNA-seq (+ strand) (genes on - strand)': flat_track(filename='../flats/scrnaseq_strp.flat', name='scRNA-seq (+ strand)'),
+    'scRNA-seq (- strand) (genes on + strand)': flat_track(filename='../flats/scrnaseq_strm.flat', name='scRNA-seq (- strand)'),
     }
 
 # cid1 = sites affected by low K reprogramming
@@ -27,7 +27,7 @@ genes = {
 big_tab = None
 pad_array = None
 
-distance = 1000
+distance = 2000
 
 for k in trks:
     res = trks[k].heatmap(
@@ -35,12 +35,12 @@ for k in trks:
         distance=distance,
         genelist=genes[k],
         cmap=cm.magma,
-        norm_by_read_count=False,
+        norm_by_read_count=True,
         sort_by_intensity=True,
         respect_strand=False, # Don't need to respect strand, otherwise it gest confusing as both heatmaps appear the same
         size=[6,21],
         log=2,
         log_pad=0.1,
-        bracket=[0, 4]
+        bracket=[0, 0.02]
         )
 
