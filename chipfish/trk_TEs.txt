@@ -8,6 +8,12 @@ flat: colour=orange min_scaling=10 clamp=0 inverted=True
     single_cell.str2.flat
 flat: colour=red min_scaling=10 clamp=0
     single_cell.str1.flat
+    
+#flat: colour=orange min_scaling=10 clamp=0 inverted=True
+#    ../singlecell/flats/scrnaseq_strm.flat
+#flat: colour=red min_scaling=10 clamp=0
+#    ../singlecell/flats/scrnaseq_strp.flat
+    
 genome_sql: 
     ../transcript_assembly/packed/hg38_hpscs_srlr.sql
 

@@ -5,7 +5,7 @@ sys.path.append(os.path.join(os.path.expanduser("~"), "chipfish"))
 import app as chipfish
 from glbase_wrapper import location, glload, genelist
 
-draw = 'png'
+draw = 'pdf'
 
 c = chipfish.app()
 c.startup(os.path.expanduser("../trk_TEs.txt"))

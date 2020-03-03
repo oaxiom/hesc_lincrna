@@ -7,41 +7,40 @@ import matplotlib.cm as cm
 config.draw_mode = 'pdf'
 
 trks = {
-    'scRNA-seq (+ strand)': flat_track(filename='../flats/scrnaseq_strp.flat', name='scRNA-seq (+ strand)'),#, norm_factor= 12.22)
-    'scRNA-seq (- strand)': flat_track(filename='../flats/scrnaseq_strm.flat', name='scRNA-seq (- strand)'),#, norm_factor= 11.91)
-    'scRNA-seq (+ strand) (genes on - strand)': flat_track(filename='../flats/scrnaseq_strp.flat', name='scRNA-seq (+ strand)'),#, norm_factor= 12.22)
-    'scRNA-seq (- strand) (genes on + strand)': flat_track(filename='../flats/scrnaseq_strm.flat', name='scRNA-seq (- strand)'),#, norm_factor= 11.91)
+    'scRNA-seq (+ strand)': flat_track(filename='../../chipfish/single_cell.str1.flat', name='scRNA-seq (+ strand)'),
+    'scRNA-seq (- strand)': flat_track(filename='../../chipfish/single_cell.str2.flat', name='scRNA-seq (- strand)'),
+    'scRNA-seq (+ strand) (genes on - strand)': flat_track(filename='../../chipfish/single_cell.str1.flat', name='scRNA-seq (+ strand)'),
+    'scRNA-seq (- strand) (genes on + strand)': flat_track(filename='../../chipfish/single_cell.str2.flat', name='scRNA-seq (- strand)'),
     }
 
 # cid1 = sites affected by low K reprogramming
 genes = glload('../custom_3end_gtf/all_3ends.glb')
 
 genes = {
-    'scRNA-seq (+ strand)': genes.get(key='strand', value='+').removeDuplicatesByLoc('pointify_expand', 'loc', 500), # remove dupes, to make it look more clear
-    'scRNA-seq (- strand)': genes.get(key='strand', value='-').removeDuplicatesByLoc('pointify_expand', 'loc', 500),
+    'scRNA-seq (+ strand)': genes.get(key='strand', value='+').removeDuplicatesByLoc('pointify_expand', 'loc', 500, use_strand=True), # remove dupes, to make it look more clear
+    'scRNA-seq (- strand)': genes.get(key='strand', value='-').removeDuplicatesByLoc('pointify_expand', 'loc', 500, use_strand=True),
 
-    'scRNA-seq (+ strand) (genes on - strand)': genes.get(key='strand', value='-').removeDuplicatesByLoc('pointify_expand', 'loc', 500), # remove dupes, to make it look more clear
-    'scRNA-seq (- strand) (genes on + strand)': genes.get(key='strand', value='+').removeDuplicatesByLoc('pointify_expand', 'loc', 500)
+    'scRNA-seq (+ strand) (genes on - strand)': genes.get(key='strand', value='-').removeDuplicatesByLoc('pointify_expand', 'loc', 500, use_strand=True), # remove dupes, to make it look more clear
+    'scRNA-seq (- strand) (genes on + strand)': genes.get(key='strand', value='+').removeDuplicatesByLoc('pointify_expand', 'loc', 500, use_strand=True)
     }
 
 big_tab = None
 pad_array = None
-bracket = [2, 7]
 
 distance = 1000
 
 for k in trks:
     res = trks[k].heatmap(
-        filename='{0}.png'.format(k),
+        filename='heat-{0}.png'.format(k),
         distance=distance,
         genelist=genes[k],
-        cmap=cm.inferno,
-        norm_by_read_count=True,
+        cmap=cm.magma,
+        norm_by_read_count=False,
         sort_by_intensity=True,
         respect_strand=False, # Don't need to respect strand, otherwise it gest confusing as both heatmaps appear the same
         size=[6,21],
         log=2,
         log_pad=0.1,
-        bracket=[0, 5]
+        bracket=[0, 4]
         )
 
