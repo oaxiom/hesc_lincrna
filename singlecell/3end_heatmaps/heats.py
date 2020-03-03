@@ -40,7 +40,7 @@ for k in trks:
         respect_strand=False, # Don't need to respect strand, otherwise it gest confusing as both heatmaps appear the same
         size=[6,21],
         log=2,
-        log_pad=0.1,
-        bracket=[0, 0.02]
+        log_pad=0.01,
+        bracket=[-2, 5]
         )
 
