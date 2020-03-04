@@ -31,6 +31,7 @@ dfam = genelist('../../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'na
 doms = solo_tes.map(genelist=CDSs, key='transcript_id')
 print(doms)
 
+tes_to_check = set(['HERVH', 'LTR7', 'FRAM', 'SVA', 'L2d', 'HERV-Fc2', 'HERVH48', 'AluJb', 'MLT1C2'])
 
 #genes = set(solo_tes['transcript_id'])
 
@@ -40,12 +41,16 @@ for n, gene in enumerate(solo_tes):
     #if gene['transcript_id'].split(' ')[0] not in genes:
     #    continue
 
-    path = '%s/%s/' % (draw, ';'.join(sorted(gene['te_type'].split('; '))))
+    all_TEs = set([g['dom'] for g in gene['doms']])
+    tes = [te for te in all_TEs if te in tes_to_check]
+
+    if not tes:
+        continue
+
+    path = '%s/%s/' % (draw, ';'.join(tes))
     if not os.access('%s' % (path), os.R_OK | os.W_OK):
         os.mkdir('%s' % (path))
 
     draw_domains_share.draw_domain(gene, '%s/%s.%s.%s.%s' % (path, gene['name'], gene['transcript_id'], gene['enst'], draw), dfam)
 
-    if (n+1) % 100 == 0:
-        print('Processed: {:,} domains'.format(n+1))
-        #break
+
