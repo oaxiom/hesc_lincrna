@@ -30,17 +30,25 @@ dfam = genelist('../../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'na
 doms = doms.map(genelist=CDSs, key='transcript_id')
 print(doms)
 
+tes_to_check = set(['HERVH', 'LTR7', 'FRAM', 'AluJb', 'Tigger1b', 'L1HS', 'L1M2', 'AluSp',])
+
 for n, gene in enumerate(doms):
     # I have to pre-load the exonStarts:
 
     if gene['expression'] != 'enriched':
         continue
 
+
+
     print(gene['name'])
     draw_domains_share.draw_domain(gene,
         '%s/%s.%s.%s' % (draw, gene['name'], gene['enst'], draw),
         dfam)
 
-    if (n+1) % 1000 == 0:
-        print('Processed: {:,} domains'.format(n+1))
-        #break
+    for d in gene['doms']:
+        if True in [te in d['dom'] for te in tes_to_check]:
+            draw_domains_share.draw_domain(gene,
+                'specific_doms/%s.%s.%s' % (gene['name'], gene['enst'], draw),
+                dfam)
+            break
+
