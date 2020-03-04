@@ -17,16 +17,21 @@ import draw_domains_share
 sys.path.append('../../../')
 import shared
 
-draw = 'png'
+draw = 'pdf'
 
 #[os.remove(f) for f in glob.glob('%s/*.%s' % (draw, draw))]
 
 doms = glload('../../te_transcripts/transcript_table_merged.mapped.glb')
-gencode_db = genome_sql(filename=os.path.expanduser('~/hg38/hg38_gencode_v29.sql'))
-dfam = genelist('../../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
 
 solo_tes = glload('../../solo_tes/solo_tes.glb')
 print(solo_tes)
+
+CDSs = glload('../../../transcript_assembly/get_CDS/coding_genes_with_local_CDS-corrected.glb')
+dfam = genelist('../../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
+doms = solo_tes.map(genelist=CDSs, key='transcript_id')
+print(doms)
+
+
 #genes = set(solo_tes['transcript_id'])
 
 for n, gene in enumerate(solo_tes):
@@ -39,7 +44,7 @@ for n, gene in enumerate(solo_tes):
     if not os.access('%s' % (path), os.R_OK | os.W_OK):
         os.mkdir('%s' % (path))
 
-    draw_domains_share.draw_domain(gene, '%s/%s.%s.%s.%s' % (path, gene['name'], gene['transcript_id'], gene['enst'], draw), gencode_db, dfam)
+    draw_domains_share.draw_domain(gene, '%s/%s.%s.%s.%s' % (path, gene['name'], gene['transcript_id'], gene['enst'], draw), dfam)
 
     if (n+1) % 100 == 0:
         print('Processed: {:,} domains'.format(n+1))

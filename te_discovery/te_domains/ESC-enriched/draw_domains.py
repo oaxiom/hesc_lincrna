@@ -26,7 +26,6 @@ draw = 'pdf'
 doms = glload('../../te_transcripts/transcript_table_merged.mapped.glb')
 CDSs = glload('../../../transcript_assembly/get_CDS/coding_genes_with_local_CDS-corrected.glb')
 dfam = genelist('../../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
-
 doms = doms.map(genelist=CDSs, key='transcript_id')
 print(doms)
 
