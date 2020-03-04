@@ -35,7 +35,7 @@ tes_to_check = set(['HERVH', 'LTR7', 'FRAM', 'SVA', 'L2d', 'HERV-Fc2', 'HERVH48'
 
 #genes = set(solo_tes['transcript_id'])
 
-for n, gene in enumerate(solo_tes):
+for n, gene in enumerate(doms):
     #print(gene['name'].split(' ')[0])
     #print(gene)
     #if gene['transcript_id'].split(' ')[0] not in genes:
