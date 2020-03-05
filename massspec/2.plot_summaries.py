@@ -77,7 +77,7 @@ ax.set_yticklabels(order)
 [t.set_fontsize(6) for t in ax.get_yticklabels()]
 [t.set_fontsize(6) for t in ax.get_xticklabels()]
 for y, p, x in zip(ys, percs, num_hits):
-    ax.text(x+4, y, s='{:.1f}%'.format(p), va='center', fontsize=6)
+    ax.text(x+4, y, s='{0} ({1:.1f}%)'.format(x, p), va='center', fontsize=6)
 
 fig.savefig('summary.png')
 fig.savefig('summary.pdf')

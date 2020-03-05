@@ -5,7 +5,7 @@ Measure the expression of TEs by family and then by class, plot a violin and a h
 
 '''
 
-import glob, sys, os, gzip, numpy, math, scipy.stats
+import glob, sys, os, gzip, numpy, math, scipy.stats, pickle
 import matplotlib
 matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['font.size'] = 6
@@ -83,7 +83,7 @@ for g in contains_te:
     unq_doms = set([d['dom'] for d in g['doms']])
     tpm = math.log2(g['TPM']+0.1)
     for TE in unq_doms:
-        
+
         full_name = dfam_dict[TE]
 
         if g['coding'] == 'coding':
@@ -123,7 +123,7 @@ for te in sorted(res_type):
                 continue
 
             p = scipy.stats.mannwhitneyu(data[te], data['noTE'], alternative='two-sided')[1]
-            
+
             # This M is really dubious, as if you move the average slightly then the overall will be a mess.
             #M = utils.fold_change(2**numpy.mean(data['noTE']), 2**numpy.mean(data[te]), pad=0.01)# fold-change
             # Convert M to a rank score from 0 -> 1 instead
@@ -132,16 +132,16 @@ for te in sorted(res_type):
             # Find rank in list;
             #for rank, v in enumerate(sorted(data['noTE'])):
             #    if mm < v:
-            #        break 
+            #        break
             #M = rank / total
-            
+
             # Just call it a Z-score:
             #m = numpy.mean(data[te])
             m = numpy.mean(data['noTE'])
             s = numpy.std(data['noTE'])
             mm = (data[te] - m) / s
             M = numpy.mean(mm) # mean Z-score
-            
+
             A = numpy.mean(data[te]) # average expression;
 
             p_scatter[t].append({'name': te, 'p': p, 'M': M, 'A': A, 'n': len(data[te])})
@@ -149,7 +149,7 @@ for te in sorted(res_type):
 # adjust the p values pls
 #print(p_scatter)
 
-label_tester = ['HERVH', 'LTR7', 'L1M2_orf2']
+label_tester = ['HERVH', 'LTR7', 'L1M2_orf2', 'L1HS',]
 
 for t in class_dict().keys():
     gl = genelist()
@@ -177,11 +177,9 @@ for t in class_dict().keys():
         else:
             spot_cols.append('grey')
 
-    config.draw_mode = 'svg'
     shared.nice_scatter(y=gl['-log10q'], x=gl['M'], figsize=[2,2], spot_size=12,
         spot_cols=spot_cols, label_tester=label_tester,
         filename='MA-{0}.png'.format(t), label=gl['name'], hlines=[1.301], vlines=[0])
-    config.draw_mode = 'pdf'
 
     if os.path.exists(t):
         [os.remove(f) for f in glob.glob('{0}/*.pdf'.format(t))]
@@ -200,3 +198,12 @@ for t in class_dict().keys():
             gldraw.boxplot(filename='{0}-box_{1}-{2}.png'.format(t, te['name'], t), data=data.values(), labels=data.keys(),
                 figsize=[2,1.8], ylims=[-4, 8], title='q={0:.2e} n={1}'.format(te['q'], te['n']),
                 showfliers=False)
+
+# Save pickles:
+oh = open('res.pickle', 'w')
+pickle.dump(oh, res)
+oh.close()
+
+oh = open('res_type.pickle', 'w')
+pickle.dump(oh, res_type)
+oh.close()

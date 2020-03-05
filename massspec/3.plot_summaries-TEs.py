@@ -13,8 +13,8 @@ import shared
 res = {}
 
 all_matches = glload('results_gene.glb')
-all_solo_tes = glload('../te_discovery/te_transcripts/transcript_table_merged.mapped.glb')
-all_data = all_matches.map(genelist=all_solo_tes, key='transcript_id')
+all_te_transcripts = glload('../te_discovery/te_transcripts/transcript_table_merged.mapped.glb')
+all_data = all_matches.map(genelist=all_te_transcripts, key='transcript_id')
 print(all_data)
 
 all_fastas = genelist('2.blast_searches/all_masked_peptides.fa', format=format.fasta) # Just for getting the positions;
@@ -36,6 +36,7 @@ for m in all_data:
     res_per_gene[m['transcript_id']]['derived_peptide'].append(peptide)
 
     # Get the position in the Peptide_fasta
+    print([m['class'], m['name'].replace(' ', ''), m['transcript_id'], m['enst']])
     name = '|'.join([m['class'], m['name'].replace(' ', ''), m['transcript_id'], m['enst']])
     aa_seq = all_fastas[name]
     left = aa_seq.index(peptide) * 3

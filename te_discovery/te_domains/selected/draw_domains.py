@@ -60,6 +60,7 @@ transcript_ids = [
     'HPSCSR.4844.3',
     'HPSCSR.162330.3',
     'HPSCSR.216914.100',
+    'HPSCLR.5927.1',
     ]
 
 gl = genelist()
