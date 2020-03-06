@@ -18,8 +18,8 @@ def bundle_up_by_name(mode):
         if symbol not in bundles:
             bundles[symbol] = []
 
-        if gene['enst'] in tes:
-            gene['doms'] = tes[gene['enst']]['doms']
+        if gene['transcript_id'] in tes:
+            gene['doms'] = tes[gene['transcript_id']]['doms']
             gene['TEs'] = True
         else:
             gene['TEs'] = False
@@ -59,11 +59,49 @@ def bundle_up_by_name(mode):
 
     return bundles
 
-coding_bundles = bundle_up_by_name('coding')
-noncoding_bundles = bundle_up_by_name('noncoding')
-noncoding_bundles = bundle_up_by_name('all')
-
-print(coding_bundles)
-
 # Broad summary:
-for g in bundles:
+def process_bundles(bundle):
+    res_fcs = {}
+    gene_with_noTE_and_TE_transcript = 0
+    has_no_with_te_transcript = 0
+    has_no_nonte_transcript = 0
+
+    for gene in bundle:
+        tpms_for_no_te = []
+        tpms_for_with_te = {}
+        for transcript in bundle[gene]:
+            if transcript['TEs']:
+                for te in transcript['doms']:
+                    if te['dom'] not in tpms_for_with_te:
+                        tpms_for_with_te[te['dom']] = []
+                    tpms_for_with_te[te['dom']].append(transcript['TPM'])
+            else: # No TE:
+                tpms_for_no_te.append(transcript['TPM'])
+
+        # Get FC:
+        # A few ways to do this, take the mean or the max
+        if not tpms_for_with_te:
+            has_no_with_te_transcript += 1
+            continue # No paired
+        if not tpms_for_no_te: # There is a few!
+            has_no_nonte_transcript += 1
+            continue
+
+        gene_with_noTE_and_TE_transcript += 1
+        for te in tpms_for_with_te:
+            fc = utils.fold_change(max(tpms_for_no_te), max(tpms_for_with_te[te]), pad=0.01)
+            if te not in res_fcs:
+                res_fcs[te] = []
+            res_fcs[te].append(fc)
+    print('{0:,} genes without a non-TE transcript '.format(has_no_nonte_transcript))
+    print('{0:,} genes without a TE-containing transcript'.format(has_no_with_te_transcript))
+    print('Found {0:,} genes with at least 1 non-TE transcript and 1 TE-containing transcript'.format(gene_with_noTE_and_TE_transcript))
+    return res_fcs
+
+coding_bundles = bundle_up_by_name('coding')
+#noncoding_bundles = bundle_up_by_name('noncoding')
+#noncoding_bundles = bundle_up_by_name('all')
+
+res_coding = process_bundles(coding_bundles)
+
+

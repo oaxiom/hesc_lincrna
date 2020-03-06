@@ -416,3 +416,58 @@ def split_bar(filename, data_dict, key_order=None, title='', cols=None):
     fig.savefig(filename)
     fig.savefig(filename.replace('.png', '.pdf'))
     print('Saved %s' % filename)
+
+def boxplots(filename, data, qs):
+    fig = plot.figure(figsize=[2.8,4])
+    mmheat_hei = 0.1+(0.022*len(data))
+    fig.subplots_adjust(left=0.4, right=0.8, top=mmheat_hei, bottom=0.1)
+    ax = fig.add_subplot(111)
+    ax.tick_params(right=True)
+    m = numpy.median(data['no TE'])
+
+    ax.axvline(m, ls=":", lw=0.5, color="grey") # add a grey line at zero for better orientation
+    ax.axvline(m-1, ls=":", lw=0.5, color="grey") # add a grey line at zero for better orientation
+    ax.axvline(m+1, ls=":", lw=0.5, color="grey") # add a grey line at zero for better orientation
+
+    dats = numpy.array(list(data.values()))
+    r = ax.boxplot(dats,
+        showfliers=False,
+        whis=True,
+        patch_artist=True,
+        widths=0.5, vert=False)
+
+    plot.setp(r['medians'], color='black', lw=2) # set nicer colours
+    plot.setp(r['boxes'], color='black', lw=0.5)
+    plot.setp(r['caps'], color="grey", lw=0.5)
+    plot.setp(r['whiskers'], color="grey", lw=0.5)
+
+    ax.set_yticklabels(data.keys())
+
+    gtm = '#FF8A87'
+    ltm = '#92A7FF'
+
+    draw_qs = True
+    if not qs:
+        draw_qs = False
+        qs = [0.00001] * len(data) # spoof to force colour drawing;
+
+    for i, q, k, p in zip(range(0, len(data)), qs, data, r['boxes']):
+        #ax.text(6.3, i+0.5, q, ha='left', va='center', fontsize=6,)
+        if qs[q] < 0.05:
+            ax.text(6.5, i+1, '*{0:.1e}'.format(qs[q]), ha='left', va='center', fontsize=6,)
+            if numpy.median(data[k]) > m:
+                p.set_facecolor(gtm)
+            else:
+                p.set_facecolor(ltm)
+        else:
+            if draw_qs:
+                ax.text(6.5, i+1, '{0:.1e}'.format(qs[q]), ha='left', va='center', fontsize=6,)
+            p.set_facecolor('lightgrey')
+
+        if k == 'no TE':
+            p.set_facecolor('grey')
+
+    [t.set_fontsize(6) for t in ax.get_yticklabels()]
+    [t.set_fontsize(6) for t in ax.get_xticklabels()]
+
+    fig.savefig(filename)
