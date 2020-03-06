@@ -27,7 +27,7 @@ all_genes = glload('../../../transcript_assembly/packed/all_genes.glb')
 dfam = genelist('../../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
 contains_te = glload('../../te_transcripts/transcript_table_merged.mapped.glb')
 contains_not_te = contains_te.map(genelist=all_genes, key='transcript_id', logic='notright')
-
+contains_not_te.saveTSV('not_TE.tsv')
 dfam_dict = {}
 for te in dfam:
     dfam_dict[te['name']] = '{0}:{1}:{2}'.format(te['type'], te['subtype'], te['name'])
@@ -116,7 +116,7 @@ p_scatter = {
 
 for te in sorted(res_type):
     for t in class_dict().keys(): # pc-all, ncrna-all' etc.
-        if True in [typ in te for typ in ['SINE', 'LINE', 'LTR', 'Retroposon']]:
+        if True in [typ in te for typ in ['SINE', 'LINE', 'LTR', 'Retroposon', 'DNA', 'Unknown', 'Satellite',]]:
             data = {te: res_type[te][t], 'noTE': res[t]['nonTE']}
 
             if len(data[te]) <= 20:
@@ -200,10 +200,10 @@ for t in class_dict().keys():
                 showfliers=False)
 
 # Save pickles:
-oh = open('res.pickle', 'w')
-pickle.dump(oh, res)
+oh = open('res.pickle', 'wb')
+pickle.dump(res, oh)
 oh.close()
 
-oh = open('res_type.pickle', 'w')
-pickle.dump(oh, res_type)
+oh = open('res_type.pickle', 'wb')
+pickle.dump(res_type, oh)
 oh.close()
