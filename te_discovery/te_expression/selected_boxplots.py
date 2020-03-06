@@ -1,10 +1,13 @@
 
-import pickle, numpy
+import pickle, numpy, sys
 import matplotlib
 import matplotlib.pyplot as plot
 from glbase3 import *
 from collections import defaultdict
 matplotlib.rc('font', serif='Helvetica')
+
+sys.path.append('../../')
+import shared
 
 def class_dict():
     return {
@@ -57,7 +60,7 @@ for k in data:
         qs['no TE'] = 0.0
         continue
     qs[k] = qvals.get(key='name', value=k, mode='lazy')[0]['q']
-boxplots('pc.pdf', data, qs)
+shared.boxplots('pc.pdf', data, qs)
 
 # The ncRNA TEs:
 qvals = genelist('by_transcript_class/tab_ncrna-all.tsv', format={'force_tsv': True, 'name': 0, 'q': 2})
@@ -117,4 +120,4 @@ for k in data:
         qs['no TE'] = 0.0
         continue
     qs[k] = qvals.get(key='name', value=k, mode='lazy')[0]['q']
-boxplots('ncrna.pdf', data, qs)
+shared.boxplots('ncrna.pdf', data, qs)
