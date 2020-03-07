@@ -460,7 +460,7 @@ def boxplots(filename, data, qs, no_TE_key='no TE'):
         qs = {}
         for k in data:
             m = numpy.median(data[k])
-            if abs(m) > 1.0:
+            if abs(m) > 0.53:
                 qs[k] = 0.00001# spoof to force colour drawing;
             else:
                 qs[k] = 1  # i.e. grey

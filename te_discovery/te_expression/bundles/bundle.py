@@ -1,9 +1,11 @@
-import sys, os, numpy
-from scipy.stats import mannwhitneyu, wilcoxon
+import sys, os, numpy, math
+from scipy.stats import mannwhitneyu, wilcoxon, ttest_ind, ttest_1samp
 from glbase3 import *
 import matplotlib.pyplot as plot
 sys.path.append('../../../')
 import shared
+sys.path.append('../')
+import shared_bundle
 
 # These have the official GENCODE CDS, and the predicted (about ~80% accurate)
 all_genes = glload('../../../transcript_assembly/packed/all_genes.glb')
@@ -11,56 +13,6 @@ tes = glload('../../te_transcripts/transcript_table_merged.mapped.glb') # yes, a
 tes = {gene['transcript_id']: gene for gene in tes}
 dfam = genelist('../../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
 dfam_dict = {te['name']: '{0}:{1}:{2}'.format(te['type'], te['subtype'], te['name']) for te in dfam}
-
-def bundle_up_by_name(mode):
-    # First I need to bundle them up by their name;
-    bundles = {}
-    for gene in all_genes:
-        symbol = gene['name'].split(' ')[0].strip()
-
-        if symbol not in bundles:
-            bundles[symbol] = []
-
-        if gene['transcript_id'] in tes:
-            gene['doms'] = tes[gene['transcript_id']]['doms']
-            gene['TEs'] = True
-        else:
-            gene['TEs'] = False
-            gene['doms'] = []
-
-        bundles[symbol].append(gene)
-
-    # remove the genes that are only non-coding
-    newbundles = {}
-    for gene in bundles:
-        for transcript in bundles[gene]:
-            if mode == 'all' or transcript['coding'] == mode:
-                newbundles[gene] = bundles[gene]
-                break
-    bundles = newbundles
-
-    print(mode)
-    print('Found {0:,} genes'.format(len(bundles)))
-    bundles = {b: bundles[b] for b in bundles if len(bundles[b]) > 1}
-    genes_with_multiple_transcripts = len(bundles)
-    print('Found {0:,} genes with >1 transcript'.format(genes_with_multiple_transcripts))
-
-    transcript_variants_per_gene = [len(bundles[gene]) for gene in bundles]
-    # limit to 10+
-    transcript_variants_per_gene = [min(b, 20) for b in transcript_variants_per_gene]
-    # histogram;
-    fig = plot.figure(figsize=[1.6,1.1])
-    ax = fig.add_subplot(111)
-    ax.hist(transcript_variants_per_gene, max(transcript_variants_per_gene)-1, range=(0, 20))
-    ax.set_xlim([-0.5, 21.5])
-
-    ax.set_xticks([1.5, 10, 19.5])
-    ax.set_xticklabels([2, 10, '>=20'])
-    [t.set_fontsize(6) for t in ax.get_yticklabels()]
-    [t.set_fontsize(6) for t in ax.get_xticklabels()]
-    fig.savefig('transcripts_per_gene-{0}.pdf'.format(mode))
-
-    return bundles
 
 # Broad summary:
 def process_bundles(bundle):
@@ -79,8 +31,9 @@ def process_bundles(bundle):
         tpms_for_with_te = {}
         for transcript in bundle[gene]:
             if transcript['TEs']:
-                for te in transcript['doms']:
-                    full_name = dfam_dict[te['dom']]
+                unq_tes = set([t['dom'] for t in transcript['doms']])
+                for te in unq_tes:
+                    full_name = dfam_dict[te]
                     if full_name not in tpms_for_with_te:
                         tpms_for_with_te[full_name] = []
                     tpms_for_with_te[full_name].append(transcript['TPM'])
@@ -118,7 +71,17 @@ def process_bundles(bundle):
     # Figure out the P:
     ps = {}
     for te in tpms_withTE:
-        ps[te] = mannwhitneyu(tpms_noTE[te], tpms_withTE[te], alternative='two-sided')[1]
+        #ps[te] = mannwhitneyu(tpms_noTE[te], tpms_withTE[te], alternative='two-sided')[1]
+        #ps[te] = ttest_ind(
+        #    [math.log2(v) for v in tpms_noTE[te]],
+        #    [math.log2(v) for v in tpms_withTE[te]],
+        #    equal_var=True)[1]
+        #ps[te] = ttest_ind(
+        #    tpms_noTE[te],
+        #    tpms_withTE[te],
+        #    equal_var=False)[1]
+        ps[te] = ttest_1samp(res_fcs[te], 0)[1]
+        print(ps[te], te)
     # Q value correct?
 
     print('{0:,} genes without a non-TE transcript '.format(has_no_nonte_transcript))
@@ -126,9 +89,9 @@ def process_bundles(bundle):
     print('Found {0:,} genes with at least 1 non-TE transcript and 1 TE-containing transcript'.format(gene_with_noTE_and_TE_transcript))
     return res_fcs, ps
 
-coding_bundles = bundle_up_by_name('coding')
-noncoding_bundles = bundle_up_by_name('noncoding')
-all_bundles = bundle_up_by_name('all')
+coding_bundles = shared_bundle.bundle_up_by_name('coding', all_genes, tes)
+noncoding_bundles = shared_bundle.bundle_up_by_name('noncoding', all_genes, tes)
+all_bundles = shared_bundle.bundle_up_by_name('all', all_genes, tes)
 
 res_coding, p_coding = process_bundles(coding_bundles)
 res_ncrna, p_ncrna  = process_bundles(noncoding_bundles)
@@ -186,7 +149,7 @@ noncoding_tes = data = [
     'LTR:ERV1:HERV-Fc2',
     'LTR:ERV1:HERVS71',
     'LTR:ERV1:MER50-int',
-    'LTR:ERV1:HUERS-P3b',
+    #'LTR:ERV1:HUERS-P3b',
     'LTR:ERV1:MER110',
 
     'LTR:ERVK:HERVK',

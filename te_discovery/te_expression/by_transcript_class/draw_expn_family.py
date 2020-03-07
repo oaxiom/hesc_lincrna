@@ -122,8 +122,8 @@ for te in sorted(res_type):
             if len(data[te]) <= 20:
                 continue
 
-            p = scipy.stats.mannwhitneyu(data[te], data['noTE'], alternative='two-sided')[1]
-
+            #p = scipy.stats.mannwhitneyu(data[te], data['noTE'], alternative='two-sided')[1]
+            p = scipy.stats.ttest_ind(data[te], data['noTE'], equal_var=False)[1]
             # This M is really dubious, as if you move the average slightly then the overall will be a mess.
             #M = utils.fold_change(2**numpy.mean(data['noTE']), 2**numpy.mean(data[te]), pad=0.01)# fold-change
             # Convert M to a rank score from 0 -> 1 instead
