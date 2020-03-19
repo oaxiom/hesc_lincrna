@@ -1,5 +1,6 @@
 import numpy
 import matplotlib.pyplot as plot
+plot.rcParams['pdf.fonttype'] = 42
 
 col_keys = {
     'DNA:.': 'black',
@@ -344,7 +345,7 @@ def lab_func(pct, allvals):
     absolute = int(pct/100.*sum(allvals))
     return "{:.1f}%\n{:,}".format(pct, absolute)
 
-def split_bar(filename, data_dict, key_order=None, title='', cols=None):
+def split_bar(filename, data_dict, key_order=None, title='', cols=None, figsize=[4,3]):
     if not cols:
         cols = plot.rcParams['axes.prop_cycle'].by_key()['color']
 

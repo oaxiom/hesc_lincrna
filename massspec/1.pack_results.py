@@ -12,6 +12,9 @@ all_fastas = genelist('2.blast_searches/all_masked_peptides.fa', format=format.f
 all_fastas = {i['name']: i['seq'] for i in all_fastas}
 dfam = genelist('../te_discovery/dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
 all_te_transcripts = glload('../te_discovery/te_transcripts/transcript_table_merged.mapped.glb')
+print(all_te_transcripts)
+CDSs = glload('../transcript_assembly/get_CDS/coding_genes_with_local_CDS-corrected.glb')
+CDSs = {i['transcript_id']: i for i in CDSs}
 all_te_transcripts = {i['transcript_id']: i['doms'] for i in all_te_transcripts}
 #all_data = all_matches.map(genelist=all_te_transcripts, key='transcript_id')
 
@@ -54,14 +57,18 @@ for filename in glob.glob('3.hipsci_results/PT*.tsv.gz'):
             # Get the position in the Peptide_fasta
             fasta_name = '|'.join([class_, symbol.replace(' ', ''), hsc, enst])
             aa_seq = all_fastas[fasta_name]
-            left = aa_seq.index(peptide_string) * 3
-            rite = left+len(peptide_string) * 3
+            left = aa_seq.index(peptide_string)
+            rite = left+len(peptide_string)
 
             # see if it's in a TE domain:
             fullname = 'No'
             te_doms = all_te_transcripts[hsc]
             for d in te_doms:
-                if d['span'][1] >= left and d['span'][0] <= rite:
+                # the span values include the UTRs. I need to trim them.
+                mrna_left = CDSs[hsc]['cds_local_locs'][0] + (left*3)
+                mrna_right = CDSs[hsc]['cds_local_locs'][0] + (rite*3)
+
+                if d['span'][1] >= mrna_left and d['span'][0] <= mrna_right:
                     te = dfam.get(key='name', value=d['dom'])[0]
                     fullname = '{0}:{1}:{2}'.format(te['type'], te['subtype'], d['dom'])
 
@@ -72,8 +79,10 @@ for filename in glob.glob('3.hipsci_results/PT*.tsv.gz'):
                 'peptide': peptide,
                 'E': e,
                 'peptide_string': peptide_string,
-                'left': left,
-                'right': rite,
+                'peptide_left': left,
+                'peptide_right': rite,
+                'mrna_left': mrna_left,
+                'mrna_right': mrna_right,
                 'insideTE': fullname,
                 })
 

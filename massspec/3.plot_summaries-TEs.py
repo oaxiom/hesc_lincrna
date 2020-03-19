@@ -70,7 +70,8 @@ for k in res_per_gene:
 # Plot 1:
 shared.split_bar('peptides.png', res,
     key_order=['2 or more unique peptides', '1 Unique peptide', 'No peptides'],
-    cols=['#d62728', '#ff7f0e', '#2ca02c',  ]) #, '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'])
+    cols=['#d62728', '#ff7f0e', '#2ca02c',  ],
+    figsize=[3,2]) #, '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'])
 
 # Save the unqTE table:
 gl = genelist()
