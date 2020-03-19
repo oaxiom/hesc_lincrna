@@ -6,6 +6,15 @@ import gzip as gzipfile
 res_peps = {} # Peptides that pass
 res_genes = [] # Genes that pass
 
+delete_chars = set('0123456789.+')
+# So I can get hte locations;
+all_fastas = genelist('2.blast_searches/all_masked_peptides.fa', format=format.fasta) # Just for getting the positions;
+all_fastas = {i['name']: i['seq'] for i in all_fastas}
+dfam = genelist('../te_discovery/dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
+all_te_transcripts = glload('../te_discovery/te_transcripts/transcript_table_merged.mapped.glb')
+all_te_transcripts = {i['transcript_id']: i['doms'] for i in all_te_transcripts}
+#all_data = all_matches.map(genelist=all_te_transcripts, key='transcript_id')
+
 for filename in glob.glob('3.hipsci_results/PT*.tsv.gz'):
     oh = gzipfile.open(filename, 'rt')
     print(filename)
@@ -39,19 +48,40 @@ for filename in glob.glob('3.hipsci_results/PT*.tsv.gz'):
         res_peps[peptide] += 1
 
         for hsc, enst, symbol, class_ in zip(hsc_names, enst_names, symbol_names, class_names):
+            peptide_string = ''.join([i for i in peptide if i not in delete_chars])
+
+            # Find out where it is in the CDS, and if it's in a TE:
+            # Get the position in the Peptide_fasta
+            fasta_name = '|'.join([class_, symbol.replace(' ', ''), hsc, enst])
+            aa_seq = all_fastas[fasta_name]
+            left = aa_seq.index(peptide_string) * 3
+            rite = left+len(peptide_string) * 3
+
+            # see if it's in a TE domain:
+            fullname = 'No'
+            te_doms = all_te_transcripts[hsc]
+            for d in te_doms:
+                if d['span'][1] >= left and d['span'][0] <= rite:
+                    te = dfam.get(key='name', value=d['dom'])[0]
+                    fullname = '{0}:{1}:{2}'.format(te['type'], te['subtype'], d['dom'])
+
             res_genes.append({'transcript_id': hsc,
                 'enst': enst,
                 'name': symbol,
                 'class': class_,
                 'peptide': peptide,
                 'E': e,
+                'peptide_string': peptide_string,
+                'left': left,
+                'right': rite,
+                'insideTE': fullname,
                 })
 
 gl = genelist()
 gl.load_list(res_genes)
 gl.sort('name')
 gl.sort('class')
-gl.saveTSV('results_gene.tsv', key_order=['transcript_id', 'enst', 'name'])
+gl.saveTSV('results_gene.tsv', key_order=['transcript_id', 'enst', 'name', 'class', 'E', 'peptide', 'peptide_string', 'left', 'right', 'insideTE'])
 gl.save('results_gene.glb')
 
 print('{0} peptides passed'.format(len(res_peps)))

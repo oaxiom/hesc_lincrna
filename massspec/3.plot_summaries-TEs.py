@@ -27,32 +27,18 @@ for solo_te in all_data:
     res_per_gene[solo_te['transcript_id']] = {'te_derived_peptide': [],
         'derived_peptide': []}
 
-delete_chars = set('0123456789.+')
-# I need to go through, work out where the peptide is positioned, and then see if it is coming out of a TE:
+# inside TE generated in script 1
 res_per_TE_type = {}
 for m in all_data:
-    # Sanitise the peptide for searching
-    peptide = ''.join([i for i in m['peptide'] if i not in delete_chars])
-    res_per_gene[m['transcript_id']]['derived_peptide'].append(peptide)
+    print(m)
+    if m['insideTE'] == 'No':
+        res_per_gene[m['transcript_id']]['derived_peptide'].append(m['peptide_string'])
+        continue
+    res_per_gene[m['transcript_id']]['te_derived_peptide'].append(m['peptide_string'])
 
-    # Get the position in the Peptide_fasta
-    print([m['class'], m['name'].replace(' ', ''), m['transcript_id'], m['enst']])
-    name = '|'.join([m['class'], m['name'].replace(' ', ''), m['transcript_id'], m['enst']])
-    aa_seq = all_fastas[name]
-    left = aa_seq.index(peptide) * 3
-    rite = left+len(peptide) * 3
-
-    # see if it's in a TE domain:
-    for d in m['doms']:
-        if d['span'][1] >= left and d['span'][0] <= rite:
-            res_per_gene[m['transcript_id']]['te_derived_peptide'].append(peptide)
-
-            te = dfam.get(key='name', value=d['dom'])[0]
-            fullname = '{0}:{1}:{2}'.format(te['type'], te['subtype'], d['dom'])
-
-            if fullname not in res_per_TE_type:
-                res_per_TE_type[fullname] = set([])
-            res_per_TE_type[fullname].add(peptide)
+    if m['insideTE'] not in res_per_TE_type:
+        res_per_TE_type[m['insideTE']] = set([])
+    res_per_TE_type[m['insideTE']].add(m['peptide_string'])
 
 res_unq_pep = {}
 for k in res_per_gene:
@@ -63,23 +49,23 @@ for k in res_per_gene:
 
 
 res = {
-    'TE-derived': {'2 or more unique peptides': 0, '1 Unique peptide': 0, 'No peptides': 0},
-    'detected': {'2 or more unique peptides': 0, '1 Unique peptide': 0, 'No peptides': 0},
+    'Inside TE': {'2 or more unique peptides': 0, '1 Unique peptide': 0, 'No peptides': 0},
+    'Outside TE': {'2 or more unique peptides': 0, '1 Unique peptide': 0, 'No peptides': 0},
     }
 for k in res_per_gene:
     if res_per_gene[k]['num_unq_derived_peptide'] >= 2:
-        res['detected']['2 or more unique peptides'] += 1
+        res['Outside TE']['2 or more unique peptides'] += 1
     elif res_per_gene[k]['num_unq_derived_peptide'] == 1:
-        res['detected']['1 Unique peptide'] += 1
+        res['Outside TE']['1 Unique peptide'] += 1
     else:
-        res['detected']['No peptides'] += 1
+        res['Outside TE']['No peptides'] += 1
 
     if res_per_gene[k]['num_unq_te_derived_peptide'] >= 2:
-        res['TE-derived']['2 or more unique peptides'] += 1
-    elif res_per_gene[k]['num_unq_derived_peptide'] == 1:
-        res['TE-derived']['1 Unique peptide'] += 1
+        res['Inside TE']['2 or more unique peptides'] += 1
+    elif res_per_gene[k]['num_unq_te_derived_peptide'] == 1:
+        res['Inside TE']['1 Unique peptide'] += 1
     else:
-        res['TE-derived']['No peptides'] += 1
+        res['Inside TE']['No peptides'] += 1
 
 # Plot 1:
 shared.split_bar('peptides.png', res,
@@ -117,7 +103,7 @@ ax.set_yticklabels(labs)
 xlim = ax.get_xlim()[1]
 xlim += (xlim/10)
 for y, c in zip(ys, vals):
-    ax.text(xlim, y-0.25, c, fontsize=6)
+    ax.text(xlim, y, c, fontsize=6, va='center')
 ax.tick_params(right=True)
 [t.set_fontsize(6) for t in ax.get_yticklabels()]
 [t.set_fontsize(6) for t in ax.get_xticklabels()]
@@ -142,7 +128,7 @@ ax.barh(ys, vals)
 xlim = ax.get_xlim()[1]
 xlim += (xlim/10)
 for y, c in zip(ys, vals):
-    ax.text(xlim, y-0.25, c, fontsize=6)
+    ax.text(xlim, y, c, fontsize=6, va='center')
 ax.tick_params(right=True)
 ax.set_yticks(ys)
 ax.set_yticklabels(labs)
