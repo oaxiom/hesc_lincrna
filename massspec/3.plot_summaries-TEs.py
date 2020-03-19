@@ -51,8 +51,8 @@ for m in all_data:
             fullname = '{0}:{1}:{2}'.format(te['type'], te['subtype'], d['dom'])
 
             if fullname not in res_per_TE_type:
-                res_per_TE_type[fullname] = 0
-            res_per_TE_type[fullname] += 1
+                res_per_TE_type[fullname] = set([])
+            res_per_TE_type[fullname].add(peptide)
 
 res_unq_pep = {}
 for k in res_per_gene:
@@ -86,22 +86,69 @@ shared.split_bar('peptides.png', res,
     key_order=['2 or more unique peptides', '1 Unique peptide', 'No peptides'],
     cols=['#d62728', '#ff7f0e', '#2ca02c',  ]) #, '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'])
 
-# Plot 2: Peptide-derived TEs:
-fig = plot.figure(figsize=[3,5.8])
-fig.subplots_adjust(left=0.6, right=0.98, top=0.998, bottom=0.03)#, hspace=0.2, wspace=0.2)
-#ax = plot.subplot2grid((2,2), (0,0), rowspan=2)
+# Save the unqTE table:
+gl = genelist()
+newl = []
+for k in res_per_TE_type:
+    for pep in res_per_TE_type[k]:
+        newl.append({'name': k, 'num_peps': len(res_per_TE_type[k]), 'peptide': pep})
+#newl = [{'name': k, 'num_peps': len(res_per_TE_type[k]), 'peptides':res_per_TE_type[k]} for k in res_per_TE_type]
+gl.load_list(newl)
+gl.sort('name')
+gl.saveTSV('unique_TE-derived_peptides.tsv', key_order=['name', 'num_peps'])
 
+# Plot 2: Peptide-derived TEs:
+fig = plot.figure(figsize=[3,4.5])
+fig.subplots_adjust(left=0.6, right=0.90, top=0.998, bottom=0.03)#, hspace=0.2, wspace=0.2)
+#ax = plot.subplot2grid((2,2), (0,0), rowspan=2)
 ax = fig.add_subplot(111)
-res_per_TE_type = {k: res_per_TE_type[k] for k in sorted(res_per_TE_type, key=res_per_TE_type.get, reverse=False)}
-print(res_per_TE_type)
+sorted_names = sorted(res_per_TE_type.keys())
+print(sorted_names)
+
+vals = {k: len(res_per_TE_type[k]) for k in sorted_names}
+
 ys = numpy.arange(len(res_per_TE_type))
-ax.barh(ys, list(res_per_TE_type.values()))
+labs = vals.keys()
+vals = vals.values()
+
+ax.barh(ys, vals)
 ax.set_yticks(ys)
-ax.set_yticklabels(res_per_TE_type.keys())
+ax.set_yticklabels(labs)
+xlim = ax.get_xlim()[1]
+xlim += (xlim/10)
+for y, c in zip(ys, vals):
+    ax.text(xlim, y-0.25, c, fontsize=6)
+ax.tick_params(right=True)
 [t.set_fontsize(6) for t in ax.get_yticklabels()]
 [t.set_fontsize(6) for t in ax.get_xticklabels()]
 ax.set_ylim([-1, len(ys)])
 fig.savefig('detected_TEs.png')
 fig.savefig('detected_TEs.pdf')
 
+# Plot 3: As plot 2, but top 10
+fig = plot.figure(figsize=[3,2])
+fig.subplots_adjust(left=0.6, right=0.90, top=0.998, bottom=0.03)#, hspace=0.2, wspace=0.2)
+#ax = plot.subplot2grid((2,2), (0,0), rowspan=2)
+ax = fig.add_subplot(111)
+res_per_TE_type = {k: len(res_per_TE_type[k]) for k in res_per_TE_type}
+res_per_TE_type = {k: res_per_TE_type[k] for k in sorted(res_per_TE_type, key=res_per_TE_type.get, reverse=False)}
+print(res_per_TE_type)
+ys = numpy.arange(20)
+vals = list(res_per_TE_type.values())[-20:]
+labs = list(res_per_TE_type.keys())[-20:]
+
+ax.barh(ys, vals)
+
+xlim = ax.get_xlim()[1]
+xlim += (xlim/10)
+for y, c in zip(ys, vals):
+    ax.text(xlim, y-0.25, c, fontsize=6)
+ax.tick_params(right=True)
+ax.set_yticks(ys)
+ax.set_yticklabels(labs)
+[t.set_fontsize(6) for t in ax.get_yticklabels()]
+[t.set_fontsize(6) for t in ax.get_xticklabels()]
+ax.set_ylim([-1, len(ys)])
+fig.savefig('detected_TEs_top20.png')
+fig.savefig('detected_TEs_top20.pdf')
 

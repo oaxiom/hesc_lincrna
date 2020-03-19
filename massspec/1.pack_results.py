@@ -18,10 +18,10 @@ for filename in glob.glob('3.hipsci_results/PT*.tsv.gz'):
 
         peptide = line[8]
         matches = line[9]
-        q = float(line[14])
+        e = float(line[13]) # EValue column
 
         # Only take high quality matches
-        if q > 0.05:
+        if e > 0.01: # strict
             continue
 
         # delete peptides matching to two peptides or more with the same name;
@@ -44,7 +44,7 @@ for filename in glob.glob('3.hipsci_results/PT*.tsv.gz'):
                 'name': symbol,
                 'class': class_,
                 'peptide': peptide,
-                'q': q,
+                'E': e,
                 })
 
 gl = genelist()

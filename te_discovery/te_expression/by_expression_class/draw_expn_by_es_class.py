@@ -73,9 +73,10 @@ res_type = defaultdict(dict_builder)
 gldraw = draw()
 
 for g in contains_te:
-    for d in g['doms']:
-        tpm = math.log2(max([g['TPM'], 0.1]))
-        TE = d['dom']
+    unq_doms = set([d['dom'] for d in g['doms']])
+    tpm = math.log2(max([g['TPM'], 0.1]))
+    for TE in unq_doms:
+
         full_name = dfam_dict[TE]
         tetype = full_name.split(':')[0]
 
@@ -94,16 +95,17 @@ for te in res_type:
             gldraw.beanplot(filename='by_type/viol_{0}-{1}.png'.format(te, t), data=data,
                 figsize=[2,1.8], beans=False, ylims=[-2.5, 8])
             gldraw.boxplot(filename='by_type/box_{0}-{1}.png'.format(te, t), data=data,
-                figsize=[2,1.8], beans=False, ylims=[-2.5, 8])
+                figsize=[2,1.8], beans=False, ylims=[-2.5, 8],
+                labels=data.keys())
 
 #Below: Split by te_subtype;
 res_type = defaultdict(dict_builder)
 gldraw = draw()
 
 for g in contains_te:
-    for d in g['doms']:
-        tpm = math.log2(max([g['TPM'], 0.1]))
-        TE = d['dom']
+    tpm = math.log2(max([g['TPM'], 0.1]))
+    unq_doms = set([d['dom'] for d in g['doms']])
+    for TE in unq_doms:
         full_name = dfam_dict[TE]
         tesubtype = ':'.join(full_name.split(':')[0:2])
 

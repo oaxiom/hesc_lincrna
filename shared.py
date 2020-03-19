@@ -466,16 +466,17 @@ def boxplots(filename, data, qs, no_TE_key='no TE'):
                 qs[k] = 1  # i.e. grey
         draw_qs = False # But don't draw;
 
-    for i, q, k, p in zip(range(0, len(data)), qs, data, r['boxes']):
+    for i, k, p in zip(range(0, len(data)), data, r['boxes']):
         #ax.text(6.3, i+0.5, q, ha='left', va='center', fontsize=6,)
-        if qs[q] < 0.05:
-            if draw_qs: ax.text(xlim+(xlim/5), i+1, '*{0:.1e}'.format(qs[q]), ha='left', va='center', fontsize=6,)
+        print(k, qs[k])
+        if qs[k] < 0.05:
+            if draw_qs: ax.text(xlim+(xlim/5), i+1, '*{0:.1e}'.format(qs[k]), ha='left', va='center', fontsize=6,)
             if numpy.median(data[k]) > m:
                 p.set_facecolor(gtm)
             else:
                 p.set_facecolor(ltm)
         else:
-            if draw_qs: ax.text(xlim+(xlim/5), i+1, '{0:.1e}'.format(qs[q]), ha='left', va='center', fontsize=6,)
+            if draw_qs: ax.text(xlim+(xlim/5), i+1, '{0:.1e}'.format(qs[k]), ha='left', va='center', fontsize=6,)
             p.set_facecolor('lightgrey')
 
         if k == 'no TE':

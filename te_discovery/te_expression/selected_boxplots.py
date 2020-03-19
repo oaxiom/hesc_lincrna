@@ -39,21 +39,28 @@ oh.close()
 qvals = genelist('by_transcript_class/tab_pc-all.tsv', format={'force_tsv': True, 'name': 0, 'q': 2})
 
 # figure is bottom to top:
-data = {
-    'DNA:TcMar-Tigger:Tigger1': res_type['DNA:TcMar-Tigger:Tigger1']['pc-all'],
-    'SINE:MIR:MIR': res_type['SINE:MIR:MIR']['pc-all'],
-    'SINE:Alu:AluSp': res_type['SINE:Alu:AluSp']['pc-all'],
-    'LINE:L2:L2': res_type['LINE:L2:L2']['pc-all'],
-    'LINE:L1:L1M2_orf2': res_type['LINE:L1:L1M2_orf2']['pc-all'],
-    'LINE:L1:L1M5_orf2': res_type['LINE:L1:L1M5_orf2']['pc-all'],
-    'LINE:L1:L1HS_5end': res_type['LINE:L1:L1HS_5end']['pc-all'],
-    'LTR:ERVL-MaLR:MLT1B': res_type['LTR:ERVL-MaLR:MLT1B']['pc-all'],
-    'LTR:ERV1:LTR7': res_type['LTR:ERV1:LTR7']['pc-all'],
-    'LTR:ERV1:LTR7Y': res_type['LTR:ERV1:LTR7Y']['pc-all'],
-    'LTR:ERV1:HERVH': res_type['LTR:ERV1:HERVH']['pc-all'],
+data = [
+    'DNA:TcMar-Tigger:Tigger1',
+    'SINE:MIR:MIR',
+    'SINE:Alu:AluSp',
+    'SINE:Alu:AluJb',
+    'SINE:Alu:FRAM',
+    'LINE:L2:L2',
+    'LINE:L1:L1M2_orf2',
+    'LINE:L1:L1M5_orf2',
+    'LINE:L1:L1HS_5end',
+    'LTR:ERVL-MaLR:MLT1B',
+    'LTR:ERV1:LTR7',
+    'LTR:ERV1:LTR7Y',
+    'LTR:ERV1:HERVH',
+    'LTR:ERV1:HERV-Fc2',
+    'LTR:ERV1:HERVE',
     #'', res_type['']['pc-all'],
-    'no TE': res['pc-all']['nonTE'],
-    }
+    ]
+
+data = {te: res_type[te]['pc-all'] for te in data}
+data['no TE'] = res['pc-all']['nonTE']
+
 qs = {}
 for k in data:
     if k == 'no TE':

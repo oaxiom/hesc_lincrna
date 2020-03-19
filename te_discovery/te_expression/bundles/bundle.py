@@ -51,8 +51,9 @@ def process_bundles(bundle):
 
         gene_with_noTE_and_TE_transcript += 1
         for te in tpms_for_with_te:
-            fc = utils.fold_change(max(tpms_for_no_te), max(tpms_for_with_te[te]), pad=0.01) # correct way around
-            #print(te, max(tpms_for_no_te), max(tpms_for_with_te[te]), fc)
+            fc = utils.fold_change(max(tpms_for_no_te), max(tpms_for_with_te[te]), pad=0.1) # correct way around
+            if 'LTR7' in te and '7' in te[-1]:
+                print(te, tpms_for_no_te, tpms_for_with_te[te], fc)
             #fc = utils.fold_change(numpy.mean(tpms_for_no_te), numpy.mean(tpms_for_with_te[te]), pad=0.01)
 
             # You need to think about this slightly odd way of generating a P value, but it basically keeps all genes in each category
@@ -61,6 +62,7 @@ def process_bundles(bundle):
                 tpms_noTE[te] = []
             if te not in tpms_withTE:
                 tpms_withTE[te] = []
+
             tpms_noTE[te] += tpms_for_no_te
             tpms_withTE[te] += tpms_for_with_te[te]
 
@@ -80,8 +82,9 @@ def process_bundles(bundle):
         #    tpms_noTE[te],
         #    tpms_withTE[te],
         #    equal_var=False)[1]
-        ps[te] = ttest_1samp(res_fcs[te], 0)[1]
-        print(ps[te], te)
+        #print(te, ['{0:.2f}'.format(f) for f in sorted(list(res_fcs[te]))])
+        ps[te] = ttest_1samp(res_fcs[te], 0)[1] # For FC
+        #print(ps[te], te)
     # Q value correct?
 
     print('{0:,} genes without a non-TE transcript '.format(has_no_nonte_transcript))
@@ -101,6 +104,8 @@ coding_tes = [
     'DNA:TcMar-Tigger:Tigger1',
     'SINE:MIR:MIR',
     'SINE:Alu:AluSp',
+    'SINE:Alu:AluJb',
+    'SINE:Alu:FRAM',
     'LINE:L2:L2',
     'LINE:L1:L1M2_orf2',
     'LINE:L1:L1M5_orf2',
@@ -109,6 +114,8 @@ coding_tes = [
     'LTR:ERV1:LTR7',
     'LTR:ERV1:LTR7Y',
     'LTR:ERV1:HERVH',
+    'LTR:ERV1:HERV-Fc2',
+    'LTR:ERV1:HERVE',
     #'', res_type['']['pc-all'],
     ]
 
@@ -150,7 +157,7 @@ noncoding_tes = data = [
     'LTR:ERV1:HERVS71',
     'LTR:ERV1:MER50-int',
     #'LTR:ERV1:HUERS-P3b',
-    'LTR:ERV1:MER110',
+    #'LTR:ERV1:MER110',
 
     'LTR:ERVK:HERVK',
 

@@ -116,10 +116,11 @@ p_scatter = {
 
 for te in sorted(res_type):
     for t in class_dict().keys(): # pc-all, ncrna-all' etc.
-        if True in [typ in te for typ in ['SINE', 'LINE', 'LTR', 'Retroposon', 'DNA', 'Unknown', 'Satellite',]]:
+        #if True in [typ in te for typ in ['SINE', 'LINE', 'LTR', 'Retroposon', 'DNA', 'Unknown', 'Satellite',]]:
+        if True:
             data = {te: res_type[te][t], 'noTE': res[t]['nonTE']}
 
-            if len(data[te]) <= 20:
+            if len(data[te]) <= 5:
                 continue
 
             #p = scipy.stats.mannwhitneyu(data[te], data['noTE'], alternative='two-sided')[1]
@@ -186,6 +187,7 @@ for t in class_dict().keys():
     else:
         os.mkdir(t)
 
+    '''
     for te in gl:
         #print(t, te, res_type[te['name']][t])
         if te['q'] < 0.05:
@@ -198,7 +200,7 @@ for t in class_dict().keys():
             gldraw.boxplot(filename='{0}-box_{1}-{2}.png'.format(t, te['name'], t), data=data.values(), labels=data.keys(),
                 figsize=[2,1.8], ylims=[-4, 8], title='q={0:.2e} n={1}'.format(te['q'], te['n']),
                 showfliers=False)
-
+    '''
 # Save pickles:
 oh = open('res.pickle', 'wb')
 pickle.dump(res, oh)

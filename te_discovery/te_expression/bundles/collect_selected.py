@@ -103,6 +103,8 @@ coding_tes = [
     'DNA:TcMar-Tigger:Tigger1',
     'SINE:MIR:MIR',
     'SINE:Alu:AluSp',
+    'SINE:Alu:AluJb',
+    'SINE:Alu:FRAM',
     'LINE:L2:L2',
     'LINE:L1:L1M2_orf2',
     'LINE:L1:L1M5_orf2',
@@ -111,6 +113,8 @@ coding_tes = [
     'LTR:ERV1:LTR7',
     'LTR:ERV1:LTR7Y',
     'LTR:ERV1:HERVH',
+    'LTR:ERV1:HERV-Fc2',
+    'LTR:ERV1:HERVE',
     #'', res_type['']['pc-all'],
     ]
 
