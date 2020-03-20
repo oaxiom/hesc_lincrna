@@ -38,7 +38,7 @@ for n, gene in enumerate(doms):
             found = True
             break
 
-        if 'LTR7' in d['dom']:
+        if d['dom'] == 'LTR7':
             found = True
             break
 

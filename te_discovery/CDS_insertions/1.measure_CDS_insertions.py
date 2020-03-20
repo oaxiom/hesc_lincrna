@@ -12,6 +12,8 @@ def contained(al, ar, bl, br): # Is A in B?
 # These have the official GENCODE CDS, and the predicted (about ~80% accurate)
 canonical = glload('../../gencode/hg38_gencode_v32.pc.glb')
 gencode_cds = glload('../../transcript_assembly/get_CDS/gencode_cds.glb')
+print(canonical)
+print(gencode_cds)
 canonical_all = canonical.map(genelist=gencode_cds, key='enst')
 
 canonical = {}# convert to a quick look up for speed

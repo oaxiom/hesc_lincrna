@@ -56,6 +56,13 @@ for filename in glob.glob('blaster/table_*.tsv'):
     fasta = genelist('../1.fasta/fasta/{0}.fasta'.format(stub), format=format.fasta)
     fasta_lookup = {}
 
+    # A few squeek through somehow. I think these are a few crazy lucky ones that are the same length
+    # as the exisiting CDS. Probably a very subtle frameshift.
+    if 'class_not_found' in stub:
+        continue
+    if '_no_disruption_' in stub:
+        continue
+
     res = []
     for f in fasta:
         query_len = len(f['seq'])
@@ -65,6 +72,9 @@ for filename in glob.glob('blaster/table_*.tsv'):
                 print('Warning: {0} <{1} Amino acids, skipping'.format(hit['query_name'], min_length))
             else:
                 res.append(f) # Full sequence is uniquq
+                oh_all_seqs.write('>{0}|{1}\n'.format(stub, f['name']))
+                oh_all_seqs.write(f['seq'])
+                oh_all_seqs.write('\n')
 
         else: # Was found by BLASTP
             blastp_status = 'Found, but no good hits'

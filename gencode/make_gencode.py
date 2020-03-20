@@ -99,8 +99,8 @@ for idx, line in enumerate(oh):
             'exonStarts': [],
             'exonEnds': [],
             'name': gtf_dec['gene_name'],
-            'ensg': gtf_dec['gene_id'].split('.')[0],
-            'enst': gtf_dec['transcript_id'].split('.')[0],
+            'ensg': gtf_dec['gene_id'],
+            'enst': gtf_dec['transcript_id'],
             'transcript_id': gtf_dec['transcript_id'],
             'transcript_type': gtf_dec['transcript_type'],
             }
