@@ -74,27 +74,28 @@ def barplot(bundle, filename, gene_name, TE):
     fig.savefig(filename)
 
 # Noncoding:
-genes = [
-    ('HDAC2-AS2', 'LTR7'),
-    ('PDCL3P4', 'HERVK'),
-    ('AC108519.1', 'HERVK'),
-    ]
+genes = {
+    'LTR7': ['HDAC2-AS2'],
+    'HERVK': ['PDCL3P4', 'AC108519.1'],
+    }
 
-for g in genes:
-    barplot(noncoding_bundles, 'ncrna-{0}-{1}.pdf'.format(g[0], g[1]), g[0], g[1])
+for te in genes:
+    for g in genes[te]:
+        barplot(noncoding_bundles, 'ncrna-{0}-{1}.pdf'.format(te, g), g, te)
 
-genes = [
-    ('DISP1', 'HERVH'),
-    ('CCDC141', 'HERVH'),
-    ('TRMT44', 'HERVH'),
-    ('KLKB1', 'HERVH'),
-    ('PRKG1', 'HERVH'),
-    ('GUCY2C', 'HERVH'),
-    ('ABHD12B', 'HERVH'),
-    ('PCDH11X', 'HERVH'),
+genes = {
+    'HERVH': ['DISP1', 'CCDC141', 'TRMT44', 'KLKB1', 'PRKG1', 'GUCY2C', 'ABHD12B', 'PCDH11X'],
 
-    ]
+    'L1M5_orf2': [ 'CTPS2', 'ZNF542P', 'ZNF780B','ZNF69', ],
 
-for g in genes:
-    barplot(coding_bundles, 'pc-{0}-{1}.pdf'.format(g[0], g[1]), g[0], g[1])
+    'L1M2_orf2': [ 'CTPS1', 'UTY', 'ADGRL3', 'CCDC191',
+        'R3HCC1L', 'ZNF91',  'LRRTM4', 'NCOA2', 'SHANK2', 'MED21', 'RAB21',
+        ],
+
+    'FRAM': ['CDH2', 'CNDP2', 'BACH2', 'FBXL4', 'GINS4', 'ZNF250', 'RBM14'],
+    }
+
+for te in genes:
+    for g in genes[te]:
+        barplot(coding_bundles, 'pc-{0}-{1}.pdf'.format(te, g), g, te)
 
