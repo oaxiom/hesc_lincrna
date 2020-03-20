@@ -15,12 +15,10 @@ res = {}
 all_matches = glload('results_gene.glb')
 all_te_transcripts = glload('../te_discovery/te_transcripts/transcript_table_merged.mapped.glb')
 all_data = all_matches.map(genelist=all_te_transcripts, key='transcript_id')
-print(all_data)
 
 all_fastas = genelist('2.blast_searches/all_masked_peptides.fa', format=format.fasta) # Just for getting the positions;
 all_fastas = {i['name']: i['seq'] for i in all_fastas}
 dfam = genelist('../te_discovery/dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
-print(all_fastas)
 
 res_per_gene = {}
 for solo_te in all_data:
@@ -118,7 +116,7 @@ fig.subplots_adjust(left=0.6, right=0.90, top=0.998, bottom=0.03)#, hspace=0.2, 
 ax = fig.add_subplot(111)
 res_per_TE_type = {k: len(res_per_TE_type[k]) for k in res_per_TE_type}
 res_per_TE_type = {k: res_per_TE_type[k] for k in sorted(res_per_TE_type, key=res_per_TE_type.get, reverse=False)}
-print(res_per_TE_type)
+
 ys = numpy.arange(20)
 vals = list(res_per_TE_type.values())[-20:]
 labs = list(res_per_TE_type.keys())[-20:]

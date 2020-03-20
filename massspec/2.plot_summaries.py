@@ -58,7 +58,12 @@ ax = fig.add_subplot(111)
 ys = numpy.arange(len(res))
 
 print(res.keys())
-order = ['table_insertion_alternate_cds', 'table_new_STOP', 'table_new_ATG', 'table_frameshift_insertion',
+order = [
+    'table_novel_coding',
+    'table_insertion_alternate_cds',
+    'table_new_STOP', 'table_new_ATG',
+    'table_frameshift_insertion',
+
     ] # bottom to top
 
 num_hits = numpy.array([res[k][0] for k in order])
