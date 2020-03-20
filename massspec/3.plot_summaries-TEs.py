@@ -30,7 +30,6 @@ for solo_te in all_data:
 # inside TE generated in script 1
 res_per_TE_type = {}
 for m in all_data:
-    print(m)
     if m['insideTE'] == 'No':
         res_per_gene[m['transcript_id']]['derived_peptide'].append(m['peptide_string'])
         continue

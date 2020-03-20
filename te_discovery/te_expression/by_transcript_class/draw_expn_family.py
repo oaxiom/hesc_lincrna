@@ -52,27 +52,26 @@ data = {'nonTE': contains_not_te}
 res = class_dict()
 
 # Fill the data tables
-for datatype in data:
-    for g in data[datatype]:
-        tpm = math.log2(g['TPM']+0.1)
+for g in contains_not_te:
+    tpm = math.log2(g['TPM']+0.1)
 
-        if g['coding'] == 'coding':
-            res['pc-all'][datatype].append(tpm)
+    if g['coding'] == 'coding':
+        res['pc-all']['nonTE'].append(tpm)
 
-            if ';~' in g['name']:
-                res['pc-variant'][datatype].append(tpm)
-            elif ';=' in g['name']:
-                res['pc-known'][datatype].append(tpm)
+        if ';~' in g['name']:
+            res['pc-variant']['nonTE'].append(tpm)
+        elif ';=' in g['name']:
+            res['pc-known']['nonTE'].append(tpm)
 
-        elif g['coding'] == 'noncoding':
-            res['ncrna-all'][datatype].append(tpm)
+    elif g['coding'] == 'noncoding':
+        res['ncrna-all']['nonTE'].append(tpm)
 
-            if ';=' in g['name']:
-                res['ncrna-known'][datatype].append(tpm)
-            elif ';~' in g['name']:
-                res['ncrna-variant'][datatype].append(tpm)
-            elif ';!' in g['name']:
-                res['ncrna-unknown'][datatype].append(tpm)
+        if ';=' in g['name']:
+            res['ncrna-known']['nonTE'].append(tpm)
+        elif ';~' in g['name']:
+            res['ncrna-variant']['nonTE'].append(tpm)
+        elif ';!' in g['name']:
+            res['ncrna-unknown']['nonTE'].append(tpm)
 
 #Below: Split by te_family;
 res_type = defaultdict(dict_builder)
@@ -120,10 +119,12 @@ for te in sorted(res_type):
         if True:
             data = {te: res_type[te][t], 'noTE': res[t]['nonTE']}
 
-            if len(data[te]) <= 5:
+            if len(data[te]) <= 10:
                 continue
 
             #p = scipy.stats.mannwhitneyu(data[te], data['noTE'], alternative='two-sided')[1]
+            #print(data[te])
+            #print(data['noTE'])
             p = scipy.stats.ttest_ind(data[te], data['noTE'], equal_var=False)[1]
             # This M is really dubious, as if you move the average slightly then the overall will be a mess.
             #M = utils.fold_change(2**numpy.mean(data['noTE']), 2**numpy.mean(data[te]), pad=0.01)# fold-change

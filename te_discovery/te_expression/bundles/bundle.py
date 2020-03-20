@@ -7,6 +7,8 @@ import shared
 sys.path.append('../')
 import shared_bundle
 
+from statsmodels.stats.weightstats import ztest
+
 # These have the official GENCODE CDS, and the predicted (about ~80% accurate)
 all_genes = glload('../../../transcript_assembly/packed/all_genes.glb')
 tes = glload('../../te_transcripts/transcript_table_merged.mapped.glb') # yes, all as I am measuring PC -> ncRNA as well;
@@ -83,8 +85,12 @@ def process_bundles(bundle):
         #    tpms_withTE[te],
         #    equal_var=False)[1]
         #print(te, ['{0:.2f}'.format(f) for f in sorted(list(res_fcs[te]))])
-        ps[te] = ttest_1samp(res_fcs[te], 0)[1] # For FC
-        #print(ps[te], te)
+        t = ttest_1samp(res_fcs[te], 0)[1] # For FC
+        #z = ztest(res_fcs[te], value=0)[1]
+
+        #print(z, t, te)
+
+        ps[te] = t
     # Q value correct?
 
     print('{0:,} genes without a non-TE transcript '.format(has_no_nonte_transcript))
@@ -102,6 +108,7 @@ res_all, p_all = process_bundles(all_bundles)
 
 coding_tes = [
     'DNA:TcMar-Tigger:Tigger1',
+    'DNA:hAT-Charlie:MER117',
     'SINE:MIR:MIR',
     'SINE:Alu:AluSp',
     'SINE:Alu:AluJb',
@@ -110,6 +117,7 @@ coding_tes = [
     'LINE:L1:L1M2_orf2',
     'LINE:L1:L1M5_orf2',
     'LINE:L1:L1HS_5end',
+    'LINE:L1:L1MB5_3end',
     'LTR:ERVL-MaLR:MLT1B',
     'LTR:ERV1:LTR7',
     'LTR:ERV1:LTR7Y',

@@ -101,6 +101,7 @@ all_bundles = bundle_up_by_name('all')
 
 coding_tes = [
     'DNA:TcMar-Tigger:Tigger1',
+    'DNA:hAT-Charlie:MER117',
     'SINE:MIR:MIR',
     'SINE:Alu:AluSp',
     'SINE:Alu:AluJb',
@@ -109,6 +110,7 @@ coding_tes = [
     'LINE:L1:L1M2_orf2',
     'LINE:L1:L1M5_orf2',
     'LINE:L1:L1HS_5end',
+    'LINE:L1:L1MB5_3end',
     'LTR:ERVL-MaLR:MLT1B',
     'LTR:ERV1:LTR7',
     'LTR:ERV1:LTR7Y',

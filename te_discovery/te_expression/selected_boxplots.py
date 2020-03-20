@@ -41,6 +41,7 @@ qvals = genelist('by_transcript_class/tab_pc-all.tsv', format={'force_tsv': True
 # figure is bottom to top:
 data = [
     'DNA:TcMar-Tigger:Tigger1',
+    'DNA:hAT-Charlie:MER117',
     'SINE:MIR:MIR',
     'SINE:Alu:AluSp',
     'SINE:Alu:AluJb',
@@ -49,6 +50,7 @@ data = [
     'LINE:L1:L1M2_orf2',
     'LINE:L1:L1M5_orf2',
     'LINE:L1:L1HS_5end',
+    'LINE:L1:L1MB5_3end',
     'LTR:ERVL-MaLR:MLT1B',
     'LTR:ERV1:LTR7',
     'LTR:ERV1:LTR7Y',
