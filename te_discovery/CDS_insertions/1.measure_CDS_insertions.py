@@ -4,7 +4,7 @@ sys.path.append('../../')
 import shared
 
 def qcollide(al, ar, bl, br):
-    return ar > bl and al < br
+    return ar >= bl and al <= br # return(self.loc["right"] >= loc.loc["left"] and self.loc["left"] <= loc.loc["right"]) # nice one-liner
 
 def contained(al, ar, bl, br): # Is A in B?
     return al >= bl and ar <= br
@@ -59,8 +59,8 @@ for gene in all_genes:
     if symbol not in bundles:
         bundles[symbol] = []
 
-    if gene['enst'] in tes:
-        gene['doms'] = tes[gene['enst']]['doms']
+    if gene['transcript_id'] in tes:
+        gene['doms'] = tes[gene['transcript_id']]['doms']
         gene['TEs'] = True
     else:
         gene['TEs'] = False
@@ -120,7 +120,6 @@ for idx, gene_name in enumerate(bundles):
                 i['tags'] = '='
                 i['coding'] = 'coding'
                 bundles[gene_name].append(i)
-                print(i)
             #print(bundles[gene_name])
         else:
             #print(gene_name)
@@ -189,13 +188,13 @@ for idx, gene_name in enumerate(bundles):
                             frameshift_insertion = True
 
                     else: # It is colliding, but extends past the CDS;
-                        if t['span'][1] > transcript['cds_local_locs'][1]: # It's STOP the CDS
+                        if t['span'][1] >= transcript['cds_local_locs'][1]: # It's STOP the CDS
                             if expected_cds_length in cds_lengths: # It's probably already annotated as contained, and has no effect on the CDS
                                 pass
                             else: # probably a novel truncation
                                 new_STOP = True
 
-                        elif t['span'][0] < transcript['cds_local_locs'][0]: # It's at the START;
+                        elif t['span'][0] <= transcript['cds_local_locs'][0]: # It's at the START;
                             if expected_cds_length in cds_lengths: # It's probably already annotated as contained, and has no effect on the CDS
                                 pass
                             else: # probably a novel truncation

@@ -81,11 +81,12 @@ for filename in glob.glob('blaster/table_*.tsv'):
             remaining_sequence = f['seq']
 
             for hit in blasta_lookup[f['name']]:
-                if query_len == hit['match_len']: # 100 % match;
-                    print('Warning: {0} 100% blast match, skipping'.format(hit['query_name']))
+                if query_len == hit['match_len'] and hit['pident'] >= 90.0: # basically a 100 % match;
+                    print('Warning: {0} full length and >90% blast match, skipping'.format(hit['query_name']))
                     remaining_sequence = None
                     break
-                if hit['pident'] > 95.0:
+
+                if hit['pident'] >= 90.0:
                     # I just keep masking it from all the hits
                     hit_len = ''.join(['n'] * (hit['match_len']-1))
                     remaining_sequence = remaining_sequence[0:hit['qstart']] + hit_len + remaining_sequence[hit['qend']:]
@@ -120,26 +121,8 @@ for filename in glob.glob('blaster/table_*.tsv'):
 
                         # tr -s 'n', and replace with a '-' to signify a gap, and stop the ability to search back across peptides that have a matching segment(s) in the middle.
                         # Don't do this, and just replace the 'n' with a '-'. This allows me to keep the actual position, and so
-                        '''
-                        squeeze_ns = [] # probably a 1-liner could do this...
-                        last = None
-                        for c in remaining_sequence:
-                            if last == 'n':
-                                last = c
-                                continue
-                            last = c
-                            to_add = c
-                            if to_add == 'n':
-                                to_add = '-'
-                            squeeze_ns.append(to_add)
 
-                        print(squeeze_ns)
-                        if squeeze_ns[0] == '-': squeeze_ns =squeeze_ns[1:]
-
-                        oh_all_seqs.write(''.join([a for a in squeeze_ns if a not in ('_')]))
-                        '''
                         oh_all_seqs.write(''.join([a for a in remaining_sequence.replace('n', '-') if a not in ('_')]))
-
                         oh_all_seqs.write('\n')
 
     if res:

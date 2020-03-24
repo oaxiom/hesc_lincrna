@@ -28,10 +28,10 @@ for transcript in all_genes:
         te = tes[transcript['transcript_id']]
         transcript['doms'] = te['doms']
 
-    transcript['cds_local_locs'] = cds[transcript['transcript_id']]['cds_local_locs']
-    transcript['cds_info'] = 'TRUE'
+        transcript['cds_local_locs'] = cds[transcript['transcript_id']]['cds_local_locs']
+        transcript['cds_info'] = 'TRUE'
 
-    newl.append(transcript)
+        newl.append(transcript)
 
 gl = genelist()
 gl.load_list(newl)
