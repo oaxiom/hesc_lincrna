@@ -404,11 +404,74 @@ def split_bar(filename, data_dict, key_order=None, title='', cols=None, figsize=
     ax.set_yticks(ypos)
     ax.set_yticklabels(labs)
 
-
-
     ax.set_xlim([-2, 102])
     ax.set_xticks([0, 50, 100])
     ax.set_xticklabels(['0%', '50%', '100%'])
+    ax.set_title(title, size=6)
+    ax.legend()
+    plot.legend(loc='upper left', bbox_to_anchor=(0.0, -0.4), prop={'size': 6})
+    [t.set_fontsize(6) for t in ax.get_yticklabels()]
+    [t.set_fontsize(6) for t in ax.get_xticklabels()]
+    fig.savefig(filename)
+    fig.savefig(filename.replace('.png', '.pdf'))
+    print('Saved %s' % filename)
+
+def bar(filename, data_dict, key_order=None, title='', cols=None, figsize=[4,3]):
+    if not cols:
+        cols = plot.rcParams['axes.prop_cycle'].by_key()['color']
+
+    # get all of the classes:
+    if not key_order:
+        all_keys = [] # preserve order
+        for k in data_dict:
+            for kk in data_dict[k]:
+                if kk not in all_keys:
+                    all_keys.append(kk)
+        print('Found {0} keys'.format(all_keys))
+    else:
+        all_keys = key_order
+
+    vals = {k: [] for k in all_keys}
+
+    labs = []
+    for k in data_dict:
+        labs.append(k)
+        for kk in all_keys:
+            vals[kk].append(float(data_dict[k][kk]))
+    print(vals)
+
+    scaled = {k: [] for k in all_keys}
+    sums = None
+    for k in all_keys:
+        if sums is None:
+            sums = numpy.zeros(len(vals[k]))
+        sums += vals[k]
+
+    for k in all_keys:
+        vals[k] = numpy.array(vals[k])
+
+    plot_hei = (0.8) - (0.04*len(labs))
+
+    plot.rcParams['pdf.fonttype'] = 42
+    fig = plot.figure(figsize=[4,3])
+    fig.subplots_adjust(left=0.35, right=0.95, bottom=plot_hei,)
+    ax = fig.add_subplot(111)
+    ax.set_prop_cycle('color', cols)
+
+    ypos = numpy.arange(len(data_dict))
+
+    # data_dict = {'bar_row': {'class': 0, class2': 0}}
+
+    bots = numpy.zeros(len(labs))
+    for k in vals:
+        ax.barh(ypos, vals[k], 0.7, label=k, left=bots)
+        for y, v, s, b in zip(ypos, vals[k], vals[k], bots):
+            ax.text(b+(s//2), y, '{0:,.0f} ({1:.0f}%)'.format(v, s), ha='center', va='center', fontsize=6)
+        bots += vals[k]
+
+    ax.set_yticks(ypos)
+    ax.set_yticklabels(labs)
+
     ax.set_title(title, size=6)
     ax.legend()
     plot.legend(loc='upper left', bbox_to_anchor=(0.0, -0.4), prop={'size': 6})
