@@ -49,6 +49,7 @@ res = {
     'Inside TE': {'2 or more unique peptides': 0, '1 Unique peptide': 0, 'No peptides': 0},
     'Outside TE': {'2 or more unique peptides': 0, '1 Unique peptide': 0, 'No peptides': 0},
     }
+
 for k in res_per_gene:
     if res_per_gene[k]['num_unq_derived_peptide'] >= 2:
         res['Outside TE']['2 or more unique peptides'] += 1

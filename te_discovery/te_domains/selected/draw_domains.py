@@ -33,7 +33,7 @@ genes = set(['SOX2', 'NANOG', 'SALL4', 'LIN28A', 'LIN28B', 'SALL1', 'POU5F1', 'B
     'DNMT3L', 'LEFTY2', 'FGF4', 'NODAL', 'CER1', 'NLRP7', 'SFRP1', 'ZIC2', 'KDR',
     'ZFP42', 'C9ORF135', 'ST6GAL1', 'LRP4', 'MSTO1', 'PRODH', # From Pontis et al., 2019 CSC
     'SFRP2', 'OTX2', 'KLF4', 'KLF5',
-    'HNRNPK', 'HNRNPU'])
+    'HNRNPK', 'HNRNPU', 'PMPCB'])
 
 for n, gene in enumerate(doms):
     #print(gene['name'].split(' ')[0])
