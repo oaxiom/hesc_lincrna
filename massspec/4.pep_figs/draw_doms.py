@@ -14,6 +14,7 @@ draw = 'pdf'
 for n, gene in enumerate(res):
     print(gene['transcript_id'])
 
+    _class = gene['class']
     gene = doms.get(key='transcript_id', value=gene['transcript_id'])[0] # By defiition
 
     peptides = res.get(value=gene['transcript_id'], key='transcript_id', mode='greedy')
@@ -25,8 +26,9 @@ for n, gene in enumerate(res):
 
     peptides = [(i['mrna_left'], i['mrna_right'], i['peptide_string'], i['insideTE']) for i in peptides]
 
+
     draw_domains_share.draw_domain(gene,
-        '%s/%s.%s.%s.%s' % (draw, gene['name'], gene['transcript_id'], gene['enst'], draw),
+        '%s/%s.%s.%s.%s.%s' % (draw, _class, gene['name'], gene['transcript_id'], gene['enst'], draw),
         dfam,
         peptides
         )
