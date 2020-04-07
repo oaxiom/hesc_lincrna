@@ -51,7 +51,7 @@ for stub in res_per_gene:
     res[stub] = [num_hits, len(pep_hits)]
 print(res)
 
-fig = plot.figure(figsize=[4,1.4])
+fig = plot.figure(figsize=[3,1.0])
 fig.subplots_adjust(left=0.5)
 ax = fig.add_subplot(111)
 
