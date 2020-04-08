@@ -1,0 +1,82 @@
+CLUSTAL O(1.2.4) multiple sequence alignment
+
+
+2        ------------------------------------------------------------	0
+1        ------------------------------------------------------------	0
+POL      NKSKKRRNRVSFLGAATVEPPKPIPLTWKTEKPVWVNQWPLPKQKLEALHLLANEQLEKG	60
+                                                                     
+
+2        ------------------------------------------------------------	0
+1        ------------------------------------------------------------	0
+POL      HIEPSFSPWNSPVFVIQKKSGKWRMLTDLRAVNAVIQPMGPLQPGLPSPAMIPKDWPLII	120
+                                                                     
+
+2        ------------------------------------------------------------	0
+1        ------------------------------------------------------------	0
+POL      IDLKDCFFTIPLAEQDCEKFAFTIPAINNKEPATRFQWKVLPQGMLNSPTICQTFVGRAL	180
+                                                                     
+
+2        ------------------------------------------------------------	0
+1        ------------------------------------------------------------	0
+POL      QPVREKFSDCYIIHYIDDILCAAETKDKLIDCYTFLQAEVANAGLAIASDKIQTSTPFHY	240
+                                                                     
+
+2        ------------------------------------------------------------	0
+1        ---------------------------------------------------------GDS	3
+POL      LGMQIENRKIKPQKIEIRKDTLKTLNDFQKLLGDINWIRPTLGIPTYAMSNLFSILRGDS	300
+                                                                     
+
+2        ------------------------------------------------------------	0
+1        DLNSKRMLTPEATKEIK-------------------------------------------	20
+POL      DLNSKRMLTPEATKEIKLVEEKIQSAQINRIDPLAPLQLLIFATAHSPTGIIIQNTDLVE	360
+                                                                     
+
+2        ------------------------------------------------------------	0
+1        ------------------------------------------------------------	20
+POL      WSFLPHSTVKTFTLYLDQIATLIGQTRLRIIKLCGNDPDKIVVPLTKEQVRQAFINSGAW	420
+                                                                     
+
+2        ------------------------------------------------------------	0
+1        ------------------------------------------------------------	20
+POL      QIGLANFVGIIDNHYPKTKIFQFLKLTTWILPKITRREPLENALTVFTDGSSNGKAAYTG	480
+                                                                     
+
+2        ------------------------------------------------------------	0
+1        ------------------------------------------------------------	20
+POL      PKERVIKTPYQSAQRAELVAVITVLQDFDQPINIISDSAYVVQATRDVETALIKYSMDDQ	540
+                                                                     
+
+2        --------------RNFPFYITHIR-----------------------------------	11
+1        ------------------------------------------------------------	20
+POL      LNQLFNLLQQTVRKRNFPFYITHIRAHTNLPGPLTKANEQADLLVSSALIKAQELHALTH	600
+                                                                     
+
+2        ------------------------------------------------------------	11
+1        ------------------------------------------------------------	20
+POL      VNAAGLKNKFDVTWKQAKDIVQHCTQCQVLHLPTQEAGVNPRGLCPNALWQMDVTHVPSF	660
+                                                                     
+
+2        ------------------------------------------------------------	11
+1        ------------------------------------------------------------	20
+POL      GRLSYVHVTVDTYSHFIWATCQTGESTSHVKKHLLSCFAVMGVPEKIKTDNGPGYCSKAF	720
+                                                                     
+
+2        ------------------------------------------------------------	11
+1        ------------------------------------------------------------	20
+POL      QKFLSQWKISHTTGIPYNSQGQAIVERTNRTLKTQLVKQKEGGDSKECTTPQMQLNLALY	780
+                                                                     
+
+2        ------------------------------------------------------------	11
+1        ------------------------------------------------------------	20
+POL      TLNFLNIYRNQTTTSAEQHLTGKKNSPHEGKLIWWKDNKNKTWEIGKVITWGRGFACVSP	840
+                                                                     
+
+2        ------------------------------------------------------------	11
+1        ------------------------------------------------------------	20
+POL      GENQLPVWIPTRHLKFYNEPIRDAKKSTSAETETPQSSTVDSQDEQNGDVRRTDEVAIHQ	900
+                                                                     
+
+2        --------------------------------------------------------	11
+1        --------------------------------------------------------	20
+POL      EGRAADLGTTKEADAVSYKISREHKGDTNPREYAACSLDDCINGGKSPYACRSSCS	956
+                                                                 
