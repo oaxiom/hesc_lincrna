@@ -14,6 +14,7 @@ gllocs = glload('../../te_discovery/te_transcripts/transcript_table_merged.mappe
 
 locs = [
     'PMPCB',
+    'PCAT14',
     ]
 locs = genelist(loadable_list=[{'gene_symbol': k} for k in locs])
 ll = locs.map(genelist=gllocs, key='gene_symbol')

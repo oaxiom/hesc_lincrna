@@ -22,10 +22,14 @@ jk = {}
 for k in res:
     if res[k]:
         #res[k] = max(res[k]) / 1000.0
+        #print(res[k])
         res[k] = (sum(res[k]) / len(res[k])) / 1000.0 # milliDiv is parts per thousand, this should be in range 0 .. 1
+        print(res[k])
     substitutions_fraction = res[k]
     if substitutions_fraction:
-        jk[k] = -3.0/4.0 * math.log(1 - 4.0/3.0 * substitutions_fraction)
+        print(substitutions_fraction)
+        # Jukes-Cantor divergence:
+        jk[k] = -(3.0/4.0) * math.log(1 - (4.0/3.0 * substitutions_fraction))
         #jk[k] /= 4.5e-9 # Mm substitution rate
         jk[k] /= 2.2e-9 # Hs substitution rate
 
