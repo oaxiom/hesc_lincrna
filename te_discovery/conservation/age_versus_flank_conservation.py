@@ -50,10 +50,10 @@ for te in gl:
 shared.nice_scatter(x=x, y=y,
     figsize=[2,2], spot_size=12,
     spot_cols=get_cols(c),
-    label_t=0.6,
+    label_t=0.25,
     filename='scat_age_vs_te.pdf',
     label=c,
-    hlines=[0.6])
+    hlines=[0])
 
 x = []
 y = []
@@ -69,6 +69,6 @@ for te in gl:
 shared.nice_scatter(x=x, y=y,
     figsize=[2,2], spot_size=12,
     spot_cols=get_cols(c),
-    label_t=0.6,
+    label_t=0.25,
     filename='scat_age_vs_notte.pdf',
-    label=c, hlines=[0.6])
+    label=c, hlines=[0])
