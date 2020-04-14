@@ -293,6 +293,13 @@ def nice_scatter(x=None, y=None, filename=None, do_best_fit_line=False, spot_col
     fig = draw.getfigure(**kargs)
     ax = fig.add_subplot(111)
 
+    if doR:
+        xs = numpy.arange(min(x), max(x))
+        slope, intercept, r_value, p_value, std_err = linregress(x, y)
+        predict_y = intercept + slope * xs
+        plot.plot(xs, predict_y, ':', c='black')
+        ax.set_title('R={:.3f}; p={:.1e}'.format(r_value, p_value))
+
     ax.scatter(x, y, s=spot_size, c=spot_cols, alpha=0.2, edgecolors="none")
 
     if label:
@@ -306,13 +313,6 @@ def nice_scatter(x=None, y=None, filename=None, do_best_fit_line=False, spot_col
 
     [t.set_fontsize(6) for t in ax.get_yticklabels()]
     [t.set_fontsize(6) for t in ax.get_xticklabels()]
-
-    if doR:
-        xs = numpy.arange(min(x), max(x))
-        slope, intercept, r_value, p_value, std_err = linregress(x, y)
-        predict_y = intercept + slope * xs
-        plot.plot(xs, predict_y, ':', c='black')
-        ax.set_title('R={:.3f}'.format(r_value))
 
     draw.do_common_args(ax, **kargs)
 

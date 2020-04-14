@@ -12,7 +12,7 @@ def scat(filename, x, y, xlabel, ylabel, xlims, ylims, alpha=0.1, cols=None):
     slope, intercept, r_value, p_value, std_err = linregress(x, y)
     predict_y = intercept + slope * xs
     plot.plot(xs, predict_y, ':', c='black')
-    ax.set_title('R={:.3f}'.format(r_value))
+    ax.set_title('R={:.3f}; p={:.1e}'.format(r_value, p_value))
 
     ax.scatter(x, y, c=cols, s=4, alpha=alpha,  ec='none')
 
@@ -82,10 +82,8 @@ def contour(filename, x, y, xlabel, ylabel, ranges, vmax=200):
 
     slope, intercept, r_value, p_value, std_err = linregress(x, y)
     predict_y = intercept + slope * xs
-
     plot.plot(xs, predict_y, ':', c='black')
-
-    ax.set_title('R={:.3f}'.format(r_value))
+    ax.set_title('R={:.3f}; p={:.1e}'.format(r_value, p_value))
 
     ax.set_xlim(ranges[0])
     ax.set_ylim(ranges[1])

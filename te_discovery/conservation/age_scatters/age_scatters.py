@@ -23,8 +23,12 @@ draw_type = 'pdf'
 dfam = genelist('../../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
 contains_te = glload('../../te_transcripts/transcript_table_merged.mapped.glb')
 
-ages = glload('../../dfam/te_ages.glb')
-ages = {i['TE']: i['age'] for i in ages} # lookup;
+ages_gl = glload('../../dfam/te_ages.glb')
+ages = {}
+for te in ages_gl:
+    if '-int' in te['TE']:
+        ages[te['TE'].replace('-int', '')] = te['age'] # Harmonise the names
+    ages[te['TE']] = te['age'] # lookup;
 
 dfam_dict = {}
 for te in dfam:
