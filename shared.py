@@ -299,7 +299,7 @@ def nice_scatter(x=None, y=None, filename=None, do_best_fit_line=False, spot_col
         for x, y, t in zip(x, y, label):
             if label_tester:
                 if True in [test in t for test in label_tester]:
-                    ax.text(x, y, t, fontsize=5)
+                    if t: ax.text(x, y, t, fontsize=5)
                 continue
             if y > label_t: # q=0.05
                 ax.text(x, y, t, fontsize=5)

@@ -1,4 +1,4 @@
-import sys, os, numpy, math
+import sys, os, numpy, math, copy
 from scipy.stats import mannwhitneyu, wilcoxon, ttest_ind, ttest_1samp
 from glbase3 import *
 import matplotlib.pyplot as plot
@@ -23,14 +23,12 @@ def process_bundles(bundle):
     gene_with_noTE_and_TE_transcript = 0
     has_no_with_te_transcript = 0
     has_no_nonte_transcript = 0
-
-    # FOR P calc:
-    tpms_withTE = {}
-    tpms_noTE = {}
+    for_gl = []
 
     for gene in bundle:
         tpms_for_no_te = []
         tpms_for_with_te = {}
+        temp_for_gl = []
         for transcript in bundle[gene]:
             if transcript['TEs']:
                 unq_tes = set([t['dom'] for t in transcript['doms']])
@@ -39,8 +37,12 @@ def process_bundles(bundle):
                     if full_name not in tpms_for_with_te:
                         tpms_for_with_te[full_name] = []
                     tpms_for_with_te[full_name].append(transcript['TPM'])
+                    transcript['te'] = te
+                    temp_for_gl.append(copy.deepcopy(transcript))
             else: # No TE:
                 tpms_for_no_te.append(transcript['TPM'])
+                transcript['te'] = '-'
+                temp_for_gl.append(transcript)
 
         # Get FC:
         # A few ways to do this, take the mean or the max
@@ -51,6 +53,8 @@ def process_bundles(bundle):
             has_no_nonte_transcript += 1
             continue
 
+        for_gl += temp_for_gl
+
         gene_with_noTE_and_TE_transcript += 1
         for te in tpms_for_with_te:
             fc = utils.fold_change(max(tpms_for_no_te), max(tpms_for_with_te[te]), pad=0.1) # correct way around
@@ -58,23 +62,13 @@ def process_bundles(bundle):
                 print(te, tpms_for_no_te, tpms_for_with_te[te], fc)
             #fc = utils.fold_change(numpy.mean(tpms_for_no_te), numpy.mean(tpms_for_with_te[te]), pad=0.01)
 
-            # You need to think about this slightly odd way of generating a P value, but it basically keeps all genes in each category
-            # that are with or without a specific TE, and then does a MWU against that;
-            if te not in tpms_noTE:
-                tpms_noTE[te] = []
-            if te not in tpms_withTE:
-                tpms_withTE[te] = []
-
-            tpms_noTE[te] += tpms_for_no_te
-            tpms_withTE[te] += tpms_for_with_te[te]
-
             if te not in res_fcs:
                 res_fcs[te] = []
             res_fcs[te].append(fc)
 
     # Figure out the P:
     ps = {}
-    for te in tpms_withTE:
+    for te in res_fcs:
         #ps[te] = mannwhitneyu(tpms_noTE[te], tpms_withTE[te], alternative='two-sided')[1]
         #ps[te] = ttest_ind(
         #    [math.log2(v) for v in tpms_noTE[te]],
@@ -93,18 +87,25 @@ def process_bundles(bundle):
         ps[te] = t
     # Q value correct?
 
+    gl = genelist()
+    gl.load_list(for_gl)
+
     print('{0:,} genes without a non-TE transcript '.format(has_no_nonte_transcript))
     print('{0:,} genes without a TE-containing transcript'.format(has_no_with_te_transcript))
     print('Found {0:,} genes with at least 1 non-TE transcript and 1 TE-containing transcript'.format(gene_with_noTE_and_TE_transcript))
-    return res_fcs, ps
+    return res_fcs, ps, gl
 
 coding_bundles = shared_bundle.bundle_up_by_name('coding', all_genes, tes)
 noncoding_bundles = shared_bundle.bundle_up_by_name('noncoding', all_genes, tes)
 all_bundles = shared_bundle.bundle_up_by_name('all', all_genes, tes)
 
-res_coding, p_coding = process_bundles(coding_bundles)
-res_ncrna, p_ncrna  = process_bundles(noncoding_bundles)
-res_all, p_all = process_bundles(all_bundles)
+res_coding, p_coding, gl_coding = process_bundles(coding_bundles)
+res_ncrna, p_ncrna, gl_ncrna  = process_bundles(noncoding_bundles)
+#res_all, p_all, gl_all = process_bundles(all_bundles)
+
+gl_coding.saveTSV('coding.tsv')
+gl_ncrna.saveTSV('ncrna.tsv')
+#gl_all.saveTSV('all.tsv')
 
 coding_tes = [
     'DNA:TcMar-Tigger:Tigger1',
@@ -130,7 +131,7 @@ coding_tes = [
 data = {te: res_coding[te] for te in coding_tes}
 shared.boxplots('pc.pdf', data, qs=p_coding, no_TE_key=None)
 
-noncoding_tes = data = [
+noncoding_tes = [
     #'DNA:TcMar-Tigger:Tigger1': res_type['DNA:TcMar-Tigger:Tigger1']['ncrna-all'],
     'SINE:Alu:AluSg',
     'SINE:Alu:AluSp',
@@ -164,21 +165,21 @@ noncoding_tes = data = [
     'LTR:ERV1:HERV-Fc2',
     'LTR:ERV1:HERVS71',
     'LTR:ERV1:MER50-int',
-    #'LTR:ERV1:HUERS-P3b',
-    #'LTR:ERV1:MER110',
+    #'LTR:ERV1:HUERS-P3b', # No valid bundles
+    #'LTR:ERV1:MER110', # Just 1 valid gene;
 
     'LTR:ERVK:HERVK',
 
     'LTR:ERVL-MaLR:MST-int',
     'LTR:ERVL-MaLR:THE1-int',
     #'', res_type['']['pc-all'],
-
     ]
 
 data = {te: res_ncrna[te] for te in noncoding_tes}
-shared.boxplots('ncrna.pdf', data, qs=p_ncrna, no_TE_key=None)
+ps = {te: p_ncrna[te] for te in noncoding_tes}
+shared.boxplots('ncrna.pdf', data, qs=ps, no_TE_key=None)
 
-all_tes = list(set(coding_tes + noncoding_tes))
-all_tes.sort()
-data = {te: res_all[te] for te in all_tes}
-shared.boxplots('all.pdf', data, qs=p_all, no_TE_key=None)
+#all_tes = list(set(coding_tes + noncoding_tes))
+#all_tes.sort()
+#data = {te: res_all[te] for te in all_tes}
+#shared.boxplots('all.pdf', data, qs=p_all, no_TE_key=None)
