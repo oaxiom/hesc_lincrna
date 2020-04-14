@@ -1,5 +1,8 @@
 import numpy
 import matplotlib.pyplot as plot
+from sklearn import linear_model
+from scipy.stats import linregress
+from sklearn.metrics import mean_squared_error, r2_score
 plot.rcParams['pdf.fonttype'] = 42
 
 col_keys = {
@@ -275,7 +278,7 @@ def translateAA(seq):
 
 def nice_scatter(x=None, y=None, filename=None, do_best_fit_line=False, spot_cols='grey',
     print_correlation=False, spot_size=4, label_fontsize=14, label=False, label_t=1.301,
-    label_tester=None,
+    label_tester=None, doR=False,
     **kargs):
     """
     **Purpose**
@@ -300,6 +303,16 @@ def nice_scatter(x=None, y=None, filename=None, do_best_fit_line=False, spot_col
                 continue
             if y > label_t: # q=0.05
                 ax.text(x, y, t, fontsize=5)
+
+    [t.set_fontsize(6) for t in ax.get_yticklabels()]
+    [t.set_fontsize(6) for t in ax.get_xticklabels()]
+
+    if doR:
+        xs = numpy.arange(min(x), max(x))
+        slope, intercept, r_value, p_value, std_err = linregress(x, y)
+        predict_y = intercept + slope * xs
+        plot.plot(xs, predict_y, ':', c='black')
+        ax.set_title('R={:.3f}'.format(r_value))
 
     draw.do_common_args(ax, **kargs)
 

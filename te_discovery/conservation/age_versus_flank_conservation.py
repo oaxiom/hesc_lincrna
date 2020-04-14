@@ -4,9 +4,11 @@
 Measure the conservation of the lncRNAs versus the Family age of the TE and the flanks
 
 '''
-
-from glbase3 import glload, genelist
+import sys
+from glbase3 import glload, genelist, config
+sys.path.append('../../')
 import shared
+config.draw_mode = 'pdf'
 
 dfam = genelist('../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
 
@@ -21,46 +23,52 @@ for te in dfam:
 ages = glload('../dfam/te_ages.glb')
 ages = {i['TE']: i['age'] for i in ages} # lookup;
 
+def get_cols(TE_names):
+    spot_cols = []
+    for name in TE_names:
+        if 'LINE' in name:
+            spot_cols.append('blue')
+        elif 'LTR' in name:
+            spot_cols.append('red')
+        elif 'SINE' in name:
+            spot_cols.append('green')
+        else:
+            spot_cols.append('grey')
+    return spot_cols
+
 x = []
 y = []
+c = []
 for te in gl:
-    print(te['TE'])
     if te['TE'] not in dfam_dict:
         continue
     if dfam_dict[te['TE']] in ages:
         y.append(te['phyloP_tes'])
         x.append(ages[dfam_dict[te['TE']]])
+        c.append(dfam_dict[te['TE']])
 
-shared.scat('scat_age_vs_te.pdf',
-    x, y,
-    'Age', 'TE phyloP',
-    None, None,
-    )
-
-shared.contour('cont_age_vs_te.pdf',
-    x, y,
-    'Age', 'TE phyloP',
-    [[0, 190], [-0.6, 0.6]],
-    )
+shared.nice_scatter(x=x, y=y,
+    figsize=[2,2], spot_size=12,
+    spot_cols=get_cols(c),
+    label_t=0.6,
+    filename='scat_age_vs_te.pdf',
+    label=c,
+    hlines=[0.6])
 
 x = []
 y = []
+c = []
 for te in gl:
-    print(te['TE'])
     if te['TE'] not in dfam_dict:
         continue
     if dfam_dict[te['TE']] in ages:
         y.append(te['phyloP_nottes'])
         x.append(ages[dfam_dict[te['TE']]])
+        c.append(dfam_dict[te['TE']])
 
-shared.scat('scat_age_vs_notte.pdf',
-    x, y,
-    'Age', 'not-TE phyloP',
-    None, None,
-    )
-
-shared.contour('cont_age_vs_te.pdf',
-    x, y,
-    'Age', 'TE phyloP',
-    [[0, 190], [-0.6, 0.6]],
-    )
+shared.nice_scatter(x=x, y=y,
+    figsize=[2,2], spot_size=12,
+    spot_cols=get_cols(c),
+    label_t=0.6,
+    filename='scat_age_vs_notte.pdf',
+    label=c, hlines=[0.6])

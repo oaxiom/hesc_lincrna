@@ -61,7 +61,6 @@ for t in transcripts:
 
 newres = []
 for te in res:
-
     result = {
         'TE': te,
         'phyloP_tes': sum(res[te]['phyloP_tes']) / len(res[te]['phyloP_tes']),
