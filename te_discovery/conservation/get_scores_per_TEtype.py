@@ -18,7 +18,7 @@ res = {}
 
 setter = itertools.count(-50)
 
-for t in transcripts[0:1000]:
+for t in transcripts:
     # just extract all the per-base exon scores; then distribute them to the TE or not-TE categories
 
     all = 0.0

@@ -8,7 +8,7 @@ def scat(filename, x, y, xlabel, ylabel, xlims, ylims):
     fig = plot.figure(figsize=[3,3])
     ax = fig.add_subplot(111)
 
-    xs = np.arange(-0.6, 0.6)
+    xs = np.arange(min(x), max(x))
 
     slope, intercept, r_value, p_value, std_err = linregress(x, y)
     predict_y = intercept + slope * xs

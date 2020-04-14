@@ -75,8 +75,13 @@ def barplot(bundle, filename, gene_name, TE):
 
 # Noncoding:
 genes = {
-    'LTR7': ['HDAC2-AS2'],
-    'HERVK': ['PDCL3P4', 'AC108519.1'],
+    'LTR7': ['HDAC2-AS2', 'AP000867.4', 'AC027288.1', 'FIRRE',],
+    'HERVK': ['AC108519.1'],
+    'HERVH': ['LINC01108', 'AL590705.1', 'AP002856.2', ],
+    'HERVS71': ['AC068587.8',],
+    'L1M2': ['AC012213.1', ],
+    'FRAM': ['FIRRE',],
+
     }
 
 for te in genes:

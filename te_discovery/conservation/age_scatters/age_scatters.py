@@ -91,7 +91,7 @@ for te in sorted(res_type):
         if True in [typ in te for typ in ['SINE', 'LINE', 'LTR', 'Retroposon']]:
             data = res_type[te][t]
 
-            if len(data) <= 20:
+            if len(data) <= 50:
                 continue
 
             if te in ages:
@@ -118,8 +118,6 @@ for t in class_dict().keys():
         else:
             spot_cols.append('grey')
 
-    config.draw_mode = 'svg'
     shared.nice_scatter(x=gl['age'], y=gl['exp'], figsize=[2,2], spot_size=12,
         spot_cols=spot_cols, label_t=0.6,
         filename='MA-{0}.png'.format(t), label=gl['name'], hlines=[0.6])
-    config.draw_mode = 'pdf'

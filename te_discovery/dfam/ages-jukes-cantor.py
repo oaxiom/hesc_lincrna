@@ -32,6 +32,7 @@ for k in res:
         jk[k] = -(3.0/4.0) * math.log(1 - (4.0/3.0 * substitutions_fraction))
         #jk[k] /= 4.5e-9 # Mm substitution rate
         jk[k] /= 2.2e-9 # Hs substitution rate
+        jk[k] /= 1e6 # MYrs
 
 print('Ages:')
 for k in jk:
