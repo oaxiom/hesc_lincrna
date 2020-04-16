@@ -1,11 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plot
+import matplotlib.cm as cm
 from sklearn import linear_model
 from scipy.stats import linregress
 from sklearn.metrics import mean_squared_error, r2_score
 
 def scat(filename, x, y, xlabel, ylabel, xlims, ylims, alpha=0.1, cols=None):
-    fig = plot.figure(figsize=[3,3])
+    fig = plot.figure(figsize=[2.4,2])
     ax = fig.add_subplot(111)
 
     xs = np.arange(min(x), max(x))
@@ -32,7 +33,17 @@ def scat(filename, x, y, xlabel, ylabel, xlims, ylims, alpha=0.1, cols=None):
 
 def hist(filename, x, y, xlabel, ylabel, ranges):
     # Hist2d:
-    fig = plot.figure(figsize=[3.4,3])
+    fig = plot.figure(figsize=[2.4,2])
+    ax = fig.add_subplot(111)
+
+    counts,xbins,ybins,image = ax.hist2d(x, y, #cmin=1,
+        vmax=200,
+        bins=60,
+        range=ranges)
+
+    plot.close(fig)
+
+    fig = plot.figure(figsize=[2.4,2])
     ax = fig.add_subplot(111)
 
     xs = np.arange(-0.6, 0.6)
@@ -45,8 +56,15 @@ def hist(filename, x, y, xlabel, ylabel, ranges):
     ax.set_title('R={:.3f}'.format(r_value))
 
     h = ax.hist2d(x, y, cmin=1,
-        vmax=400,
-        bins=20, range=ranges)
+        vmax=10, cmap=cm.plasma,
+        bins=200, range=ranges)
+
+    #ax.contour(counts.transpose(), extent=[xbins[0],xbins[-1],ybins[0],ybins[-1]],
+    #    linewidths=0.3,
+    #    vmin=0,
+    #    vmax=200,
+    #    levels = [0, 1, 5, 10, 25, 50, 75, 100, 200],#, 300, 400]
+    #    )
 
     ax.set_xlim(ranges[0])
     ax.set_ylim(ranges[1])
