@@ -5,7 +5,7 @@ from sklearn import linear_model
 from scipy.stats import linregress
 from sklearn.metrics import mean_squared_error, r2_score
 
-def scat(filename, x, y, xlabel, ylabel, xlims, ylims, alpha=0.1, cols=None):
+def scat(filename, x, y, xlabel, ylabel, xlims, ylims, alpha=0.1, cols=None, hlines=[0], vlines=[0]):
     fig = plot.figure(figsize=[2.4,2])
     ax = fig.add_subplot(111)
 
@@ -20,8 +20,10 @@ def scat(filename, x, y, xlabel, ylabel, xlims, ylims, alpha=0.1, cols=None):
     ax.set_xlim(xlims)
     ax.set_ylim(ylims)
 
-    ax.axvline(0, ls=":", color="grey")
-    ax.axhline(0, ls=":", color="grey")
+    for l in hlines:
+        ax.axvline(l, ls=":", lw=1.0, color="grey")
+    for l in vlines:
+        ax.axhline(l, ls=":", lw=1.0, color="grey")
 
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
@@ -31,7 +33,7 @@ def scat(filename, x, y, xlabel, ylabel, xlims, ylims, alpha=0.1, cols=None):
 
     fig.savefig(filename)
 
-def hist(filename, x, y, xlabel, ylabel, ranges):
+def hist(filename, x, y, xlabel, ylabel, ranges, hlines=[0], vlines=[0]):
     # Hist2d:
     fig = plot.figure(figsize=[2.4,2])
     ax = fig.add_subplot(111)
@@ -69,8 +71,10 @@ def hist(filename, x, y, xlabel, ylabel, ranges):
     ax.set_xlim(ranges[0])
     ax.set_ylim(ranges[1])
 
-    ax.axvline(0, ls=":", color="grey")
-    ax.axhline(0, ls=":", color="grey")
+    for l in hlines:
+        ax.axvline(l, ls=":", lw=1.0, color="grey")
+    for l in vlines:
+        ax.axhline(l, ls=":", lw=1.0, color="grey")
 
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)

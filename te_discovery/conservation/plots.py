@@ -23,7 +23,9 @@ shared_conservation.scat('scat_te_vs_not_tes.pdf',
 shared_conservation.hist('hist_te_vs_not_tes.pdf',
     gl['phyloP_tes'], gl['phyloP_nottes'],
     'TE', 'not-TE',
-    ranges=[[-0.6, 0.7], [-0.6, 0.7]],
+    ranges=[[-0.2, 0.7], [-0.2, 0.7]],
+    hlines = [0, 0.25],
+    vlines = [0, 0.25],
     )
 
 shared_conservation.contour('cont_te_vs_not_tes.pdf',
@@ -47,7 +49,7 @@ for t in ('phyloP_tes', 'phyloP_nottes'):
         y=np.log2(np.array(gl['TPM'])+0.1),
         xlabel='cons',
         ylabel='expn',
-        ranges=[[-0.6, 0.7], [-3, 9]],
+        ranges=[[-0.2, 0.7], [-3, 9]],
         )
 
     shared_conservation.contour(filename='cont_expn_cons_vs_{0}.pdf'.format(t),

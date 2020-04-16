@@ -92,7 +92,7 @@ p_scatter = {
 
 for te in sorted(res_type):
     for t in class_dict().keys(): # pc-all, ncrna-all' etc.
-        if True in [typ in te for typ in ['SINE', 'LINE', 'LTR', 'Retroposon']]:
+        if True in [typ in te for typ in ['SINE', 'LINE', 'LTR', 'Retroposon', 'DNA']]:
             data = res_type[te][t]
 
             if len(data) <= 50:
@@ -119,9 +119,11 @@ for t in class_dict().keys():
             spot_cols.append('red')
         elif 'SINE' in name:
             spot_cols.append('green')
+        elif 'Retroposon' in name:
+            spot_cols.append('orange')
         else:
             spot_cols.append('grey')
 
     shared.nice_scatter(x=gl['age'], y=gl['exp'], figsize=[2,2], spot_size=12,
-        spot_cols=spot_cols, label_t=0.6,
+        spot_cols=spot_cols, label_t=0.6, alpha=0.3,
         filename='MA-{0}.png'.format(t), label=gl['name'], hlines=[0.6])
