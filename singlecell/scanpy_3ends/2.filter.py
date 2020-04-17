@@ -22,28 +22,14 @@ sc.settings.autoshow = False
 
 adata = sc.read('raw_data.h5ad')
 
-#mito_genes = adata.var_names.str.startswith('mt-')
-# for each cell compute fraction of counts in mito genes vs. all genes
-# the `.A1` is only necessary as X is sparse (to transform to a dense array after summing)
-#adata.obs['percent_mito'] = np.sum(adata[:, mito_genes].X, axis=1).A1 / np.sum(adata.X, axis=1).A1
-# add the total counts per cell as observations-annotation to adata
-#adata.obs['n_counts'] = adata.X.sum(axis=1).A1
-
 sc.pl.violin(adata, ['n_genes', 'n_counts'], groupby='replicate', size=0, log=False, cut=0, show=False, save='qc1-pre-norm-replicates.pdf')
 
 # Base filtering for QC failures:
 sc.pp.filter_cells(adata, min_genes=1500)
 sc.pp.filter_cells(adata, max_genes=8000)
 sc.pp.filter_cells(adata, min_counts=3000)
-sc.pp.filter_cells(adata, max_counts=100000)
+sc.pp.filter_cells(adata, max_counts=80000)
 sc.pp.filter_genes(adata, min_cells=100) # Only filter genes here;
-#adata = adata[adata.obs['percent_mito'] < 0.2, :]
-
-# Filter out the mt genes to stop them etting into the most variable
-#mito_genes = adata.var_names.str.startswith('mt-')
-#mask = np.isin(adata.var_names, mito_genes, invert=True, assume_unique=True)
-#adata = adata[:, mask] # also slices .var[]
-# The above causes trouble for some reason in scran
 
 sc.pl.violin(adata, ['n_genes','n_counts'], groupby='cell_type', size=0, log=False, cut=0, show=False, save='qc1.pdf')
 sc.pl.violin(adata, ['n_genes','n_counts'], groupby='replicate', size=0, log=False, cut=0, show=False, save='qc1-replicates.pdf')

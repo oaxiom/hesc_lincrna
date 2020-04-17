@@ -20,16 +20,21 @@ matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['font.size'] = 10
 sc.settings.autoshow = False
 
-from sc_utils import sparsify
+from sc_utils import sparsify # https://github.com/oaxiom/sc_utils
 
-sam1 = sparsify("../te_count_ends/ss.Hs_psc_c11.rp1.tsv.gz", csv=False)           ; sam1.obs['cell_type'] = "iPSC" ; sam1.obs['replicate'] = "c11#1"
-sam2 = sparsify("../te_count_ends/ss.Hs_psc_wibr3.rp1.tsv.gz", csv=False)      ; sam2.obs['cell_type'] = "hESC" ; sam2.obs['replicate'] = "WIBR3#1"
-#sam3 = sparsify("../te_count_ends/ss.Hs_psc_wibr3nai.rp1.tsv.gz", csv=False)      ; sam3.obs['cell_type'] = "hESC"  ; sam3.obs['replicate'] = "WIBR3-naive#1"
-sam4 = sparsify("../te_count_ends/ss.hIPSC_scRNA_Sample1.tsv.gz", csv=False)   ; sam4.obs['cell_type'] = "iPSC" ; sam4.obs['replicate'] = "WTC#1"
-#sam5 = sparsify("../te_count_ends/ss.hIPSC_scRNA_Sample2.tsv.gz", csv=False)   ; sam5.obs['cell_type'] = "iPSC-primed" ; sam5.obs['replicate'] = "WTC#2" # This is the one they sequenced a few cells very deep
-sam6 = sparsify("../te_count_ends/ss.hIPSC_scRNA_Sample3.tsv.gz", csv=False)   ; sam6.obs['cell_type'] = "iPSC" ; sam6.obs['replicate'] = "WTC#3"
-sam7 = sparsify("../te_count_ends/ss.hIPSC_scRNA_Sample4.tsv.gz", csv=False)   ; sam7.obs['cell_type'] = "iPSC" ; sam7.obs['replicate'] = "WTC#4"
-sam8 = sparsify("../te_count_ends/ss.hIPSC_scRNA_Sample5.tsv.gz", csv=False)   ; sam8.obs['cell_type'] = "iPSC" ; sam8.obs['replicate'] = "WTC#5"
+sam1 = sparsify("../te_count_ends/ss.Hs_psc_c11.rp1.tsv.gz", csv=False,      obs_add={'cell_type': "iPSC", 'replicate': "c11#1"})
+sam2 = sparsify("../te_count_ends/ss.Hs_psc_wibr3.rp1.tsv.gz", csv=False,    obs_add={'cell_type': "hESC", 'replicate': "WIBR3#1"})
+#sam3 = sparsify("../te_count_ends/ss.Hs_psc_wibr3nai.rp1.tsv.gz", csv=False, obs_add={'cell_type': "hESC", 'replicate': "WIBR3-naive#1"}) # Seems okay, but better to omit as it is no different from the primed cells... So much for 'naive' cells...
+sam4 = sparsify("../te_count_ends/ss.hIPSC_scRNA_Sample1.tsv.gz", csv=False, obs_add={'cell_type': "iPSC", 'replicate': "WTC#1"})
+#sam5 = sparsify("../te_count_ends/ss.hIPSC_scRNA_Sample2.tsv.gz", csv=False, obs_add={'cell_type': "iPSC-primed", 'replicate': "WTC#2"}) # This is the one they sequenced a few cells very deep
+sam6 = sparsify("../te_count_ends/ss.hIPSC_scRNA_Sample3.tsv.gz", csv=False, obs_add={'cell_type': "iPSC", 'replicate': "WTC#3"})
+sam7 = sparsify("../te_count_ends/ss.hIPSC_scRNA_Sample4.tsv.gz", csv=False, obs_add={'cell_type': "iPSC", 'replicate': "WTC#4"})
+sam8 = sparsify("../te_count_ends/ss.hIPSC_scRNA_Sample5.tsv.gz", csv=False, obs_add={'cell_type': "iPSC", 'replicate': "WTC#5"})
+sam9 = sparsify("../te_count_ends/ss.batch1.U1-hESC.tsv.gz", csv=False,      obs_add={'cell_type': "hESC", 'replicate': "UCLA1#1"})
+sam10 = sparsify("../te_count_ends/ss.batch2.U1-hESC.tsv.gz", csv=False,     obs_add={'cell_type': "hESC", 'replicate': "UCLA1#2"})
+sam11 = sparsify("../te_count_ends/ss.batch1.U2-hESC.tsv.gz", csv=False,     obs_add={'cell_type': "hESC", 'replicate': "UCLA2#1"})
+sam12 = sparsify("../te_count_ends/ss.batch1.U1-hESC.tsv.gz", csv=False,     obs_add={'cell_type': "hESC", 'replicate': "UCLA2#2"})
+
 
 print('Loaded Samples...')
 
@@ -38,7 +43,7 @@ samples = [sam1, sam2,
     #sam3,
     sam4,
     #sam5,
-    sam6, sam7, sam8]
+    sam6, sam7, sam8, sam9, sam10, sam11, sam12]
 
 # Quick pre-filtering, these should be low, otherwise it can mess up downstream analysis, but also can get rid of trivial uninteresting things
 [sc.pp.filter_cells(sam, min_genes=500) for sam in samples]

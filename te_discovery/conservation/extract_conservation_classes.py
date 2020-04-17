@@ -42,6 +42,7 @@ print('Not counted     : {0:,}'.format(not_counted))
 print('Both conserved  : {0:,}'.format(len(both_conserved)))
 print('TE conserved    : {0:,}'.format(len(te_conserved)))
 print('lncRNA conserved: {0:,}'.format(len(lncrna_conserved)))
+print('Total TE-containing transcripts: {0:,}'.format(len(transcripts)))
 
 gl = genelist()
 gl.load_list(both_conserved)
