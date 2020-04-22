@@ -28,7 +28,7 @@ sc.pl.violin(adata, ['n_genes', 'n_counts'], groupby='replicate', size=0, log=Fa
 sc.pp.filter_cells(adata, min_genes=1500)
 sc.pp.filter_cells(adata, max_genes=8000)
 sc.pp.filter_cells(adata, min_counts=3000)
-sc.pp.filter_cells(adata, max_counts=80000)
+sc.pp.filter_cells(adata, max_counts=50000)
 sc.pp.filter_genes(adata, min_cells=100) # Only filter genes here;
 
 sc.pl.violin(adata, ['n_genes','n_counts'], groupby='cell_type', size=0, log=False, cut=0, show=False, save='qc1.pdf')
@@ -44,3 +44,17 @@ for g in adata.var_names:
     oh.write('%s\n' % g)
 oh.close()
 
+
+# rows = genes; cols=cells;
+print('Save dense matrix')
+data_mat = adata.X.T.tocsr()
+# Save out a dense array of the sparse array:
+oh = open('dense_array.tsv', 'w')
+for i in range(data_mat.shape[0]):
+
+    if i % 1000 == 0:
+        print('{0}/{1}'.format(i, data_mat.shape[0]))
+
+    oh.write('\t'.join([str(i) for i in data_mat.getrow(i).toarray()[0,:]]))
+    oh.write('\n')
+oh.close()

@@ -32,8 +32,8 @@ sam7 = sparsify("../te_count_ends/ss.hIPSC_scRNA_Sample4.tsv.gz", csv=False, obs
 sam8 = sparsify("../te_count_ends/ss.hIPSC_scRNA_Sample5.tsv.gz", csv=False, obs_add={'cell_type': "iPSC", 'replicate': "WTC#5"})
 sam9 = sparsify("../te_count_ends/ss.batch1.U1-hESC.tsv.gz", csv=False,      obs_add={'cell_type': "hESC", 'replicate': "UCLA1#1"})
 sam10 = sparsify("../te_count_ends/ss.batch2.U1-hESC.tsv.gz", csv=False,     obs_add={'cell_type': "hESC", 'replicate': "UCLA1#2"})
-sam11 = sparsify("../te_count_ends/ss.batch1.U2-hESC.tsv.gz", csv=False,     obs_add={'cell_type': "hESC", 'replicate': "UCLA2#1"})
-sam12 = sparsify("../te_count_ends/ss.batch1.U1-hESC.tsv.gz", csv=False,     obs_add={'cell_type': "hESC", 'replicate': "UCLA2#2"})
+#sam11 = sparsify("../te_count_ends/ss.batch1.U2-hESC.tsv.gz", csv=False,     obs_add={'cell_type': "hESC", 'replicate': "UCLA2#1"}) # Sample is differentiated. Mislabelled cells? THey are all CDH2+
+#sam12 = sparsify("../te_count_ends/ss.batch1.U1-hESC.tsv.gz", csv=False,     obs_add={'cell_type': "hESC", 'replicate': "UCLA2#2"}) # Not entirely differentiated, but has a lot of diffn. cells
 
 
 print('Loaded Samples...')
@@ -43,7 +43,9 @@ samples = [sam1, sam2,
     #sam3,
     sam4,
     #sam5,
-    sam6, sam7, sam8, sam9, sam10, sam11, sam12]
+    sam6, sam7, sam8, sam9, sam10,
+    #sam11, sam12
+    ]
 
 # Quick pre-filtering, these should be low, otherwise it can mess up downstream analysis, but also can get rid of trivial uninteresting things
 [sc.pp.filter_cells(sam, min_genes=500) for sam in samples]
@@ -67,4 +69,3 @@ oh = open('gene_names.all.tsv', 'w')
 for g in adata.var_names:
     oh.write('%s\n' % g)
 oh.close()
-

@@ -28,7 +28,7 @@ transcipt_ids = glload('../../transcript_assembly/packed/all_genes.glb')
 transcipt_ids = {i['transcript_id']: i for i in transcipt_ids}
 
 adata = sc.read('./learned.h5ad')
-
+'''
 print(adata)
 
 old_to_new = {
@@ -51,7 +51,7 @@ adata.obs['de_clusters'] = (
     )
 
 adata.obs.to_csv('cell_data.csv')
-
+'''
 # I merge some unimportant clusters:
 sc.pl.umap(adata, color=[de_leiden, 'de_clusters'], size=10, legend_loc='on data', show=False, save='-new-umap.pdf')
 

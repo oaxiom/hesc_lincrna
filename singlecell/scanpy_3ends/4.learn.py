@@ -16,11 +16,11 @@ print(adata)
 
 print('Number of cells: {:d}'.format(adata.n_obs))
 
-sc.pp.highly_variable_genes(adata, flavor='cell_ranger', n_top_genes=5000)
+sc.pp.highly_variable_genes(adata, flavor='cell_ranger', n_top_genes=2000)
 sc.pl.highly_variable_genes(adata, show=False, save='highly_variable.pdf')
 
 # Calculate the visualizations
-sc.pp.pca(adata, n_comps=10, use_highly_variable=True, svd_solver='arpack') # PC=20 from Nature paper
+sc.pp.pca(adata, n_comps=8, use_highly_variable=True, svd_solver='arpack') # PC=20 from Nature paper
 sc.pp.neighbors(adata)
 sc.tl.tsne(adata, n_jobs=3) #Note n_jobs works for MulticoreTSNE, but not regular implementation
 sc.tl.umap(adata, min_dist=0.1)
