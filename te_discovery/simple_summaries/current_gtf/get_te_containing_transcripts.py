@@ -37,7 +37,9 @@ shared.pie('pies/te_all.png', [len(not_te), len(te)], ['no-TE', 'TE'], 'All')
 # collect stats:
 res = {
     'pc': {'TE': 0, 'nonTE': 0},
+    'pc_matching': {'TE': 0, 'nonTE': 0},
     'ncrna': {'TE': 0, 'nonTE': 0},
+    'ncrna_matching': {'TE': 0, 'nonTE': 0},
     'non_coding_version_of_coding_gene': {'TE': 0, 'nonTE': 0},
     'novel': {'TE': 0, 'nonTE': 0},
     'novel_pc': {'TE': 0, 'nonTE': 0},
@@ -58,6 +60,8 @@ for k in data:
 
         if ';C;' in g['name']:
             res['pc'][k] += 1
+            if ';=' in g['name']:
+                res['pc_matching'][k] += 1
             if ';~' in g['name']:
                 res['pc_variant'][k] += 1
             if ';!' in g['name']:
@@ -65,6 +69,8 @@ for k in data:
 
         elif ';NC;' in g['name']:
             res['ncrna'][k] += 1
+            if ';=' in g['name']:
+                res['ncrna_matching'][k] += 1
             if ';~' in g['name']:
                 res['ncrna_variant'][k] += 1
             if ';!' in g['name']:
@@ -88,6 +94,8 @@ title_map = {'pc': 'protein-coding',
     'novel': 'Novel',
     'novel_pc': 'Novel protein-coding',
     'novel_ncrna': 'Novel non-coding',
+    'pc_matching': 'PC Matching',
+    'ncrna_matching': 'ncRNA matching'
     }
 
 for k in res:

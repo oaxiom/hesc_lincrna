@@ -1,7 +1,7 @@
 
 from glbase3 import glload, genelist
 
-gl = genelist('cell_data.csv', format={'de_clusters': 16})
+gl = genelist('cell_data.csv', format={'de_clusters': -1})
 print(gl)
 
 res = {}

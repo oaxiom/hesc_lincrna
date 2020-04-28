@@ -4,7 +4,7 @@ from glbase3 import *
 import matplotlib.cm as cm
 config.draw_mode = 'pdf'
 
-clus_order = [0, 1, 2, 3, 4, 5]
+clus_order = [0, 1, 2, 3, 4]
 
 format = {'force_tsv': True, 'pvalue': 1, 'name': 0}
 
@@ -56,7 +56,7 @@ for ont in ('BP', 'CC', 'MF'):
 
     res = goex.heatmap(filename='atmap_big_%s.png' % ont,
         size=[9, 12], bracket=[1.0,10],
-        row_cluster=True, col_cluster=True, imshow=False,
+        row_cluster=True, col_cluster=False, imshow=False,
         heat_wid=0.06, cmap=cm.Reds, border=True,
         row_font_size=7, heat_hei=0.007*len(goex), grid=True,
         draw_numbers=True, draw_numbers_fmt='*',

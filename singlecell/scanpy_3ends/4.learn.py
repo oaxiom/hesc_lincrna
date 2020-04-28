@@ -16,20 +16,22 @@ print(adata)
 
 print('Number of cells: {:d}'.format(adata.n_obs))
 
-sc.pp.highly_variable_genes(adata, flavor='cell_ranger', n_top_genes=2000)
+sc.pp.highly_variable_genes(adata, flavor='cell_ranger', n_top_genes=4000)
 sc.pl.highly_variable_genes(adata, show=False, save='highly_variable.pdf')
 
 # Calculate the visualizations
-sc.pp.pca(adata, n_comps=8, use_highly_variable=True, svd_solver='arpack') # PC=20 from Nature paper
+sc.pp.pca(adata, n_comps=20, use_highly_variable=True, svd_solver='arpack') # PC=20 from Nature paper
 sc.pp.neighbors(adata)
 sc.tl.tsne(adata, n_jobs=3) #Note n_jobs works for MulticoreTSNE, but not regular implementation
-sc.tl.umap(adata, min_dist=0.1)
+sc.tl.umap(adata, min_dist=2.0)
 #sc.tl.diffmap(adata)
 
 sc.pl.pca_variance_ratio(adata, log=True, show=False, save='pca_variance.pdf')
 
 # Perform clustering - using highly variable genes
-res = [1.0, 0.9, 0.8, 0.7, 0.6, 0.55, 0.5, 0.4, 0.3]
+res = [1.0, 0.6, 0.5, 0.4, 0.35, 0.3,
+    0.25, 0.2, 0.15, 0.1
+    ]
 for r in res:
     sc.tl.leiden(adata, resolution=r, key_added='leiden_r{0:.2f}'.format(r))
 

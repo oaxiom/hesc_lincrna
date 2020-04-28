@@ -26,7 +26,7 @@ print(gencode)
 data = {
     'hPSC-novel': gtf['novel_ncrna'],
     'hPSC-variant': gtf['ncrna_variant'],
-    'hPSC-known': gtf['ncrna'],
+    'hPSC-matching': gtf['ncrna_matching'],
     'GENCODE': gencode['ncrna']
     }
 shared.split_bar('bar-ncrna.png', data, key_order=['TE', 'nonTE'], cols=['#ff7f0e', '#1f77b4']) #, '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'])
@@ -34,7 +34,7 @@ shared.split_bar('bar-ncrna.png', data, key_order=['TE', 'nonTE'], cols=['#ff7f0
 
 data = {
     'hPSC-variant': gtf['pc_variant'],
-    'hPSC-known': gtf['pc'],
+    'hPSC-matching': gtf['pc_matching'],
     'GENCODE': gencode['pc']
     }
 shared.split_bar('bar-pc.png', data, key_order=['TE', 'nonTE'], cols=['#ff7f0e', '#1f77b4']) #, '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'])
@@ -43,8 +43,8 @@ data = {
     'Variant with TE': expn['pc-variant-TE'],
     'Variant no TE': expn['pc-variant-noTE'],
 
-    'Known with TE': expn['pc-known-TE'],
-    'Known no TE': expn['pc-known-noTE'],
+    'Matching with TE': expn['pc-known-TE'],
+    'Matching no TE': expn['pc-known-noTE'],
 
     #'pc-all-TE': expn['pc-all-TE'],
     #'pc-all-noTE': expn['pc-all-noTE'],

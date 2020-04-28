@@ -3,9 +3,9 @@ import matplotlib.pyplot as plot
 from matplotlib import gridspec
 from glbase3 import genelist, glload
 
-TEs = glload('../../../te_discovery/te_transcripts/transcript_table_merged.mapped.glb')
+TEs = glload('../../../../te_discovery/te_transcripts/transcript_table_merged.mapped.glb')
 
-dfam = glload('../../../te_discovery/dfam/dfam_annotation.glb') #, format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
+dfam = glload('../../../../te_discovery/dfam/dfam_annotation.glb') #, format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
 dfam = {d['name']: '{0}:{1}:{2}'.format(d['type'], d['subtype'], d['name']) for d in dfam}
 
 for filename in glob.glob('../../*.glb'):

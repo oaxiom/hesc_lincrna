@@ -91,6 +91,8 @@ for grp in res:
     [t.set_fontsize(6) for t in ax.get_xticklabels()]
 
     ax = plot.subplot(gs[0:, 1])
+    res_TEs_type[grp] = {k: res_TEs_type[grp][k] for k in sorted(res_TEs_type[grp], key=res_TEs_type[grp].get, reverse=True)}
+    res_TEs_type[grp] = {k: res_TEs_type[grp][k] for k in list(res_TEs_type[grp].keys())[0:10]}
     res_TEs_type[grp] = {k: res_TEs_type[grp][k] for k in sorted(res_TEs_type[grp], key=res_TEs_type[grp].get, reverse=False)}
     ys = numpy.arange(len(res_TEs_type[grp]))
     ax.barh(ys, list(res_TEs_type[grp].values()))

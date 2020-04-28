@@ -4,30 +4,30 @@ from glbase3 import *
 import matplotlib.cm as cm
 config.draw_mode = 'pdf'
 
-clus_order = [0, 1, 2, 3, 4, 5]
+clus_order = [0, 1, 2, 3, 4]
 
 format = {'force_tsv': True, 'pvalue': 1, 'name': 0}
 
 main_cluster_membership = {}
 
 go_to_keep = set([
-    # 0 and 4:
-    'GO:0060485 mesenchyme development',
-    'GO:0048863 stem cell differentiation',
-    'GO:0048864 stem cell development',
+    # 0 Stem cells;
+    'GO:0001825 blastocyst formation',
+    'GO:0001708 cell fate specification',
+    'GO:0040019 positive regulation of embryonic development',
     'GO:0007369 gastrulation',
     # 1: Cell cycle;
-    'GO:0051298 centrosome duplication',
-    'GO:0044839 cell cycle G2/M phase transition',
-    'GO:0140014 mitotic nuclear division',
-    # 4: Differnetiation
-    'GO:0003007 heart morphogenesis',
-    'GO:0021537 telencephalon development',
-    'GO:0060993 kidney morphogenesis',
+    'GO:0045740 positive regulation of DNA replication',
+    'GO:0090068 positive regulation of cell cycle process',
     # 2:
-    'GO:1902275 regulation of chromatin organization',
-    'GO:0080111 DNA demethylation',
-    'GO:0045815 positive regulation of gene expression, epigenetic',
+    'GO:0080154 regulation of fertilization',
+    'GO:1901992 positive regulation of mitotic cell cycle phase transition',
+    # 3: differnetiation;
+    'GO:0050807 regulation of synapse organization',
+    'GO:0072073 kidney epithelium development',
+    'GO:0045669 positive regulation of osteoblast differentiation',
+    # 4: Quiescence?
+    'GO:0017148 negative regulation of translation',
     ])
 
 for ont in ('BP', ):

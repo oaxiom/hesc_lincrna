@@ -22,7 +22,8 @@ sc.settings.figdir = 'diffexp'
 transcript_id = glload('../../transcript_assembly/packed/all_genes.glb')
 transcript_id = {i['transcript_id']: i for i in transcript_id}
 
-de_leiden = 'de_clusters'
+de_leiden = 'de_clusters' # If you merge clusters;
+#de_leiden = 'leiden_r1.00'
 
 adata = sc.read('./de.h5ad')
 

@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 sys.path.append('../../')
 import shared
 
-gl = genelist('cell_cycle.csv', format={'grp': 16, 'phase': 19, 'S_score': 17, 'G2M_score': 18})
+gl = genelist('cell_cycle.csv', format={'grp': 17, 'phase': 20, 'S_score': 18, 'G2M_score': 19})
 
 cluster = {}
 

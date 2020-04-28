@@ -44,7 +44,10 @@ sc.pl.dotplot(adata, marker_genes_dict, groupby='leiden_r0.60', dot_max=0.5, den
 sc.pl.heatmap(adata, marker_genes_dict, groupby='leiden_r0.60', show=False, save='markers.pdf')
 '''
 
-genes_to_do = ['POU5F1', 'SOX2', 'UTF1', 'NANOG', 'DPPA2', 'LEFTY2', 'KLF4', 'LIN28A',
+genes_to_do = [
+    # Senescence;
+    'EIF4EBP1', 'EEF1E1', 'CDK8', 'TP53', 'CDKN1A', 'FOXO1', 'TGFB1',
+    'POU5F1', 'SOX2', 'UTF1', 'NANOG', 'DPPA2', 'LEFTY2', 'KLF4', 'LIN28A', 'PCAT14', 'ESRRB', 'PIF1',
     'DPPA2', 'DPPA3', 'DPPA5A', 'PRDM14', 'JARID2', 'SALL2', 'SALL3', 'TCF3',
     'ZFP42', 'C9ORF135', 'ST6GAL1', 'LRP4', 'MSTO1', 'PRODH',# From Pontis et al., 2019 CSC
     'ESRRB', 'LIN28A', 'LIN28B', 'PRDM14',
@@ -74,7 +77,7 @@ for gene_name in genes_to_do:
 # These cytokines have very low expression, so move the scale down a bit;
 genes_to_do = [
     'WNT4', 'BMP4', 'TGFB1',
-    'AURKB', 'TOP2A',
+    'AURKB', 'TOP2A', 'PCAT14',
     ]
 
 for gene_name in genes_to_do:
