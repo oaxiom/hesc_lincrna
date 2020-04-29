@@ -25,17 +25,19 @@ doms = glload('../../te_transcripts/transcript_table_merged.mapped.glb')
 CDSs = glload('../../../transcript_assembly/get_CDS/coding_genes_with_local_CDS-corrected.glb')
 dfam = genelist('../../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
 
-doms = doms.map(genelist=CDSs, key='transcript_id')
-print(doms)
+cds_doms = doms.map(genelist=CDSs, key='transcript_id')
+print(cds_doms)
 
-genes = set(['SOX2', 'NANOG', 'SALL4', 'LIN28A', 'LIN28B', 'SALL1', 'POU5F1', 'BRCA1', 'BRCA2',
+genes = set([
+    'AC005099.1', 'UQCRHL', 'AC005099.1', 'AC005099.1', # GRP 4;
+    'SOX2', 'NANOG', 'SALL4', 'LIN28A', 'LIN28B', 'SALL1', 'POU5F1', 'BRCA1', 'BRCA2',
     'DPPA2', 'DPPA3', 'DPPA5', 'PRDM14', 'JARID2', 'SALL2', 'SALL3', 'TCF3',
     'DNMT3L', 'LEFTY2', 'FGF4', 'NODAL', 'CER1', 'NLRP7', 'SFRP1', 'ZIC2', 'KDR',
     'ZFP42', 'C9ORF135', 'ST6GAL1', 'LRP4', 'MSTO1', 'PRODH', # From Pontis et al., 2019 CSC
     'SFRP2', 'OTX2', 'KLF4', 'KLF5',
     'HNRNPK', 'HNRNPU', 'PMPCB'])
 
-for n, gene in enumerate(doms):
+for n, gene in enumerate(cds_doms):
     #print(gene['name'].split(' ')[0])
     if gene['name'].split(' ')[0] not in genes:
         continue
@@ -47,20 +49,8 @@ for n, gene in enumerate(doms):
         #break
 
 transcript_ids = [
-    'HPSCSR.72619.1',
-    'HPSCSR.276998.297',
-    'HPSCSR.327312.6',
-    'HPSCSR.19279.1',
-    'HPSCSR.21764.4',
-    'HPSCSR.216914.100',
-    'HPSCSR.300037.3',
-    'HPSCSR.23832.77',
-    'HPSCSR.300037.3',
-    'HPSCSR.304643.1',
-    'HPSCSR.4844.3',
-    'HPSCSR.162330.3',
-    'HPSCSR.216914.100',
-    'HPSCLR.5927.1',
+    # GRP 4:
+    'HPSCSR.157359.37','HPSCSR.1172.31', 'HPSCSR.157359.37', 'HPSCSR.157359.37',
     ]
 
 gl = genelist()

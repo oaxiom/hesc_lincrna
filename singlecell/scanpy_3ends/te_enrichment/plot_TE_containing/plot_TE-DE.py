@@ -18,11 +18,8 @@ for filename in glob.glob('../te_containing/*.glb'):
 
     sc.settings.figdir = stub
 
-    if stub == 'grp5':
-        continue
-
     for item in de_list:
-        unq_doms = set([i['dom'] for i in item['doms']]) # Only draw once per TE family;
+        unq_doms = item['TES'].split('; ') # Only draw once per TE family;
         for te in unq_doms:
             type_subtype = dfam[te]
 
