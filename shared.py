@@ -494,7 +494,7 @@ def bar(filename, data_dict, key_order=None, title='', cols=None, figsize=[4,3])
     fig.savefig(filename.replace('.png', '.pdf'))
     print('Saved %s' % filename)
 
-def boxplots(filename, data, qs, no_TE_key='no TE'):
+def boxplots(filename, data, qs, no_TE_key='no TE', title=None, trim_low_samples=False):
     fig = plot.figure(figsize=[2.8,4])
     mmheat_hei = 0.1+(0.022*len(data))
     fig.subplots_adjust(left=0.4, right=0.8, top=mmheat_hei, bottom=0.1)
@@ -511,6 +511,16 @@ def boxplots(filename, data, qs, no_TE_key='no TE'):
         ax.axvline(0, ls=":", lw=0.5, color="grey") # add a grey line at zero for better orientation
         ax.axvline(-1, ls=":", lw=0.5, color="grey")
         ax.axvline(+1, ls=":", lw=0.5, color="grey")
+
+    # blank out really empty ones:
+    if trim_low_samples:
+        newd = {}
+        for k in data:
+            if len(data[k]) <= trim_low_samples:
+                newd[k] = []
+            else:
+                newd[k] = data[k]
+        data = newd
 
     dats = numpy.array(list(data.values()))
     r = ax.boxplot(dats,
@@ -545,7 +555,7 @@ def boxplots(filename, data, qs, no_TE_key='no TE'):
 
     for i, k, p in zip(range(0, len(data)), data, r['boxes']):
         #ax.text(6.3, i+0.5, q, ha='left', va='center', fontsize=6,)
-        print(k, qs[k])
+        #print(k, qs[k])
         if qs[k] < 0.05:
             if draw_qs: ax.text(xlim+(xlim/5), i+1, '*{0:.1e}'.format(qs[k]), ha='left', va='center', fontsize=6,)
             if numpy.median(data[k]) > m:
@@ -559,7 +569,10 @@ def boxplots(filename, data, qs, no_TE_key='no TE'):
         if k == 'no TE':
             p.set_facecolor('grey')
 
+    if title: ax.set_title(title, fontsize=6)
+
     [t.set_fontsize(6) for t in ax.get_yticklabels()]
     [t.set_fontsize(6) for t in ax.get_xticklabels()]
 
     fig.savefig(filename)
+    plot.close(fig)
