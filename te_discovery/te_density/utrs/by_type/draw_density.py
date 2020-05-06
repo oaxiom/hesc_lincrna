@@ -21,11 +21,16 @@ dfam = genelist('../../../dfam/dfam_annotation.tsv', format={'force_tsv': True, 
 cds = glload('../../../../transcript_assembly/get_CDS/coding_genes_with_local_CDS-corrected.glb')
 cds = {i['transcript_id']: i for i in cds}
 newl = []
-#for g in doms:
-#    g['enst'] = g['enst'].split('.')[0]
-#    newl.append(g)
-#doms.load_list(newl)
-gencode = glload('../../../../transcript_assembly/get_CDS/gencode_cds.glb').map(genelist=doms, key='enst')
+
+gencode_doms = glload('../../../te_transcripts/transcript_table_gencode_pc.glb')
+
+gencode = glload('../../../../transcript_assembly/get_CDS/gencode_cds.glb')
+for g in gencode:
+    g['enst'] = g['enst'].split('.')[0]
+    newl.append(g)
+gencode.load_list(newl)
+
+gencode = gencode.map(genelist=gencode_doms, key='enst')
 
 # preprocss the doms list to remove non-coding genes;
 newdoms = []
