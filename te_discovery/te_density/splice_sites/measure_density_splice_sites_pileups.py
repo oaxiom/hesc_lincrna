@@ -36,16 +36,16 @@ def draw_pileup(filename,
 
     datap = {
         'GENCODE     +': gencode_plus,
-        'ES-enriched +': enriched_plus,
+        'ES-depleted +': depleted_plus,
         'ES-unbiased +': unbiased_plus,
-        'ES-depleted +': depleted_plus
+        'ES-enriched +': enriched_plus,
         }
 
     datam = {
         'GENCODE     -': gencode_neg,
-        'ES-enriched +': enriched_neg,
-        'ES-unbiased +': unbiased_neg,
-        'ES-depleted +': depleted_neg
+        'ES-depleted -': depleted_neg,
+        'ES-unbiased -': unbiased_neg,
+        'ES-enriched -': enriched_neg,
         }
 
     ax1 = fig.add_subplot(211)
@@ -61,8 +61,11 @@ def draw_pileup(filename,
             ax2.plot(xs, -datam[k], label=k) # add legend
             if datam[k].max() > ymax: ymax = datam[k].max()
 
-    ax1.legend()
-    ax2.legend()
+    ax1.legend(prop={'size': 6})
+    ax2.legend(prop={'size': 6})
+
+    ax1.set_title('Same strand as transcript')
+    ax2.set_title('Opposite strand from transcript')
 
     ax1.axvline(delta, ls=":", color="grey")
     ax2.axvline(delta, ls=":", color="grey")
@@ -167,10 +170,10 @@ for transcriptome_type in ('ncrna', 'pc'): # change me if you want to do ncrna o
                     #print(ss, dom['span'], ss_rel_left, ss_rel_right)
                     #print(res_tefamily[full_name]['sp+'][dataset])
 
-                    if dom['strand'] == '+': # same orientation as the transgene
+                    if dom['strand'] == gene['strand']: # same orientation as the transgene
                         res_tefamily[full_name]['sp+'][dataset][ss_rel_left:ss_rel_right] += 1
                         res_tetype[te_type]['sp+'][dataset][ss_rel_left:ss_rel_right] += 1
-                    elif dom['strand'] == '-':
+                    else: # On the opposite strand
                         res_tefamily[full_name]['sp-'][dataset][ss_rel_left:ss_rel_right] += 1
                         res_tetype[te_type]['sp-'][dataset][ss_rel_left:ss_rel_right] += 1
 
