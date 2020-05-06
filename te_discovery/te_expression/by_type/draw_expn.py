@@ -48,7 +48,7 @@ res = class_dict()
 # Fill the data tables
 for datatype in data:
     for g in data[datatype]:
-        tpm = math.log2(g['TPM']+0.1)
+        tpm = math.log2(g['TPM'])
         if g['coding'] == 'coding':
             res['pc-all'][datatype].append(tpm)
         elif g['coding'] == 'noncoding':
