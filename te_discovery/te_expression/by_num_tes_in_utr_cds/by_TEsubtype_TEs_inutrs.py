@@ -7,6 +7,7 @@ import shared
 sys.path.append('../')
 import shared_bundle
 
+config.draw_mode = 'pdf'
 [os.remove(f) for f in glob.glob('subtype/*.pdf')]
 
 def get_num_te_in_utr(dataset, TE=None):
@@ -94,18 +95,23 @@ contains_not_te = correct_CDS(contains_not_te)
 
 types = {}
 for item in dfam:
-    t_st = '{0}-{1}'.format(item['type'], item['subtype'])
+    t_st = '{0}:{1}'.format(item['type'], item['subtype'])
     if t_st not in types:
         types[t_st] = []
     types[t_st].append(item['name'])
 
 print(types)
 
+heat_data = []
+
 for T in types:
+
     te_tpms = get_num_te_in_utr(contains_te, TE=types[T])
 
     if max([len(te_tpms['utr5']), len(te_tpms['cds']), len(te_tpms['utr3'])]) < 50: # Ignore uncommon/empty
         continue
+
+    print(T)
 
     res_pc = {
         "3' UTR": te_tpms['utr3'],
@@ -113,6 +119,19 @@ for T in types:
         "5' UTR": te_tpms['utr5'],
         'no TE': [math.log2(i['TPM']) for i in contains_not_te],
         }
+
+    c_5 = numpy.mean(res_pc["5' UTR"]) if len(res_pc["5' UTR"]) > 10 else 0
+    c_c = numpy.mean(res_pc["CDS"]) if len(res_pc["CDS"]) > 10 else 0
+    c_3 = numpy.mean(res_pc["3' UTR"]) if len(res_pc["3' UTR"]) > 10 else 0
+
+    c_5 = utils.fold_change(2**numpy.mean(res_pc["no TE"]), 2**numpy.mean(res_pc["5' UTR"]), pad=0.0001) if len(res_pc["5' UTR"]) > 10 else 0
+    c_c = utils.fold_change(2**numpy.mean(res_pc["no TE"]), 2**numpy.mean(res_pc["CDS"]), pad=0.0001) if len(res_pc["CDS"]) > 10 else 0
+    c_3 = utils.fold_change(2**numpy.mean(res_pc["no TE"]), 2**numpy.mean(res_pc["3' UTR"]), pad=0.0001) if len(res_pc["3' UTR"]) > 10 else 0
+
+    if '.' not in T:
+        heat_data.append({'name': T,
+            'conditions': [c_5, c_c, c_3]})
+
 
     q_pc = {}
     for k in res_pc:
@@ -122,3 +141,6 @@ for T in types:
         trim_low_samples=10,
         title=T)
 
+heat = expression(loadable_list=heat_data, cond_names=["5'UTR", 'CDS', "3'UTR"])
+heat.heatmap(filename='all_subtypes.png', heat_wid=0.07, border=False, grid=True, heat_hei=0.013*len(heat),
+    col_cluster=False, bracket=[-1, 1])

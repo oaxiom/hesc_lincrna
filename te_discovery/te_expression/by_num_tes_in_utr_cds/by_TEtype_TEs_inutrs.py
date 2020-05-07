@@ -103,7 +103,7 @@ types = {
 for T in types:
     te_tpms = get_num_te_in_utr(contains_te, TE=types[T])
 
-    if max([len(te_tpms['utr5']), len(te_tpms['cds']), len(te_tpms['utr3'])]) < 50: # Ignore uncommon/empty
+    if max([len(te_tpms['utr5']), len(te_tpms['cds']), len(te_tpms['utr3'])]) < 20: # Ignore uncommon/empty
         continue
 
     res_pc = {
