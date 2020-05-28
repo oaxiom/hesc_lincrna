@@ -57,6 +57,8 @@ genes_to_do = [
     'EOMES', 'OTX2', 'MIXL1', 'DKK1','SOX17', 'SOX7',  # DE markers
     'SOX1', # EC makers;
     'GATA3', 'GATA2', # ME markers
+    # From Liu et al., Nat Comm 2020:
+    'EPCAM', 'PODXL', 'CD9',
     # PGC markers;
     'CDH1', 'EPCAM', 'PECAM1', 'OCLN', 'PKP1', 'TCF4', 'CDH11',# E markers
     'CDH2', 'VIM', 'SNAI1', 'SNAI2', 'ZEB1', 'ZEB2', 'TGFBR1', 'TWIST2', 'TWIST1', 'KLF8'# M markers;
