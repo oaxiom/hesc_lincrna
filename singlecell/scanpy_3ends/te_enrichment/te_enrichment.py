@@ -18,6 +18,8 @@ res_esc_expn = {}
 for filename in glob.glob('../gls/*.glb'):
     stub = os.path.split(filename)[1].split('.')[0].replace('de_genes-', '')
 
+    print(stub)
+
     genes = glload(filename)
 
     res[stub] = {'noTE': 0, 'TE': 0}
@@ -43,7 +45,7 @@ for filename in glob.glob('../gls/*.glb'):
                     continue
                 TE = dfam[TE['dom']] # Get fullname
 
-                if True not in [i in TE for i in ('LTR', 'LINE', 'SINE', 'SVA')]:
+                if True not in [i in TE for i in ('LTR', 'LINE', 'SINE', 'SVA', 'DNA')]:
                     continue
                 if '.' in TE:
                     continue
@@ -118,3 +120,47 @@ for grp in res:
 
     fig.savefig('bp-{0}.png'.format(grp))
     fig.savefig('bp-{0}.pdf'.format(grp))
+
+tes_to_keep = [
+    'DNA:TcMar-Tigger',
+    'DNA:hAT-Charlie',
+    #'LINE:CR1',
+    'LINE:L1',
+    'LINE:L2',
+    'LTR:ERV1',
+    'LTR:ERVK',
+    'LTR:ERVL',
+    'LTR:ERVL-MaLR',
+    #'LINE:RTE-X',
+    'Retroposon:SVA',
+    'SINE:Alu',
+    'SINE:MIR',
+    ]
+
+tes_to_keep.reverse()
+
+fig = plot.figure(figsize=[4,1.6])
+fig.subplots_adjust(left=0.2, right=0.99)
+
+for axidx, k in enumerate(sorted(res_TEs_type)):
+    print(res_TEs_type[k])
+    ax = fig.add_subplot(1, len(res_TEs_type), axidx+1)
+    vals = []
+    for i in tes_to_keep:
+        if i in res_TEs_type[k]:
+            vals.append(res_TEs_type[k][i])
+        else:
+            vals.append(0)
+
+    ys = numpy.arange(len(vals))
+    ax.barh(ys, vals)
+    ax.set_yticks(ys)
+    if axidx == 0:
+        ax.set_yticklabels(tes_to_keep)
+    else:
+        ax.set_yticklabels('')
+    ax.set_title(k)
+    [t.set_fontsize(6) for t in ax.get_yticklabels()]
+    [t.set_fontsize(6) for t in ax.get_xticklabels()]
+
+fig.savefig('te_class.pdf'.format(grp))
