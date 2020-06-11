@@ -1,7 +1,9 @@
 import os, sys, glob, numpy
 import matplotlib.pyplot as plot
 from matplotlib import gridspec
-from glbase3 import genelist, glload
+import matplotlib.cm as cm
+from glbase3 import genelist, glload, expression, config
+config.draw_mode = 'pdf'
 
 TE_lookup = glload('../../../te_discovery/te_transcripts/transcript_table_merged.mapped.glb')
 TE_lookup = {i['transcript_id']: i for i in TE_lookup}
@@ -15,12 +17,13 @@ res_TEs = {}
 res_TEs_type = {}
 res_esc_expn = {}
 
-for filename in glob.glob('../gls/*.glb'):
+for filename in sorted(glob.glob('../gls/*.glb')):
     stub = os.path.split(filename)[1].split('.')[0].replace('de_genes-', '')
 
     print(stub)
 
     genes = glload(filename)
+    num_genes = len(genes)
 
     res[stub] = {'noTE': 0, 'TE': 0}
     res_TEs[stub] = {}
@@ -59,10 +62,19 @@ for filename in glob.glob('../gls/*.glb'):
                     res_TEs[stub][TE] = 0
                 res_TEs[stub][TE] += 1
 
+    # normalise to numebr of genes:
+    for TE in res_TEs[stub]:
+        res_TEs[stub][TE] /= num_genes
+
+    for TE in res_TEs_type[stub]:
+        res_TEs_type[stub][TE] /= num_genes
+
 tab10 = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
           '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
 
-for grp in res:
+heat_data = {}
+
+for gid, grp in enumerate(res):
     fig = plot.figure(figsize=[4,1.5])
     fig.subplots_adjust(left=0.07, right=0.98, top=0.99, bottom=0.12)#, hspace=0.2, wspace=0.2)
 
@@ -103,6 +115,11 @@ for grp in res:
     [t.set_fontsize(6) for t in ax.get_yticklabels()]
     [t.set_fontsize(6) for t in ax.get_xticklabels()]
 
+    for TE in res_TEs[grp]:
+        if TE not in heat_data:
+            heat_data[TE] = [0] * 5 # grps;
+        heat_data[TE][gid] = res_TEs[grp][TE]
+
     # Top10:
     ax = plot.subplot(gs[0:, 2])
     res_TEs[grp] = {k: res_TEs[grp][k] for k in sorted(res_TEs[grp], key=res_TEs[grp].get, reverse=True)} # Top 10:
@@ -124,6 +141,7 @@ for grp in res:
 tes_to_keep = [
     'DNA:TcMar-Tigger',
     'DNA:hAT-Charlie',
+    'DNA:hAT-Tip100',
     #'LINE:CR1',
     'LINE:L1',
     'LINE:L2',
@@ -139,7 +157,7 @@ tes_to_keep = [
 
 tes_to_keep.reverse()
 
-fig = plot.figure(figsize=[4,1.6])
+fig = plot.figure(figsize=[5,1.6])
 fig.subplots_adjust(left=0.2, right=0.99)
 
 for axidx, k in enumerate(sorted(res_TEs_type)):
@@ -163,4 +181,14 @@ for axidx, k in enumerate(sorted(res_TEs_type)):
     [t.set_fontsize(6) for t in ax.get_yticklabels()]
     [t.set_fontsize(6) for t in ax.get_xticklabels()]
 
+    ax.set_xlim([0, 1.5])
+
 fig.savefig('te_class.pdf'.format(grp))
+
+# Heat;
+e = expression(loadable_list=[{'name': k, 'conditions': heat_data[k]} for k in sorted(heat_data)], cond_names=[0, 1,2,3,4])
+e = e.filter_low_expressed(0.04, 1)
+e.heatmap(filename='all.pdf', col_cluster=False, row_cluster=False, heat_wid=0.12,
+    heat_hei=0.011*len(e),
+    bracket=[0, 0.2], border=True,
+    cmap=cm.plasma)
