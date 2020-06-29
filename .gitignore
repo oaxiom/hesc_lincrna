@@ -28,7 +28,7 @@ all_masked_peptides.*
 cell_cycle.csv
 cell_data.csv
 hg38_rmsk.txt.gz
-raw_data/
+#raw_data/
 hipsci*.txt.gz
 tblout.*
 get_data.sh

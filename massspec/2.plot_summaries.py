@@ -68,6 +68,7 @@ order = [
 
 num_hits = numpy.array([res[k][0] for k in order])
 len_hits = numpy.array([res[k][1] for k in order]) # starts at 0 so no need to subtract
+print(num_hits, len_hits)
 percs = (num_hits / len_hits) * 100.0
 print(num_hits)
 print(len_hits)
