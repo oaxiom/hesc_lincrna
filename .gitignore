@@ -1,4 +1,6 @@
 .DS_Store
+zlinks.sh
+*.out
 __pycache__
 *.glb
 *.xlsx
