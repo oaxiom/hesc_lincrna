@@ -494,10 +494,16 @@ def bar(filename, data_dict, key_order=None, title='', cols=None, figsize=[4,3])
     fig.savefig(filename.replace('.png', '.pdf'))
     print('Saved %s' % filename)
 
-def boxplots(filename, data, qs, no_TE_key='no TE', title=None, trim_low_samples=False):
-    fig = plot.figure(figsize=[2.8,4])
-    mmheat_hei = 0.1+(0.022*len(data))
-    fig.subplots_adjust(left=0.4, right=0.8, top=mmheat_hei, bottom=0.1)
+def boxplots(filename, data, qs, no_TE_key='no TE', title=None,
+    xlims=None,
+    trim_low_samples=False,
+    sizer=0.022,
+    vert_height=4,
+    bot_pad=0.1):
+
+    mmheat_hei = 0.1+(sizer*len(data))
+    fig = plot.figure(figsize=[2.8,vert_height])
+    fig.subplots_adjust(left=0.4, right=0.8, top=mmheat_hei, bottom=bot_pad)
     ax = fig.add_subplot(111)
     ax.tick_params(right=True)
 
@@ -506,6 +512,10 @@ def boxplots(filename, data, qs, no_TE_key='no TE', title=None, trim_low_samples
         ax.axvline(m, ls=":", lw=0.5, color="grey") # add a grey line at m for better orientation
         ax.axvline(m-1, ls=":", lw=0.5, color="grey")
         ax.axvline(m+1, ls=":", lw=0.5, color="grey")
+    elif qs == '100%quartiles':
+        ax.axvline(25, ls=":", lw=0.5, color="grey") # add a grey line at zero for better orientation
+        ax.axvline(50, ls=":", lw=0.5, color="grey")
+        ax.axvline(75, ls=":", lw=0.5, color="grey")
     else: # Probably the fold-change ones
         m = 0
         ax.axvline(0, ls=":", lw=0.5, color="grey") # add a grey line at zero for better orientation
@@ -540,8 +550,12 @@ def boxplots(filename, data, qs, no_TE_key='no TE', title=None, trim_low_samples
     ltm = '#92A7FF'
 
     xlim = ax.get_xlim()[1]
+    if xlims:
+        ax.set_xlim(xlims)
+        xlim = xlims[1]
 
     draw_qs = True
+
     if not qs:
         # Change the qs to enforce some kind of criteria, like 2-fold.
         qs = {}
@@ -553,21 +567,32 @@ def boxplots(filename, data, qs, no_TE_key='no TE', title=None, trim_low_samples
                 qs[k] = 1  # i.e. grey
         draw_qs = False # But don't draw;
 
-    for i, k, p in zip(range(0, len(data)), data, r['boxes']):
-        #ax.text(6.3, i+0.5, q, ha='left', va='center', fontsize=6,)
-        #print(k, qs[k])
-        if qs[k] < 0.05:
-            if draw_qs: ax.text(xlim+(xlim/5), i+1, '*{0:.1e}'.format(qs[k]), ha='left', va='center', fontsize=6,)
-            if numpy.median(data[k]) > m:
+    if qs == '100%quartiles':
+        for i, k, p in zip(range(0, len(data)), data, r['boxes']):
+            m = numpy.median(data[k])
+            if m >= 75:
                 p.set_facecolor(gtm)
-            else:
+            elif m <= 25:
                 p.set_facecolor(ltm)
-        else:
-            if draw_qs: ax.text(xlim+(xlim/5), i+1, '{0:.1e}'.format(qs[k]), ha='left', va='center', fontsize=6,)
-            p.set_facecolor('lightgrey')
+            else:
+                p.set_facecolor('lightgrey')
 
-        if k == 'no TE':
-            p.set_facecolor('grey')
+    else:
+        for i, k, p in zip(range(0, len(data)), data, r['boxes']):
+            #ax.text(6.3, i+0.5, q, ha='left', va='center', fontsize=6,)
+            #print(k, qs[k])
+            if qs[k] < 0.05:
+                if draw_qs: ax.text(xlim+(xlim/5), i+1, '*{0:.1e}'.format(qs[k]), ha='left', va='center', fontsize=6,)
+                if numpy.median(data[k]) > m:
+                    p.set_facecolor(gtm)
+                else:
+                    p.set_facecolor(ltm)
+            else:
+                if draw_qs: ax.text(xlim+(xlim/5), i+1, '{0:.1e}'.format(qs[k]), ha='left', va='center', fontsize=6,)
+                p.set_facecolor('lightgrey')
+
+            if k == 'no TE':
+                p.set_facecolor('grey')
 
     if title: ax.set_title(title, fontsize=6)
 
