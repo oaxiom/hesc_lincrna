@@ -24,7 +24,7 @@ draw = 'png'
 type = 'pc'
 
 doms = glload('../../te_transcripts/transcript_table_merged.mapped.glb')
-gencode = glload('../../../gencode/hg38_gencode_v32.{0}.glb'.format(type)).getColumns(['enst', 'cds_loc'])
+gencode = glload('../../../gencode/hg38_gencode_v32.{}.glb'.format(type)).getColumns(['enst', 'cds_loc'])
 gencode_doms = glload('../../te_transcripts/transcript_table_gencode_%s.glb' % type)
 dfam = genelist('../../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
 
