@@ -121,7 +121,8 @@ for idx, line in enumerate(oh):
         for item in line[8].split(';'):
             if item:
                 item = item.strip(' ').replace('"', '').split(' ')
-                gtf_dec[item[0]] = item[1]
+                if len(item) == 2: # A few bad decorators;
+                    gtf_dec[item[0]] = item[1]
         #print(gtf_dec)
         if 'GENCODE_gene_id' not in gtf_dec:
             gtf_dec['GENCODE_gene_id'] = gtf_dec['gene_id']
