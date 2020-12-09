@@ -48,15 +48,19 @@ def add_entry(trans, gsql, newgl, done):
         e = 'U'
         return False
 
-    new_name = '%s (%s;%s;%s;%s;%s)' % (trans['name'], exon_state, coding_noncoding_map[c_nc], expn_map[e], trans['evidence'], trans['decision'])
+    new_name = '%s (%s;%s;%s;%s;%s)' % (trans['name'], exon_state, coding_noncoding_map[c_nc], expn_map[e], trans['evidence'], transcript_class[trans['transcript_class']])
 
-    toadd = {'ensg': trans['ensg'], 'enst': trans['enst'], 'name': new_name,
-        'gene_symbol': trans['name'], 'loc': trans['loc'],
+    toadd = {'ensg': trans['ensg'],
+        'enst': trans['enst'],
+        'name': new_name,
+        'gene_symbol': trans['name'],
+        'loc': trans['loc'],
         'transcript_id': transcript_id,
         'exonCounts': trans['exonCounts'],
         'exonStarts': trans['exonStarts'], 'exonEnds': trans['exonEnds'],
         'strand': trans['strand'],
-        'tags': '%s; %s; %s; %s; %s' % (exon_state, c_nc, e, trans['evidence'], trans['decision']),
+        'tags': '%s; %s; %s; %s; %s' % (exon_state, c_nc, e, trans['evidence'],  transcript_class[trans['transcript_class']]),
+        'transcript_class': trans['transcript_class'],
         'coding': c_nc,
         'expression': e,
         'TPM': trans['TPM'],
@@ -82,8 +86,11 @@ data_features_lookup = {i['transcript_id']: i for i in data_features.linearData}
 #print(data_expression_data)
 #print(data_coding_noncoding)
 
-decision = {'same': '=',
-    'different': '~'}
+transcript_class = {
+    'matching': '=',
+    'variant': '~',
+    'novel': '!',
+    }
 
 coding_noncoding_map = {'coding': 'C',
     'noncoding': 'NC',
@@ -129,16 +136,11 @@ for idx, line in enumerate(oh):
             gtf_dec['gene_name'] = gtf_dec['transcript_id'] # If one is missing, the other is also missing;
             gtf_dec['GENCODE_transcript_id'] = gtf_dec['transcript_id'] # enst
 
-        if 'decision' not in gtf_dec:
-            gtf_dec['decision'] = '!'
-        else:
-            gtf_dec['decision'] = decision[gtf_dec['decision']]
-
         trans = {'strand': line[6], 'loc': location(chr=line[0], left=line[3], right=line[4]),
             'exonCounts': 0,
             'exonStarts': [],
             'exonEnds': [],
-            'decision': gtf_dec['decision'],
+            'transcript_class': gtf_dec['transcript_class'],
             'evidence': gtf_dec['evidence'],
             'name': gtf_dec['gene_name'],
             'ensg': gtf_dec['GENCODE_gene_id'],

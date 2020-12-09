@@ -24,10 +24,15 @@ gencode = glload('../../gencode/hg38_gencode_v32.glb')
 doms = glload('../hmmer_dfam/data/transcript_table_gencode.v32.transcripts.glb') # to fix;
 # I need to go in and fix the transcript_id key, which is just the FASTA name;
 for g in doms:
-    g['transcript_id'] = g['transcript_id'].split('|')[0].split('.')[0]
+    g['transcript_id'] = g['transcript_id'].split('|')[0] # .split('.')[0]
     g['enst'] = g['transcript_id']
 
 doms._optimiseData()
+print()
+print(doms)
+print()
+print(gencode)
+print()
 doms = doms.map(gencode, key='enst')
 print(doms.keys())
 doms.save('transcript_table_gencode_all.glb')
@@ -37,7 +42,7 @@ doms.saveTSV('transcript_table_gencode_all.tsv')
 doms = glload('../hmmer_dfam/data/transcript_table_Homo_sapiens.GRCh38.ncrna.glb') # to fix;
 # I need to go in and fix the transcript_id key, which is just the FASTA name;
 for g in doms:
-    g['transcript_id'] = g['transcript_id'].split('|')[0].split('.')[0]
+    g['transcript_id'] = g['transcript_id'].split('|')[0] # .split('.')[0]
     g['enst'] = g['transcript_id']
 doms._optimiseData()
 doms = doms.map(gencode, key='enst')
@@ -48,7 +53,7 @@ doms.saveTSV('transcript_table_gencode_ncrna.tsv')
 doms = glload('../hmmer_dfam/data/transcript_table_gencode.v32.pc_transcripts.glb') # to fix;
 # I need to go in and fix the transcript_id key, which is just the FASTA name;
 for g in doms:
-    g['transcript_id'] = g['transcript_id'].split('|')[0].split('.')[0]
+    g['transcript_id'] = g['transcript_id'].split('|')[0] # .split('.')[0]
     g['enst'] = g['transcript_id']
 doms._optimiseData()
 doms = doms.map(gencode, key='enst')

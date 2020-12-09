@@ -165,7 +165,7 @@ for t in class_dict().keys():
         item['q'] = p
         item['-log10q'] = -math.log10(p)
     gl._optimiseData()
-    gl.saveTSV('tab_{0}.tsv'.format(t), key_order=['name', 'p', 'q'])
+    gl.saveTSV('tab_{}.tsv'.format(t), key_order=['name', 'p', 'q'])
 
     spot_cols = []
     for q, M in zip(gl['-log10q'], gl['M']):
@@ -181,10 +181,10 @@ for t in class_dict().keys():
 
     shared.nice_scatter(y=gl['-log10q'], x=gl['M'], figsize=[2,2], spot_size=12,
         spot_cols=spot_cols, label_tester=label_tester,
-        filename='MA-{0}.png'.format(t), label=gl['name'], hlines=[1.301], vlines=[0])
+        filename='MA-{}.png'.format(t), label=gl['name'], hlines=[1.301], vlines=[0])
 
     if os.path.exists(t):
-        [os.remove(f) for f in glob.glob('{0}/*.pdf'.format(t))]
+        [os.remove(f) for f in glob.glob('{}/*.pdf'.format(t))]
     else:
         os.mkdir(t)
 
