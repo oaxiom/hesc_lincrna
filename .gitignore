@@ -25,7 +25,6 @@ ends.gtf
 ss.*
 version*.txt
 all_masked_peptides.*
-
 # Specifics, these are mostly very large data set files that can ge generated and so don't need to be committed
 cell_cycle.csv
 cell_data.csv

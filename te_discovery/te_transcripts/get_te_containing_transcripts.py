@@ -18,6 +18,7 @@ print(doms.keys())
 print(doms)
 doms.save('transcript_table_merged.mapped.glb') # fixed name version
 doms.saveTSV('transcript_table_merged.mapped.tsv') # fixed name version
+doms.saveTSV('transcript_table_merged.mapped.tsv.gz', gzip=True)
 
 # And do the same for the gencode data:
 gencode = glload('../../gencode/hg38_gencode_v32.glb')
@@ -60,3 +61,4 @@ doms = doms.map(gencode, key='enst')
 print(doms.keys())
 doms.save('transcript_table_gencode_pc.glb')
 doms.saveTSV('transcript_table_gencode_pc.tsv')
+
