@@ -89,12 +89,12 @@ sc.settings.figdir = 'cell_cycle_g2m'
 
 for gene_name in genes_to_do_g2m:
     if gene_name not in transcript_id_lookup:
-        print('{0} gene name not found in lookup!'.format(gene_name))
+        print('{} gene name not found in lookup!'.format(gene_name))
         continue
 
     for transcript in transcript_id_lookup[gene_name]:
         try:
             sc.pl.umap(adata, color=transcript['transcript_id'], size=10, legend_loc='on data', vmax=3, show=False, save='markers-{0}-{1}.pdf'.format(transcript['transcript_id'], transcript['name']))
         except KeyError: # this specific transcript_id is missing;
-            print('{0} {1} not found'.format(transcript['transcript_id'], transcript['name']))
+            print('{} {} not found'.format(transcript['transcript_id'], transcript['name']))
         #sc.pl.umap(adata, color=marker_genes_dict[k], color_map='plasma', size=10, vmax=3, legend_loc='on data', show=False, save='markers-{0}.pdf'.format(k))

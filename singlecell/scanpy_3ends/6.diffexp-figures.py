@@ -15,7 +15,7 @@ from glbase3 import genelist, glload
 
 sc.settings.figdir = 'diffexp'
 
-[os.remove(f) for f in glob.glob('{0}/*.pdf'.format(sc.settings.figdir))]
+[os.remove(f) for f in glob.glob('{}/*.pdf'.format(sc.settings.figdir))]
 [os.remove(f) for f in glob.glob('gls/*.glb'.format(sc.settings.figdir))]
 [os.remove(f) for f in glob.glob('gls/*.tsv'.format(sc.settings.figdir))]
 

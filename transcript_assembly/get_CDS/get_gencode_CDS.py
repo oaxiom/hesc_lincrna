@@ -22,15 +22,15 @@ for fasta in fastas:
     newl.append({'enst': enst[0], 'cds_local_locs': (cds[0], cds[1]), 'tlength': len(fasta['seq'])})
 
     if fasta['seq'][cds[0]:cds[0]+3] != 'ATG':
-        print('! Warning: {0} does not have an ATG'.format(fasta['name']))
+        print('! Warning: {} does not have an ATG'.format(fasta['name']))
         truncated += 1
         continue
     elif len(fasta['seq'][cds[1]:cds[1]+3]) != 3:
-        print('! Warning: {0} does not have an in frame STOP'.format(fasta['name']))
+        print('! Warning: {} does not have an in frame STOP'.format(fasta['name']))
         truncated += 1
         continue
     elif (cds[1] - cds[0]) % 3 != 0:
-        print('! Warning, {0} not divisible by 3'.format(fasta['name']))
+        print('! Warning, {} not divisible by 3'.format(fasta['name']))
         truncated += 1
         continue
 
