@@ -125,3 +125,64 @@ def contour(filename, x, y, xlabel, ylabel, ranges, vmax=200):
     [t.set_fontsize(6) for t in ax.get_xticklabels()]
     plot.colorbar(image)
     fig.savefig(filename)
+
+
+def boxplots(filename, data, qs,
+    title=None,
+    xlims=None,
+    sizer=0.022,
+    vert_height=4,
+    bot_pad=0.1):
+
+    mmheat_hei = 0.1+(sizer*len(data))
+    fig = plot.figure(figsize=[2.8,vert_height])
+    fig.subplots_adjust(left=0.4, right=0.8, top=mmheat_hei, bottom=bot_pad)
+    ax = fig.add_subplot(111)
+    ax.tick_params(right=True)
+
+    m = 0
+    ax.axvline(0, ls=":", lw=0.5, color="grey") # add a grey line at zero for better orientation
+    ax.axvline(-0.25, ls=":", lw=0.5, color="grey")
+    ax.axvline(+0.25, ls=":", lw=0.5, color="grey")
+
+    dats = list(data.values())
+    r = ax.boxplot(dats,
+        showfliers=False,
+        whis=True,
+        patch_artist=True,
+        widths=0.5, vert=False)
+
+    plot.setp(r['medians'], color='black', lw=2) # set nicer colours
+    plot.setp(r['boxes'], color='black', lw=0.5)
+    plot.setp(r['caps'], color="grey", lw=0.5)
+    plot.setp(r['whiskers'], color="grey", lw=0.5)
+
+    ax.set_yticks(np.arange(len(data.keys()))+1)
+    ax.set_yticklabels(data.keys())
+
+    gtm = '#FF8A87'
+    ltm = '#92A7FF'
+
+    xlim = ax.get_xlim()[1]
+    if xlims:
+        ax.set_xlim(xlims)
+        xlim = xlims[1]
+
+    draw_qs = True
+
+    for i, k, p in zip(range(0, len(data)), data, r['boxes']):
+        if m >= 0.25:
+            p.set_facecolor(gtm)
+        elif m <= 0.00:
+            p.set_facecolor(ltm)
+        else:
+            p.set_facecolor('lightgrey')
+
+    if title:
+        ax.set_title(title, fontsize=6)
+
+    [t.set_fontsize(6) for t in ax.get_yticklabels()]
+    [t.set_fontsize(6) for t in ax.get_xticklabels()]
+
+    fig.savefig(filename)
+    plot.close(fig)

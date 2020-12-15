@@ -20,11 +20,10 @@ sc.pp.highly_variable_genes(adata, flavor='cell_ranger', n_top_genes=4000)
 sc.pl.highly_variable_genes(adata, show=False, save='highly_variable.pdf')
 
 # Calculate the visualizations
-sc.pp.pca(adata, n_comps=20, use_highly_variable=True, svd_solver='arpack') # PC=20 from Nature paper
+sc.pp.pca(adata, n_comps=20, use_highly_variable=True, svd_solver='arpack')
 sc.pp.neighbors(adata)
-sc.tl.tsne(adata, n_jobs=3) #Note n_jobs works for MulticoreTSNE, but not regular implementation
+sc.tl.tsne(adata, n_jobs=3)
 sc.tl.umap(adata, min_dist=2.0)
-#sc.tl.diffmap(adata)
 
 sc.pl.pca_variance_ratio(adata, log=True, show=False, save='pca_variance.pdf')
 
@@ -32,6 +31,7 @@ sc.pl.pca_variance_ratio(adata, log=True, show=False, save='pca_variance.pdf')
 res = [1.0, 0.6, 0.5, 0.4, 0.35, 0.3,
     0.25, 0.2, 0.15, 0.1
     ]
+
 for r in res:
     sc.tl.leiden(adata, resolution=r, key_added='leiden_r{0:.2f}'.format(r))
 

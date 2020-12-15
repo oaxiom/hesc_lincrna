@@ -29,7 +29,7 @@ sc.pp.filter_cells(adata, min_genes=1500)
 sc.pp.filter_cells(adata, max_genes=8000)
 sc.pp.filter_cells(adata, min_counts=3000)
 sc.pp.filter_cells(adata, max_counts=50000)
-sc.pp.filter_genes(adata, min_cells=100) # Only filter genes here;
+sc.pp.filter_genes(adata, min_cells=50) # Only filter genes here;
 
 sc.pl.violin(adata, ['n_genes','n_counts'], groupby='cell_type', size=0, log=False, cut=0, show=False, save='qc1.pdf')
 sc.pl.violin(adata, ['n_genes','n_counts'], groupby='replicate', size=0, log=False, cut=0, show=False, save='qc1-replicates.pdf')

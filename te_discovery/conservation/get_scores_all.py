@@ -33,6 +33,7 @@ for t in transcripts:
         ls = es - t['loc']['left']
         le = ee - t['loc']['left']+1
         new_scores += list(all_scores[ls:le])
+    phyloP_all = sum(new_scores) / len(new_scores)
 
     if t['strand'] == '-':
         new_scores = new_scores[::-1]
@@ -52,7 +53,7 @@ for t in transcripts:
 
     result = {'name': t['name'],
         'transcript_id': t['transcript_id'],
-        'phyloP_all': sum(new_scores) / len(new_scores),
+        'phyloP_all': phyloP_all,
         'phyloP_tes': sum(te_scores) / len(te_scores),
         'phyloP_nottes': sum(notte_scores) / len(notte_scores),
         'TPM': t['TPM'],
