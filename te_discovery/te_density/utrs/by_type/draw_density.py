@@ -23,13 +23,7 @@ cds = {i['transcript_id']: i for i in cds}
 newl = []
 
 gencode_doms = glload('../../../te_transcripts/transcript_table_gencode_pc.glb')
-
 gencode = glload('../../../../transcript_assembly/get_CDS/gencode_cds.glb')
-for g in gencode:
-    g['enst'] = g['enst'].split('.')[0]
-    newl.append(g)
-gencode.load_list(newl)
-
 gencode = gencode.map(genelist=gencode_doms, key='enst')
 
 # preprocss the doms list to remove non-coding genes;

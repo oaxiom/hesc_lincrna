@@ -14,6 +14,9 @@ from glbase3 import glload, utils, expression, genelist, genome_sql
 sys.path.append('../../')
 import shared
 
+start = re.compile('ATG', re.IGNORECASE)
+ends = re.compile('TAA|TAG|TGA', re.IGNORECASE)
+
 def find_cds(seq):
     '''
     Return the most likely CDS
@@ -28,9 +31,6 @@ def find_cds(seq):
         return l % 3 == 0
 
     # get all CDS:
-
-    start = re.compile('ATG', re.IGNORECASE)
-    ends = re.compile('TAA|TAG|TGA', re.IGNORECASE)
 
     all_starts = start.finditer(seq)
     all_stops = ends.finditer(seq)
@@ -91,9 +91,9 @@ for f in fastas:
         newl.append(f)
     else:
         no_prediction += 1
-        print('Cound not predict for {0}'.format(f['name']))
+        print('Cound not predict for {}'.format(f['name']))
 
-print('Cound not make a ORF prediction for {0}'.format(no_prediction))
+print('Cound not make a ORF prediction for {}'.format(no_prediction))
 
 newd = genelist()
 newd.load_list(newl)

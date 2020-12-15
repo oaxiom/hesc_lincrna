@@ -52,7 +52,7 @@ for t in transcripts:
 
     result = {'name': t['name'],
         'transcript_id': t['transcript_id'],
-        #'phyloP_all': sum(new_scores) / len(new_scores),
+        'phyloP_all': sum(new_scores) / len(new_scores),
         'phyloP_tes': sum(te_scores) / len(te_scores),
         'phyloP_nottes': sum(notte_scores) / len(notte_scores),
         'TPM': t['TPM'],
