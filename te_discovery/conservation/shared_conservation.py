@@ -132,6 +132,7 @@ def boxplots(filename, data, qs,
     xlims=None,
     sizer=0.022,
     vert_height=4,
+    col='lightgrey',
     bot_pad=0.1):
 
     mmheat_hei = 0.1+(sizer*len(data))
@@ -160,8 +161,8 @@ def boxplots(filename, data, qs,
     ax.set_yticks(np.arange(len(data.keys()))+1)
     ax.set_yticklabels(data.keys())
 
-    gtm = '#FF8A87'
-    ltm = '#92A7FF'
+    gtm = '#FF8A87' # red
+    ltm = '#92A7FF' # blue
 
     xlim = ax.get_xlim()[1]
     if xlims:
@@ -171,12 +172,7 @@ def boxplots(filename, data, qs,
     draw_qs = True
 
     for i, k, p in zip(range(0, len(data)), data, r['boxes']):
-        if m >= 0.25:
-            p.set_facecolor(gtm)
-        elif m <= 0.00:
-            p.set_facecolor(ltm)
-        else:
-            p.set_facecolor('lightgrey')
+        p.set_facecolor(col)
 
     if title:
         ax.set_title(title, fontsize=6)
