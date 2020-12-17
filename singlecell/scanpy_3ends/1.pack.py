@@ -22,18 +22,19 @@ sc.settings.autoshow = False
 
 from sc_utils import sparsify # https://github.com/oaxiom/sc_utils
 
-sam1  = sparsify("../te_count_ends/ss.Hs_psc_c11.rp1.tsv.gz", csv=False,      obs_add={'cell_type': "iPSC", 'replicate': "c11#1"})
-sam2  = sparsify("../te_count_ends/ss.Hs_psc_wibr3.rp1.tsv.gz", csv=False,    obs_add={'cell_type': "hESC", 'replicate': "WIBR3#1"})
+sam1 = sparsify("../te_count_ends/ss.Hs_psc_c11.rp1.tsv.gz", csv=False,      obs_add={'cell_type': "iPSC", 'replicate': "c11#1"})
+sam2 = sparsify("../te_count_ends/ss.Hs_psc_wibr3.rp1.tsv.gz", csv=False,    obs_add={'cell_type': "hESC", 'replicate': "WIBR3#1"})
 #sam3 = sparsify("../te_count_ends/ss.Hs_psc_wibr3nai.rp1.tsv.gz", csv=False, obs_add={'cell_type': "hESC", 'replicate': "WIBR3-naive#1"}) # Seems okay, but better to omit as it is no different from the primed cells... So much for 'naive' cells...
-sam4  = sparsify("../te_count_ends/ss.hIPSC_scRNA_Sample1.tsv.gz", csv=False, obs_add={'cell_type': "iPSC", 'replicate': "WTC#1"})
+sam4 = sparsify("../te_count_ends/ss.hIPSC_scRNA_Sample1.tsv.gz", csv=False, obs_add={'cell_type': "iPSC", 'replicate': "WTC#1"})
 #sam5 = sparsify("../te_count_ends/ss.hIPSC_scRNA_Sample2.tsv.gz", csv=False, obs_add={'cell_type': "iPSC-primed", 'replicate': "WTC#2"}) # This is the one they sequenced a few cells very deep
-sam6  = sparsify("../te_count_ends/ss.hIPSC_scRNA_Sample3.tsv.gz", csv=False, obs_add={'cell_type': "iPSC", 'replicate': "WTC#3"})
-sam7  = sparsify("../te_count_ends/ss.hIPSC_scRNA_Sample4.tsv.gz", csv=False, obs_add={'cell_type': "iPSC", 'replicate': "WTC#4"})
-sam8  = sparsify("../te_count_ends/ss.hIPSC_scRNA_Sample5.tsv.gz", csv=False, obs_add={'cell_type': "iPSC", 'replicate': "WTC#5"})
-sam9  = sparsify("../te_count_ends/ss.batch1.U1-hESC.tsv.gz", csv=False,      obs_add={'cell_type': "hESC", 'replicate': "UCLA1#1"})
-#sam10 = sparsify("../te_count_ends/ss.batch2.U1-hESC.tsv.gz", csv=False,      obs_add={'cell_type': "hESC", 'replicate': "UCLA1#2"})
-#sam11 = sparsify("../te_count_ends/ss.batch1.U2-hESC.tsv.gz", csv=False,     obs_add={'cell_type': "hESC", 'replicate': "UCLA2#1"}) # Sample is differentiated. Mislabelled cells? They are all CDH2+
-#sam12 = sparsify("../te_count_ends/ss.batch1.U2-hESC.tsv.gz", csv=False,      obs_add={'cell_type': "hESC", 'replicate': "UCLA2#2"}) # Not entirely differentiated, but has a lot of diffn. cells
+sam6 = sparsify("../te_count_ends/ss.hIPSC_scRNA_Sample3.tsv.gz", csv=False, obs_add={'cell_type': "iPSC", 'replicate': "WTC#3"})
+sam7 = sparsify("../te_count_ends/ss.hIPSC_scRNA_Sample4.tsv.gz", csv=False, obs_add={'cell_type': "iPSC", 'replicate': "WTC#4"})
+sam8 = sparsify("../te_count_ends/ss.hIPSC_scRNA_Sample5.tsv.gz", csv=False, obs_add={'cell_type': "iPSC", 'replicate': "WTC#5"})
+sam9 = sparsify("../te_count_ends/ss.batch1.U1-hESC.tsv.gz", csv=False,      obs_add={'cell_type': "hESC", 'replicate': "UCLA1#1"})
+sam10 = sparsify("../te_count_ends/ss.batch2.U1-hESC.tsv.gz", csv=False,     obs_add={'cell_type': "hESC", 'replicate': "UCLA1#2"})
+#sam11 = sparsify("../te_count_ends/ss.batch1.U2-hESC.tsv.gz", csv=False,     obs_add={'cell_type': "hESC", 'replicate': "UCLA2#1"}) # Sample is differentiated. Mislabelled cells? THey are all CDH2+
+#sam12 = sparsify("../te_count_ends/ss.batch1.U1-hESC.tsv.gz", csv=False,     obs_add={'cell_type': "hESC", 'replicate': "UCLA2#2"}) # Not entirely differentiated, but has a lot of diffn. cells
+
 
 print('Loaded Samples...')
 
@@ -42,9 +43,8 @@ samples = [sam1, sam2,
     #sam3,
     sam4,
     #sam5,
-    sam6, sam7, sam8, sam9,
-    #sam10,
-    #sam11,sam12
+    sam6, sam7, sam8, sam9, sam10,
+    #sam11, sam12
     ]
 
 # Quick pre-filtering, these should be low, otherwise it can mess up downstream analysis, but also can get rid of trivial uninteresting things
