@@ -1,0 +1,11 @@
+#PBS -l nodes=1:ppn=1
+#PBS -j oe
+#PBS -o kallisto_index.out
+#PBS -q batch
+#PBS -V 
+cd $PBS_O_WORKDIR
+
+# transcripts.fa can be generated from the gtf using something like:
+# rsem-prepare-reference --gtf current_gtf.fixed_contigs.gtf hg38.fa transcripts.fa
+
+kallisto index -i  current_gtf.kall.idx transcripts.fa
