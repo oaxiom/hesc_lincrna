@@ -10,9 +10,10 @@ conds = []
 def pretify_sample_names(cond_names):
     newc = []
     for c in cond_names:
-        t = c.replace('hesc_', 'hESC ').replace('rp1', '#1').replace('rp2', '#2')
+        t = c.replace('hesc_', 'hESC ').replace('_rp1', '').replace(' rp2', '#2')
         t = t.replace('nuc', 'Nuclear').replace('cyto', 'Cytoplasm').replace('monosome', 'Monosome')
         t = t.replace('poly_high', 'Polysome High').replace('poly_low', 'Polysome Low')
+        t = t.replace('_', ' ')
         newc.append(t)
     return newc
 
@@ -73,9 +74,9 @@ expn = expression(loadable_list=all, expn=cond_names)
 print(expn)
 print(custom_ann)
 
-expn = expn.filter_low_expressed(5, 2) # works out to about ~30 mapped tags
 expn = custom_ann.map(genelist=expn, key='transcript_id')
-#expn.coerce(int) #?!?!
+expn = expn.getColumns(['ensg',	'enst',	'name',	'transcript_id',	'transcript_class', 'coding',	'expression'])
+
 expn.saveTSV("kall_tpm-unmerged.tsv")
 expn.save("kall_tpm-unmerged.glb") # Only need for QC purposes
 
@@ -84,10 +85,10 @@ print(expn.getConditionNames())
 # Merge:
 expn = expn.mean_replicates(
     ['hesc_cyto_rp1', 'hesc_cyto_rp2'],
-    ['hesc_monosome_rp1', 'hesc_monosome_rp2'],
     ['hesc_nuc_rp1', 'hesc_nuc_rp2'],
-    ['hesc_poly_high_rp1', 'hesc_poly_high_rp2'],
+    ['hesc_monosome_rp1', 'hesc_monosome_rp2'],
     ['hesc_poly_low_rp1', 'hesc_poly_low_rp2',],
+    ['hesc_poly_high_rp1', 'hesc_poly_high_rp2'],
     output_pears="Pearson_correlations.tsv",
     pearson_hist="Pearson_hist.png",
     threshold=0.8)
@@ -95,6 +96,11 @@ expn = expn.mean_replicates(
 expn.strip_errs()
 
 expn.setConditionNames(pretify_sample_names(expn.getConditionNames()))
+
+print(expn.getConditionNames())
+
+expn = expn.sliceConditions(['hESC Nuclear', 'hESC Cytoplasm', 'hESC Monosome', 'hESC Polysome Low', 'hESC Polysome High', ])
+
 expn.saveTSV("kall_tpm.tsv")
 expn.save("kall_tpm.glb")
 
@@ -103,8 +109,9 @@ expn.save("kall_tpm.glb")
 newe = []
 for e in expn:
     s = sum(e['conditions'])
-    e['conditions'] = [i/s for i in e['conditions']]
-    newe.append(e)
+    if s > 0.01: # one or two nan. This seq is not as deep as our full dataset, so some transcripts become unreliable.
+        e['conditions'] = [i/s for i in e['conditions']]
+        newe.append(e)
 expn.load_list(newe, cond_names=expn.getConditionNames())
 
 expn.saveTSV("kall_ratios.tsv")
