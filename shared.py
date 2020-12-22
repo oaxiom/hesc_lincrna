@@ -608,7 +608,8 @@ def boxplots_simple(filename, data, qs,
     sizer=0.022,
     vert_height=4,
     col='lightgrey',
-    bot_pad=0.1):
+    bot_pad=0.1,
+    vlines=[]):
 
     mmheat_hei = 0.1+(sizer*len(data))
     fig = plot.figure(figsize=[2.8,vert_height])
@@ -617,9 +618,8 @@ def boxplots_simple(filename, data, qs,
     ax.tick_params(right=True)
 
     m = 0
-    ax.axvline(0, ls=":", lw=0.5, color="grey") # add a grey line at zero for better orientation
-    ax.axvline(-0.25, ls=":", lw=0.5, color="grey")
-    ax.axvline(+0.25, ls=":", lw=0.5, color="grey")
+    for vli in vlines:
+        ax.axvline(vli, ls=":", lw=0.5, color="grey") # add a grey line at zero for better orientation
 
     dats = list(data.values())
     r = ax.boxplot(dats,
