@@ -46,7 +46,7 @@ res = {}
 # final result histogram
 for stub in res_per_gene:
     pep_hits = res_per_gene[stub].keys()
-    num_hits = sum([i>=1 for i in res_per_gene[stub].values()])
+    num_hits = sum([i>=2 for i in res_per_gene[stub].values()])
 
     res[stub] = [num_hits, len(pep_hits)]
 print(res)
@@ -85,6 +85,7 @@ ax.set_yticklabels(order)
 for y, p, x in zip(ys, percs, num_hits):
     ax.text(x+4, y, s='{0} ({1:.1f}%)'.format(x, p), va='center', fontsize=6)
 
-fig.savefig('summary.pdf')
+fig.savefig('summary-2pep.png')
+fig.savefig('summary-2pep.pdf')
 
 

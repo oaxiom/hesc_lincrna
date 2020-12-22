@@ -19,6 +19,7 @@ __pycache__
 *.fa
 *.h5ad
 *.idx
+*.results.txt
 PT*.tsv.gz
 PT*.txt
 ends.gtf
