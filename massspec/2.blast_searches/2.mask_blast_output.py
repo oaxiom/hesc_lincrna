@@ -142,13 +142,16 @@ for filename in glob.glob('blaster/table_*.tsv'):
             super_table = resgl
 
 newgl = []
-for item in newgl:
+for item in super_table:
     n = item['name'].split('|')
     del item['name']
+    del item['seq']
     item['name'] = n[0]
     item['transcript_id'] = n[1]
     item['enst'] = n[2]
+    newgl.append(item)
 
+super_table.load_list(newgl)
 super_table.save('super_table.glb')
 super_table.saveTSV('super_table.tsv')
 
