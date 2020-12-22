@@ -39,6 +39,8 @@ form = {'query_name': 0,
 
 min_length = 20
 
+super_table = None
+
 oh_all_seqs = open('all_masked_peptides.fa', 'w')
 
 for filename in glob.glob('blaster/table_*.tsv'):
@@ -53,7 +55,7 @@ for filename in glob.glob('blaster/table_*.tsv'):
         blasta_lookup[b['query_name']].append(b)
 
     # Parse the FASTA
-    fasta = genelist('../1.fasta/fasta/{0}.fasta'.format(stub), format=format.fasta)
+    fasta = genelist('../1.sequences/fasta/{0}.fasta'.format(stub), format=format.fasta)
     fasta_lookup = {}
 
     # A few squeek through somehow. I think these are a few crazy lucky ones that are the same length
@@ -133,5 +135,21 @@ for filename in glob.glob('blaster/table_*.tsv'):
         resgl.saveTSV('masked/masked_results-{0}.tsv'.format(stub), key_order=['name', 'blastp_status'])
         resgl.save('masked/masked_results-{0}.glb'.format(stub))
         # resgl.saveFASTA
+
+        if super_table:
+            super_table += resgl
+        else:
+            super_table = resgl
+
+newgl = []
+for item in newgl:
+    n = item['name'].split('|')
+    del item['name']
+    item['name'] = n[0]
+    item['transcript_id'] = n[1]
+    item['enst'] = n[2]
+
+super_table.save('super_table.glb')
+super_table.saveTSV('super_table.tsv')
 
 oh_all_seqs.close()
