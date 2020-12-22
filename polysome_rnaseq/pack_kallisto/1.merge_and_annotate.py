@@ -106,14 +106,24 @@ expn.save("kall_tpm.glb")
 
 # convert the TPMs to normalised ratios:
 
+expn_poly = expn.sliceConditions(['hESC Cytoplasm', 'hESC Monosome', 'hESC Polysome Low', 'hESC Polysome High', ])
 newe = []
-for e in expn:
+for e in expn_poly:
+    s = e['conditions'][0]
+    if s > 0.01: # one or two nan. This seq is not as deep as our full dataset, so some transcripts become unreliable.
+        e['conditions'] = [i/s for i in e['conditions']]
+        newe.append(e)
+expn_poly.load_list(newe, cond_names=expn_poly.getConditionNames())
+expn_poly.saveTSV("kall_poly_ratios.tsv")
+expn_poly.save("kall_poly_ratios.glb")
+
+expn_nuccyt = expn.sliceConditions(['hESC Nuclear', 'hESC Cytoplasm'])
+newe = []
+for e in expn_nuccyt:
     s = sum(e['conditions'])
     if s > 0.01: # one or two nan. This seq is not as deep as our full dataset, so some transcripts become unreliable.
         e['conditions'] = [i/s for i in e['conditions']]
         newe.append(e)
-expn.load_list(newe, cond_names=expn.getConditionNames())
-
-expn.saveTSV("kall_ratios.tsv")
-expn.save("kall_ratios.glb")
-
+expn_nuccyt.load_list(newe, cond_names=expn_nuccyt.getConditionNames())
+expn_nuccyt.saveTSV("kall_nuc_cyt_ratios.tsv")
+expn_nuccyt.save("kall_nuc_cyt_ratios.glb")

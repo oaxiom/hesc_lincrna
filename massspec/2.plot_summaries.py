@@ -47,12 +47,13 @@ res = {}
 for stub in res_per_gene:
     pep_hits = res_per_gene[stub].keys()
     num_hits = sum([i>=1 for i in res_per_gene[stub].values()])
+    num_hits2pep = sum([i>=2 for i in res_per_gene[stub].values()])
 
-    res[stub] = [num_hits, len(pep_hits)]
+    res[stub] = [num_hits, num_hits2pep, len(pep_hits)] #these overlap, so don't adjust the bottoms.
 print(res)
 
-fig = plot.figure(figsize=[3,1.0])
-fig.subplots_adjust(left=0.5)
+fig = plot.figure(figsize=[4.5,1.5])
+fig.subplots_adjust(left=0.3)
 ax = fig.add_subplot(111)
 
 ys = numpy.arange(len(res))
@@ -66,24 +67,28 @@ order = [
 
     ] # bottom to top
 
-num_hits = numpy.array([res[k][0] for k in order])
-len_hits = numpy.array([res[k][1] for k in order]) # starts at 0 so no need to subtract
-print(num_hits, len_hits)
-percs = (num_hits / len_hits) * 100.0
-print(num_hits)
-print(len_hits)
-print(percs)
-ax.barh(ys, len_hits)
+num_hits1 = numpy.array([res[k][0] for k in order])
+num_hits2 = numpy.array([res[k][1] for k in order])
+len_hits = numpy.array([res[k][2] for k in order]) # starts at 0 so no need to subtract
+print(num_hits1, num_hits2, len_hits)
+percs1 = (num_hits1 / len_hits) * 100.0
+percs2 = (num_hits2 / len_hits) * 100.0
 
-ax.barh(ys, num_hits)
+ax.barh(ys, len_hits)
+ax.barh(ys, num_hits1)
+ax.barh(ys, num_hits2)
+
 print(res.keys())
-ax.set_xlabel('Number of proteins with >20 Amino acids')
+ax.set_xlabel('Number of proteins with >20 Amino acids', fontsize=6)
 ax.set_yticks(ys)
 ax.set_yticklabels(order)
 [t.set_fontsize(6) for t in ax.get_yticklabels()]
 [t.set_fontsize(6) for t in ax.get_xticklabels()]
-for y, p, x in zip(ys, percs, num_hits):
-    ax.text(x+4, y, s='{0} ({1:.1f}%)'.format(x, p), va='center', fontsize=6)
+
+for y, p, x in zip(ys, percs1, num_hits1):
+    ax.text(x+4, y-0.25, s='{0} ({1:.1f}%)'.format(x, p), va='center', fontsize=6)
+for y, p, x in zip(ys, percs2, num_hits2):
+    ax.text(x+4, y+0.25, s='{0} ({1:.1f}%)'.format(x, p), va='center', fontsize=6)
 
 fig.savefig('summary.pdf')
 
