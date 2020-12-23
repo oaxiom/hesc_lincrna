@@ -75,7 +75,7 @@ print(expn)
 print(custom_ann)
 
 expn = custom_ann.map(genelist=expn, key='transcript_id')
-expn = expn.getColumns(['ensg',	'enst',	'name',	'transcript_id',	'transcript_class', 'coding',	'expression'])
+expn = expn.getColumns(['ensg', 'enst', 'name', 'transcript_id', 'transcript_class', 'coding', 'expression'])
 
 expn.saveTSV("kall_tpm-unmerged.tsv")
 expn.save("kall_tpm-unmerged.glb") # Only need for QC purposes
