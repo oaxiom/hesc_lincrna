@@ -9,6 +9,9 @@ def bundle_up_by_name(mode, all_genes, tes):
     # First I need to bundle them up by their name;
     bundles = {}
     for gene in all_genes:
+        if gene['expression'] == 'depleted':
+            continue
+
         symbol = gene['name'].split(' ')[0].strip()
 
         if symbol not in bundles:
