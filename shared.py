@@ -532,7 +532,7 @@ def boxplots(filename, data, qs, no_TE_key='no TE', title=None,
                 newd[k] = data[k]
         data = newd
 
-    dats = numpy.array(list(data.values()))
+    dats = list(data.values())
     r = ax.boxplot(dats,
         showfliers=False,
         whis=True,

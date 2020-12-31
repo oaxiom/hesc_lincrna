@@ -61,7 +61,7 @@ def process_bundles(bundle):
         gene_with_noTE_and_TE_transcript += 1
         for te in tpms_for_with_te:
             # A few ways to do this, take the mean or the max
-            fc = utils.fold_change(max(tpms_for_no_te), max(tpms_for_with_te[te]), pad=0.01) # correct way around
+            fc = utils.fold_change(max(tpms_for_no_te), max(tpms_for_with_te[te]), pad=0.001) # correct way around
             if 'LTR7' in te and '7' in te[-1]:
                 print(te, tpms_for_no_te, tpms_for_with_te[te], fc)
             #fc = utils.fold_change(numpy.mean(tpms_for_no_te), numpy.mean(tpms_for_with_te[te]), pad=0.01)
@@ -109,11 +109,12 @@ gl_ncrna.saveTSV('ncrna.tsv')
 gl_all = gl_all.getColumns(['ensg', 'enst', 'name', 'gene_symbol', 'tags', 'coding', 'expression', 'TPM', 'TEs', 'te'])
 gl_all.saveTSV('all.tsv')
 
+skips = ['.', 'Deu', 'Dong', 'Kolobok', 'MULE', 'tRNA', 'Satellite', 'Penelope',
+    'Harbinger', 'Merlin',]
+
 data = {}
 for te in sorted(res_coding_family):
-    if '.' in te:
-        continue
-    if 'tRNA' in te or 'Satellite' in te:
+    if True in [i in te for i in skips]:
         continue
     data[te] = res_coding_family[te]
 
