@@ -10,12 +10,18 @@ draw = 'pdf'
 c = chipfish.app()
 c.startup(os.path.expanduser("../trk_TEs.txt"))
 
-gllocs = glload('../../te_discovery/te_transcripts/transcript_table_merged.mapped.glb')
+#gllocs = glload('../../te_discovery/te_transcripts/transcript_table_merged.mapped.glb')
+gllocs = glload('../../transcript_assembly/packed/all_genes.glb') # needed for noTE
 
 locs = [
     'PMPCB',
     'PCAT14',
     'TFCP2L1', # LBP9
+    # HERVK-containing
+    'LINC02018', 'PDCL3P4',
+        'AC108519.1',
+        'AF228730.5',
+        'AC068587.4'
     ]
 locs = genelist(loadable_list=[{'gene_symbol': k} for k in locs])
 ll = locs.map(genelist=gllocs, key='gene_symbol')

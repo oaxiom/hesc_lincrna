@@ -10,7 +10,9 @@ draw = 'pdf'
 c = chipfish.app()
 c.startup(os.path.expanduser("../trk_TEs.txt"))
 
-gllocs = glload('../../te_discovery/te_transcripts/transcript_table_merged.mapped.glb')
+#gllocs = glload('../../te_discovery/te_transcripts/transcript_table_merged.mapped.glb')
+
+gllocs = glload('../../transcript_assembly/packed/all_genes.glb') # needed for noTE
 
 locs = [
     'HPSCSR.276998.297',
@@ -21,6 +23,8 @@ locs = [
     'HPSCLR.4844.3',
     'HPSCSR.162330.3',
     'HPSCSR.216914.100',
+    'HPSCSR.165091.37', # HERVK
+    'HPSCSR.165091.26', # noTE
     #'HPSCSR.
     #'HPSCSR.
     ]
