@@ -20,6 +20,7 @@ __pycache__
 *.h5ad
 *.idx
 *.results.txt
+abundance.tsv
 PT*.tsv.gz
 PT*.txt
 ends.gtf
