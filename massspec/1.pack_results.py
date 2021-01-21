@@ -63,11 +63,11 @@ for filename in glob.glob('3.hipsci_results/PT*.tsv.gz'):
             # see if it's in a TE domain:
             fullname = 'No'
             te_doms = all_te_transcripts[hsc]
-            for d in te_doms:
-                # the span values include the UTRs. I need to trim them.
-                mrna_left = CDSs[hsc]['cds_local_locs'][0] + (left*3)
-                mrna_right = CDSs[hsc]['cds_local_locs'][0] + (rite*3)
+            # the left/rite values don't include the UTRs. I need to add them as the doms are in mRNA +UTRs positions;
+            mrna_left = CDSs[hsc]['cds_local_locs'][0] + (left*3)
+            mrna_right = CDSs[hsc]['cds_local_locs'][0] + (rite*3)
 
+            for d in te_doms:
                 if d['span'][1] >= mrna_left and d['span'][0] <= mrna_right:
                     te = dfam.get(key='name', value=d['dom'])[0]
                     fullname = '{0}:{1}:{2}'.format(te['type'], te['subtype'], d['dom'])

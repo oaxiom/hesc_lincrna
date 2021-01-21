@@ -1,5 +1,5 @@
 
-for f in ../1.fasta/fasta/*.fasta
+for f in ../1.sequences/fasta/*.fasta
 do
     bn=`basename $f | sed 's#.fasta##g'`
     echo Doing ${f}
