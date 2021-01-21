@@ -37,7 +37,7 @@ form = {'query_name': 0,
     'force_tsv': True,
     }
 
-min_length = 20
+min_length = 30
 
 super_table = None
 
@@ -55,7 +55,7 @@ for filename in glob.glob('blaster/table_*.tsv'):
         blasta_lookup[b['query_name']].append(b)
 
     # Parse the FASTA
-    fasta = genelist('../1.sequences/fasta/{0}.fasta'.format(stub), format=format.fasta)
+    fasta = genelist('../1.sequences/fasta/{}.fasta'.format(stub), format=format.fasta)
     fasta_lookup = {}
 
     # A few squeek through somehow. I think these are a few crazy lucky ones that are the same length
@@ -74,7 +74,7 @@ for filename in glob.glob('blaster/table_*.tsv'):
                 print('Warning: {0} <{1} Amino acids, skipping'.format(hit['query_name'], min_length))
             else:
                 res.append(f) # Full sequence is uniquq
-                oh_all_seqs.write('>{0}|{1}\n'.format(stub, f['name']))
+                oh_all_seqs.write('>{}|{}\n'.format(stub, f['name']))
                 oh_all_seqs.write(f['seq'])
                 oh_all_seqs.write('\n')
 

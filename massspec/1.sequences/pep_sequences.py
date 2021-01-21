@@ -93,7 +93,7 @@ for filename in glob.glob('../../te_discovery/CDS_insertions/*.glb'):
 # save out the full set of searched for peptides:
 gl = genelist()
 gl.load_list(newgl)
-gl = gl.getColums(['ensg', 'esnst', 'name', 'gene_symbol', 'expression'])
+gl = gl.getColumns(['ensg', 'enst', 'name', 'gene_symbol', 'expression'])
 gl.save('all_novel_CDS_disrupted_transcripts.glb')
 gl.saveTSV('all_novel_CDS_disrupted_transcripts.tsv')
 
