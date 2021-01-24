@@ -74,9 +74,9 @@ print(num_hits1, num_hits2, len_hits)
 percs1 = (num_hits1 / len_hits) * 100.0
 percs2 = (num_hits2 / len_hits) * 100.0
 
-ax.barh(ys, len_hits)
-ax.barh(ys, num_hits1)
-ax.barh(ys, num_hits2)
+ax.barh(ys, len_hits, color='grey')
+ax.barh(ys, num_hits1, color='tab:orange')
+ax.barh(ys, num_hits2, color='tab:red')
 
 print(res.keys())
 ax.set_xlabel('Number of proteins with >20 Amino acids', fontsize=6)

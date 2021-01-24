@@ -1,0 +1,37 @@
+# This file is used to specify modifications
+# Use # for comments, either at the start of a line or in the middle of line
+#
+# Max Number of Dynamic (Variable) Modifications per peptide
+# If this value is large, the search will be slow
+NumMods=3
+
+# Static (fixed) modifications:
+C2H3N1O1,C,fix,any,Carbamidomethyl      # Fixed Carbamidomethyl C
+
+# Variable Modifications (default: none)
+O1,M,opt,any,Oxidation                  # Oxidation M
+H-3N-1,Q,opt,N-term,Gln->pyro-Glu       # Pyro-glu from Q
+H-1N-1O1,NQ,opt,any,Deamidated 
+C2H2O,*,opt,Prot-N-term,Acetyl          # Acetylation Protein N-term
+
+
+#  Carbamidomethylation on cysteine was set as a fixed modification. 
+# Oxidation on methionine, 
+# pyro-glu conversion of N-terminal Gln, 
+# deamidation of asparagine and glutamine and 
+# acetylation at the protein N-terminus, 
+# were set as variable modification
+
+# Additional Modification Examples
+#   C2H3N1O1,  C,  fix, any,      Carbamidomethyl      # Fixed Carbamidomethyl C (alkylation)
+#   O1,        M,  opt, any,      Oxidation            # Oxidation M
+#   15.994915, M,  opt, any,      Oxidation            # Oxidation M (mass is used instead of CompositionStr)
+#   H-1N-1O1,  NQ, opt, any,      Deamidated           # Negative numbers are allowed.
+#   CH2,       K,  opt, any,      Methyl               # Methylation K
+#   C2H2O1,    K,  opt, any,      Acetyl               # Acetylation K
+#   HO3P,      STY,opt, any,      Phospho              # Phosphorylation STY
+#   C2H3NO,    *,  opt, N-term,   Carbamidomethyl      # Variable Carbamidomethyl N-term
+#   H-2O-1,    E,  opt, N-term,   Glu->pyro-Glu        # Pyro-glu from E
+#   H-3N-1,    Q,  opt, N-term,   Gln->pyro-Glu        # Pyro-glu from Q
+#   C2H2O,     *,  opt, Prot-N-term, Acetyl            # Acetylation Protein N-term
+

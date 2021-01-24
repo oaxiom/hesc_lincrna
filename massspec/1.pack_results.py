@@ -6,7 +6,7 @@ import gzip as gzipfile
 res_peps = {} # Peptides that pass
 res_genes = [] # Genes that pass
 
-delete_chars = set('0123456789.+')
+delete_chars = set('0123456789.+-')
 # So I can get hte locations;
 all_fastas = genelist('2.blast_searches/all_masked_peptides.fa', format=format.fasta) # Just for getting the positions;
 all_fastas = {i['name']: i['seq'] for i in all_fastas}
@@ -30,10 +30,11 @@ for filename in glob.glob('3.hipsci_results/PT*.tsv.gz'):
 
         peptide = line[8]
         matches = line[9]
-        e = float(line[14]) # EValue column
+        e = float(line[14]) # QValue column
+        e = float(line[13]) # EValue column
 
         # Only take high quality matches
-        if e > 0.05: # FDR if you use q
+        if e > 0.01: # FDR if you use q
             continue
 
         # delete peptides matching to two peptides or more with the same name;
@@ -52,6 +53,7 @@ for filename in glob.glob('3.hipsci_results/PT*.tsv.gz'):
 
         for hsc, enst, symbol, class_ in zip(hsc_names, enst_names, symbol_names, class_names):
             peptide_string = ''.join([i for i in peptide if i not in delete_chars])
+            #print(peptide_string, peptide)
 
             # Find out where it is in the CDS, and if it's in a TE:
             # Get the position in the Peptide_fasta
@@ -59,6 +61,7 @@ for filename in glob.glob('3.hipsci_results/PT*.tsv.gz'):
             aa_seq = all_fastas[fasta_name]
             left = aa_seq.index(peptide_string)
             rite = left+len(peptide_string)
+
 
             # see if it's in a TE domain:
             fullname = 'No'
@@ -90,7 +93,7 @@ gl = genelist()
 gl.load_list(res_genes)
 gl.sort('name')
 gl.sort('class')
-gl.saveTSV('results_gene.tsv', key_order=['transcript_id', 'enst', 'name', 'class', 'E', 'peptide', 'peptide_string', 'left', 'right', 'insideTE'])
+gl.saveTSV('results_gene.tsv', key_order=['transcript_id', 'enst', 'name', 'class', 'E', 'peptide', 'peptide_string', 'insideTE'])
 gl.save('results_gene.glb')
 
 print('{0} peptides passed'.format(len(res_peps)))

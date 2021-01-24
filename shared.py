@@ -440,7 +440,7 @@ def bar(filename, data_dict, key_order=None, title='', cols=None, figsize=[4,3])
             for kk in data_dict[k]:
                 if kk not in all_keys:
                     all_keys.append(kk)
-        print('Found {0} keys'.format(all_keys))
+        print('Found {} keys'.format(all_keys))
     else:
         all_keys = key_order
 
@@ -451,7 +451,13 @@ def bar(filename, data_dict, key_order=None, title='', cols=None, figsize=[4,3])
         labs.append(k)
         for kk in all_keys:
             vals[kk].append(float(data_dict[k][kk]))
-    print(vals)
+    print('vals:', vals)
+
+    # data_dict = {'bar_row': {'class': 0, class2': 0}}
+    percs = {}
+    for k in vals:
+        s = sum(vals[k])
+        percs[k] = [((n / s) * 100.0) for n in vals[k]]
 
     scaled = {k: [] for k in all_keys}
     sums = None
@@ -473,13 +479,11 @@ def bar(filename, data_dict, key_order=None, title='', cols=None, figsize=[4,3])
 
     ypos = numpy.arange(len(data_dict))
 
-    # data_dict = {'bar_row': {'class': 0, class2': 0}}
-
     bots = numpy.zeros(len(labs))
     for k in vals:
         ax.barh(ypos, vals[k], 0.7, label=k, left=bots)
-        for y, v, s, b in zip(ypos, vals[k], vals[k], bots):
-            ax.text(b+(s//2), y, '{0:,.0f} ({1:.0f}%)'.format(v, s), ha='center', va='center', fontsize=6)
+        for y, v, s, b in zip(ypos, vals[k], percs[k], bots):
+            ax.text(b+(v//2), y, '{:,.0f} ({:.0f}%)'.format(v, s), ha='center', va='center', fontsize=6)
         bots += vals[k]
 
     ax.set_yticks(ypos)
