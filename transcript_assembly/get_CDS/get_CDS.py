@@ -107,8 +107,8 @@ newl = []
 for gene in newd:
     enst = gene['enst']
     if enst in gencode_map and ';=)' in gene['name']:
-        gencode_cds = gencode_map[enst]['cds_local_locs']
-        gene['cds_local_locs'] = gencode_cds
+        gene['cds_local_locs'] = gencode_map[enst]['cds_local_locs']
+        gene['cds_genome_loc'] = gencode_map[enst]['cds_genome']
         newl.append(gene)
     else:
         newl.append(gene) # add the prediction
