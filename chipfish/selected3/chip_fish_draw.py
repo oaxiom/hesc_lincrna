@@ -19,9 +19,11 @@ locs = [
     'TFCP2L1', # LBP9
     # HERVK-containing
     'LINC02018', 'PDCL3P4',
-        'AC108519.1',
-        'AF228730.5',
-        'AC068587.4'
+    'AC108519.1',
+    'AF228730.5',
+    'AC068587.4',
+    'WRAP73',
+    'CEP104',
     ]
 locs = genelist(loadable_list=[{'gene_symbol': k} for k in locs])
 ll = locs.map(genelist=gllocs, key='gene_symbol')

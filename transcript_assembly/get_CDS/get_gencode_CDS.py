@@ -12,14 +12,25 @@ sys.path.append('../../')
 import shared
 
 fastas = genelist('gencode.v32.pc_transcripts.fa.gz', format=format.fasta, gzip=True)
+gencode = glload('../../gencode/hg38_gencode_v32.pc.glb')
+gencode = {t['enst']:t['cds_loc'] for t in gencode}
 
 truncated = 0
 newl = []
 for fasta in fastas:
     enst = fasta['name'].split('|')
+
+    if enst[0] not in gencode:
+        # Not an official coding sequence, possibly annotated as a NMD.
+        # Skip it;
+        continue
+
     cds = [i for i in enst if 'CDS:' in i][0].split(':')[1].split('-')
     cds = (int(cds[0])-1, int(cds[1]))
-    newl.append({'enst': enst[0], 'cds_local_locs': (cds[0], cds[1]), 'tlength': len(fasta['seq'])})
+    newl.append({'enst': enst[0],
+        'cds_local_locs': (cds[0], cds[1]),
+        'cds_genome': gencode[enst[0]],
+        'tlength': len(fasta['seq'])})
 
     if fasta['seq'][cds[0]:cds[0]+3] != 'ATG':
         print('! Warning: {} does not have an ATG'.format(fasta['name']))

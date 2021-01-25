@@ -12,7 +12,6 @@ def contained(al, ar, bl, br): # Is A in B?
 # These have the official GENCODE CDS, and the predicted (about ~80% accurate)
 canonical = glload('../../gencode/hg38_gencode_v32.pc.glb')
 gencode_cds = glload('../../transcript_assembly/get_CDS/gencode_cds.glb')
-print(canonical)
 print(gencode_cds)
 canonical_all = canonical.map(genelist=gencode_cds, key='enst')
 
@@ -82,11 +81,12 @@ res = {'inframe_insertion': [], # Class 1 # numbers are per-transcript;
     'frameshift_insertion': [],
     'new_STOP': [], # Class 2
     'new_ATG': [],
-    'disrupt_coding': [], # Class 3
+    'coding_to_noncoding': [], # Class 3
     'insertion_alternate_cds': [], # Class 4
     'no_disruption_5prime': [], # Class 5
     'no_disruption_3prime': [], # Class 6
     'no_disruption_5_3prime': [],
+    'mid_cds_insertion': [],
     'class_not_found': [],
     'no_coding': []}
 
@@ -152,7 +152,7 @@ for idx, gene_name in enumerate(bundles):
 
         if te:
             if transcript['coding'] == 'noncoding':
-                res['disrupt_coding'].append(transcript)
+                res['coding_to_noncoding'].append(transcript)
                 continue
 
             # calls:
@@ -177,8 +177,11 @@ for idx, gene_name in enumerate(bundles):
                 te_edges = (max(t['span'][0], i['cds_local_locs'][0]), min(t['span'][1], i['cds_local_locs'][1]))
                 te_span = te_edges[1] - te_edges[0]
                 cds_lengths_plus_te = [(i['cds_local_locs'][1]-i['cds_local_locs'][0])+te_span for i in known if i['coding'] == 'coding']
+                #canonical_cds_edges_genome = [
+                cds_edges = [i['cds_local_locs'][0] for i in known if i['coding'] == 'coding']
+                cds_edges += [i['cds_local_locs'][1] for i in known if i['coding'] == 'coding']
 
-                if colliding:
+                if colliding: # with this CDS;
                     if enclosed: # Te is entirely contained in the transcript
                         if expected_cds_length in cds_lengths_plus_te: # TE is most likely in frame inserted:
                             inframe_insertion = True
@@ -187,7 +190,7 @@ for idx, gene_name in enumerate(bundles):
                         else: # probably a new CDS
                             frameshift_insertion = True
 
-                    else: # It is colliding, but extends past the CDS;
+                    else: # It is colliding, but extends past the CDS, i.e. the STOP is inside the TE.
                         if t['span'][1] >= transcript['cds_local_locs'][1]: # It's STOP the CDS
                             if expected_cds_length in cds_lengths: # It's probably already annotated as contained, and has no effect on the CDS
                                 pass
@@ -200,9 +203,12 @@ for idx, gene_name in enumerate(bundles):
                             else: # probably a novel truncation
                                 new_ATG = True
 
-                else: # No collision with the CDS; check it's 5' or 3':
-                    # Check that it still contains a CDS of the correct length:
+                        else: # I can't ID it; Never gets here;
+                            frameshift_insertion = True
 
+                else: # No collision with this CDS; check it's 5' or 3':
+
+                    # Check it against the canonical CDSs;
                     if expected_cds_length in cds_lengths: # It's a simple insertion 5' or 3':
                         # I know it's not a collision, so just test the edge:
                         if t['span'][1] <= transcript['cds_local_locs'][0]: # 5'
@@ -210,9 +216,17 @@ for idx, gene_name in enumerate(bundles):
                         elif t['span'][0] >= transcript['cds_local_locs'][1]:
                             no_disruption_3prime = True
                     else:
-                        #print(expected_cds_length in cds_lengths, expected_cds_length, sorted(cds_lengths))
-                        insertion_alternate_cds = True
-                        # I find this category to be a bit dubious, and almost certainly has too many False+
+                        print('\n', transcript)
+                        # see if one of the cds edges perfectly matches a canonical edge: Most likey a mid_CDS_insertion, that results in a STOP before the TE (hence no collision)'
+                        if transcript['cds_local_locs'][0] in cds_edges or transcript['cds_local_locs'][1] in cds_edges:
+                            frameshift_insertion = True
+                        #elif 1:
+                        #    # see if the TSS CDS genomic location is the same. If yes, it's a mid-CDS insertion
+                        #    print(transcript)
+                        #    #print(expected_cds_length in cds_lengths, expected_cds_length, sorted(cds_lengths))
+                        else:
+                            insertion_alternate_cds = True
+                            # I find this category to be a bit dubious, and almost certainly has too many False+
 
             # transcripts only get called once. Add it here based ona hierarchy:
             # Use the calls above to assign to the preferred classes:

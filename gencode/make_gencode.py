@@ -70,7 +70,8 @@ done = 0
 skipped = 0
 trans = None
 transcript_types_seen = set([])
-transcript_types_dont_keep = set(['miRNA', 'snRNA', 'snoRNA', 'Mt_tRNA', 'Mt_rRNA', 'TEC', 'scRNA', 'scaRNA','vaultRNA',
+transcript_types_dont_keep = set([
+    'miRNA', 'snRNA', 'snoRNA', 'Mt_tRNA', 'Mt_rRNA', 'TEC', 'scRNA', 'scaRNA','vaultRNA',
     'ribozyme',
     'IG_pseudogene', 'IG_J_gene', 'TR_J_pseudogene', 'IG_J_pseudogene', 'TR_D_gene',
     'IG_V_gene', 'IG_C_pseudogene',  'TR_J_gene','TR_V_pseudogene','sRNA', 'TR_V_gene', 'IG_D_gene', 'IG_C_gene', 'IG_V_pseudogene', 'TR_C_gene',])
@@ -119,7 +120,7 @@ for idx, line in enumerate(oh):
 
 done = add_entry(done) # add the last one
 
-print(transcript_types_seen)
+print('Transcript types seen and kept: {}'.format(transcript_types_seen))
 
 print('Processed: %s transcripts' % done)
 print('Skipped  : %s transcripts' % skipped)
