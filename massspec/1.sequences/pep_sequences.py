@@ -5,6 +5,8 @@ from collections import defaultdict
 sys.path.append('../../')
 import shared
 
+[os.remove(f) for f in glob.glob('fasta/*.fasta')]
+
 dna_fasta = glload('../../transcript_assembly/fasta/transcripts.glb')
 
 gencode_peptide_fastas = genelist('../../transcript_assembly/get_CDS/gencode.v32.pc_translations.fa.gz', format=format.fasta, gzip=True)

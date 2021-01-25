@@ -37,7 +37,7 @@ form = {'query_name': 0,
     'force_tsv': True,
     }
 
-min_length = 30
+min_length = 20
 
 super_table = None
 

@@ -86,7 +86,6 @@ res = {'inframe_insertion': [], # Class 1 # numbers are per-transcript;
     'no_disruption_5prime': [], # Class 5
     'no_disruption_3prime': [], # Class 6
     'no_disruption_5_3prime': [],
-    'mid_cds_insertion': [],
     'class_not_found': [],
     'no_coding': []}
 
