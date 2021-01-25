@@ -216,7 +216,7 @@ for idx, gene_name in enumerate(bundles):
                         elif t['span'][0] >= transcript['cds_local_locs'][1]:
                             no_disruption_3prime = True
                     else:
-                        print('\n', transcript)
+                        #print('\n', transcript)
                         # see if one of the cds edges perfectly matches a canonical edge: Most likey a mid_CDS_insertion, that results in a STOP before the TE (hence no collision)'
                         if transcript['cds_local_locs'][0] in cds_edges or transcript['cds_local_locs'][1] in cds_edges:
                             frameshift_insertion = True
