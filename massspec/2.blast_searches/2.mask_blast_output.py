@@ -46,6 +46,8 @@ super_table = None
 
 oh_all_seqs = open('all_masked_peptides.fa', 'w')
 
+final_counts = {}
+
 for filename in glob.glob('blaster/table_*.tsv'):
     if 'table_inframe_insertion.tsv' in filename:
         continue
@@ -136,10 +138,12 @@ for filename in glob.glob('blaster/table_*.tsv'):
     if res:
         resgl = genelist()
         resgl.load_list(res)
-        print('Number of surviving peptides: {0}'.format(len(resgl)))
+        print('\n::: {}'.format(stub))
+        print('Number of surviving peptides: {}\n'.format(len(resgl)))
+        final_counts[stub] = len(resgl)
         resgl.sort('name')
-        resgl.saveTSV('masked/masked_results-{0}.tsv'.format(stub), key_order=['name', 'blastp_status'])
-        resgl.save('masked/masked_results-{0}.glb'.format(stub))
+        resgl.saveTSV('masked/masked_results-{}.tsv'.format(stub), key_order=['name', 'blastp_status'])
+        resgl.save('masked/masked_results-{}.glb'.format(stub))
         # resgl.saveFASTA
 
         if super_table:
@@ -162,3 +166,7 @@ super_table.save('super_table.glb')
 super_table.saveTSV('super_table.tsv')
 
 oh_all_seqs.close()
+
+for stub in final_counts:
+    print('::: {}'.format(stub))
+    print('Number of surviving peptides: {}'.format(final_counts[stub]))
