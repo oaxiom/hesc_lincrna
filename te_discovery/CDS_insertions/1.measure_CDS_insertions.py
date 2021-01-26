@@ -1,7 +1,10 @@
-import sys, os
+import sys, os, glob
 from glbase3 import *
 sys.path.append('../../')
 import shared
+
+[os.remove(f) for f in glob.glob('*.tsv')]
+[os.remove(f) for f in glob.glob('*.glb')]
 
 def qcollide(al, ar, bl, br):
     return ar >= bl and al <= br # return(self.loc["right"] >= loc.loc["left"] and self.loc["left"] <= loc.loc["right"]) # nice one-liner
@@ -79,6 +82,8 @@ print('Found {0:,} bundles of genes'.format(len(bundles)))
 
 res = {'inframe_insertion': [], # Class 1 # numbers are per-transcript;
     'frameshift_insertion': [],
+    'noncoding_to_coding_withTE': [],
+    'noncoding_to_coding_noTE': [],
     'new_STOP': [], # Class 2
     'new_ATG': [],
     'coding_to_noncoding': [], # Class 3
@@ -87,6 +92,7 @@ res = {'inframe_insertion': [], # Class 1 # numbers are per-transcript;
     'no_disruption_3prime': [], # Class 6
     'no_disruption_5_3prime': [],
     'class_not_found': [],
+    'variant_coding_but_noTE': [],
     'no_coding': []}
 
 total = 0
@@ -145,23 +151,33 @@ for idx, gene_name in enumerate(bundles):
     #print(known, novel)
 
     for transcript in novel:
+        # calls:
+        inframe_insertion = False
+        frameshift_insertion = False
+        insertion_alternate_cds = False
+        new_STOP = False
+        new_ATG = False
+        no_disruption_5prime = False
+        no_disruption_3prime = False
+        noncoding_to_coding_withTE = False
+        noncoding_to_coding_noTE = False
+        variant_coding_but_noTE = False
+
+        # noncoding to coding
+        known_coding_status = set([t['coding'] for t in bundles[gene_name] if '=' in t['tags']])
+        novel_coding_status = transcript['coding']
+
         te = None
         if transcript['transcript_id'] in tes:
             te = tes[transcript['transcript_id']]
 
-        if te:
-            if transcript['coding'] == 'noncoding':
-                res['coding_to_noncoding'].append(transcript)
-                continue
+        if transcript['coding'] == 'noncoding':
+            res['coding_to_noncoding'].append(transcript)
+            continue
 
-            # calls:
-            inframe_insertion = False
-            frameshift_insertion = False
-            insertion_alternate_cds = False
-            new_STOP = False
-            new_ATG = False
-            no_disruption_5prime = False
-            no_disruption_3prime = False
+        if te:
+            if 'coding' in novel_coding_status and 'coding' not in known_coding_status:
+                noncoding_to_coding_withTE = True # This will override all classes
 
             # find out if a TE overlaps the CDS:
             for t in te['doms']:
@@ -225,19 +241,31 @@ for idx, gene_name in enumerate(bundles):
                         #    #print(expected_cds_length in cds_lengths, expected_cds_length, sorted(cds_lengths))
                         else:
                             insertion_alternate_cds = True
-                            # I find this category to be a bit dubious, and almost certainly has too many False+
+                            # I find this category to be a bit dubious, and seems to have too many False+
 
-            # transcripts only get called once. Add it here based ona hierarchy:
-            # Use the calls above to assign to the preferred classes:
-            if inframe_insertion:                                res['inframe_insertion'].append(transcript)
-            elif frameshift_insertion:                           res['frameshift_insertion'].append(transcript)
-            elif new_ATG:                                        res['new_ATG'].append(transcript)
-            elif new_STOP:                                       res['new_STOP'].append(transcript)
-            elif insertion_alternate_cds:                        res['insertion_alternate_cds'].append(transcript)
-            elif no_disruption_5prime and no_disruption_3prime:  res['no_disruption_5_3prime'].append(transcript)
-            elif no_disruption_5prime:                           res['no_disruption_5prime'].append(transcript)
-            elif no_disruption_3prime:                           res['no_disruption_3prime'].append(transcript)
-            else:                                                res['class_not_found'].append(transcript)
+                            print(transcript)
+        else: # No TE
+            if 'coding' in novel_coding_status and 'coding' not in known_coding_status:
+                noncoding_to_coding_noTE = True # This will override all classes
+            else:
+                variant_coding_but_noTE = True
+
+        # transcripts only get called once. Add it here based ona hierarchy:
+        # Use the calls above to assign to the preferred classes:
+        if noncoding_to_coding_withTE:                       res['noncoding_to_coding_withTE'].append(transcript)
+        elif noncoding_to_coding_noTE:                       res['noncoding_to_coding_noTE'].append(transcript)
+        elif inframe_insertion:                              res['inframe_insertion'].append(transcript)
+        elif frameshift_insertion:                           res['frameshift_insertion'].append(transcript)
+        elif new_ATG:                                        res['new_ATG'].append(transcript)
+        elif new_STOP:                                       res['new_STOP'].append(transcript)
+        elif insertion_alternate_cds:                        res['insertion_alternate_cds'].append(transcript)
+        elif no_disruption_5prime and no_disruption_3prime:  res['no_disruption_5_3prime'].append(transcript)
+        elif no_disruption_5prime:                           res['no_disruption_5prime'].append(transcript)
+        elif no_disruption_3prime:                           res['no_disruption_3prime'].append(transcript)
+        elif variant_coding_but_noTE:                        res['variant_coding_but_noTE'].append(transcript)
+        else:
+            res['class_not_found'].append(transcript)
+            print(transcript)
 
     #if idx > 5000:
     #    break

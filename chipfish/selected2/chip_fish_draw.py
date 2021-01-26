@@ -25,6 +25,11 @@ locs = [
     'HPSCSR.216914.100',
     'HPSCSR.165091.37', # HERVK
     'HPSCSR.165091.26', # noTE
+    'HPSCSR.329.8',
+    'HPSCSR.341.9',
+    'HPSCLR.14380.7',
+    'HPSCSR.643.6',
+    'HPSCSR.88755.6',
     #'HPSCSR.
     #'HPSCSR.
     ]

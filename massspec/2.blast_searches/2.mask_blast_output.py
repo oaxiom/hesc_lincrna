@@ -25,6 +25,9 @@ blastp -outfmt 6
 import glob, sys, os
 from glbase3 import *
 
+[os.remove(f) for f in glob.glob('masked/*.tsv')]
+[os.remove(f) for f in glob.glob('masked/*.glb')]
+
 form = {'query_name': 0,
     'hit_name': 1,
     'pident': 2,
@@ -44,6 +47,9 @@ super_table = None
 oh_all_seqs = open('all_masked_peptides.fa', 'w')
 
 for filename in glob.glob('blaster/table_*.tsv'):
+    if 'table_inframe_insertion.tsv' in filename:
+        continue
+
     stub = os.path.split(filename)[1].replace('.tsv', '')
     blasta = genelist(filename, format=form)
 
@@ -84,7 +90,7 @@ for filename in glob.glob('blaster/table_*.tsv'):
 
             for hit in blasta_lookup[f['name']]:
                 if query_len == hit['match_len'] and hit['pident'] >= 90.0: # basically a 100 % match;
-                    print('Warning: {0} full length and >90% blast match, skipping'.format(hit['query_name']))
+                    print('Warning: {} full length and >90% blast match, skipping'.format(hit['query_name']))
                     remaining_sequence = None
                     break
 
@@ -108,7 +114,7 @@ for filename in glob.glob('blaster/table_*.tsv'):
                 elif len(remaining_sequence) < min_length:
                     print('Warning: {0} <{1} Amino acids, skipping'.format(hit['query_name'], min_length))
                 elif True not in [aa in remaining_sequence for aa in ('K', 'R')]: # Lys-C/Trypsin mix cutters
-                    print('Warning: {0} no Lys-C cleavage sites'.format(hit['query_name'], min_length))
+                    print('Warning: {} no Lys-C cleavage sites'.format(hit['query_name'], min_length))
                 else:
                     # Sometimes the starting M fails to get masked;
                     if remaining_sequence[0:2] == 'Mn':

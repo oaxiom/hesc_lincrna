@@ -1,4 +1,6 @@
 
+rm blaster/*
+
 for f in ../1.sequences/fasta/*.fasta
 do
     bn=`basename $f | sed 's#.fasta##g'`

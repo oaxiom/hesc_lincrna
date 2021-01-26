@@ -32,13 +32,14 @@ for filename in glob.glob('3.hipsci_results/PT*.tsv.gz'):
         matches = line[9]
 
         # Only take high quality matches
-        #e = float(line[14]) # QValue column
-        #if e > 0.05: # FDR if you use q
-        #    continue
-
-        e = float(line[13]) # EValue column
-        if e > 0.001:
+        e = float(line[14]) # QValue column
+        if e > 0.05: # FDR if you use q
             continue
+
+        # Much more relaxed:
+        #e = float(line[13]) # EValue column
+        #if e > 0.001:
+        #    continue
 
         # delete peptides matching to two peptides or more with the same name;
         matches = matches.split(');')
