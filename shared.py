@@ -107,6 +107,76 @@ def classify_transcript(name):
 
     return(destination, alpha)
 
+def convert_local_to_genome(local_left, local_rite, loc, exonStarts, exonEnds, strand):
+    '''
+    convert local_left and local_rite to genomic coordinates;
+
+
+    '''
+
+    genome_left = 0
+    genome_rite = 0
+
+    loc_left = loc.loc['left']
+    loc_rite = loc.loc['right']
+
+    intron_length = 0
+    exon_length = 0
+    last_exon_rite = loc_left
+
+    #print(loc)
+    # convert all of the positions into the spliced locations, on the + strand;
+
+    if strand == '-': # I think this doesn't matter, if '-' then you can just swap the locs?
+        exonStarts.reverse()
+        exonEnds.reverse()
+
+    for exonidx, exon in enumerate(zip(exonStarts, exonEnds)):
+        intron_length += (exon[0] - last_exon_rite)
+        last_exon_rite = exon[1]
+
+        local_exon_left = exon[0]- loc_left - intron_length
+        local_exon_rite = exon[1] - intron_length - loc_left
+
+        if local_left >= local_exon_left and local_left <= local_exon_rite: # within this exon;
+            genome_left = exon[0] + (local_left-local_exon_left)
+
+        if local_rite >= local_exon_left and local_rite <= local_exon_rite: # within this exon;
+            genome_rite = exon[0] + (local_rite-local_exon_left)
+
+        print(exonidx, exon, 'tlength', exon_length, intron_length, last_exon_rite, 'local_exon', local_exon_left, local_exon_rite, genome_left, genome_rite)
+        exon_length += (exon[1]-exon[0])
+
+
+    if strand == '+':
+        pass
+
+    # check estimate is the same:
+    if exon_length+intron_length != loc_rite-loc_left:
+        print('Size mismatch!', exon_length+intron_length, loc_rite - loc_left)
+        #1/0
+
+    return (genome_left, min([genome_rite, last_exon_rite]))
+
+if __name__ == '__main__':
+    from glbase3 import location
+    print(convert_local_to_genome(289, 3373, location(loc='chr10:21534232-21743630'), # ENST00000377072.8
+        [21534232, 21534645, 21538833, 21586294, 21595331, 21612348, 21614831, 21617112, 21651673, 21670449, 21673350, 21681332, 21682225, 21688491, 21713772, 21726244, 21727856, 21730900, 21732899, 21733504, 21733768, 21735139, 21740154, 21741939],
+        [21534520, 21534804, 21538912, 21586348, 21595440, 21612451, 21614924, 21617207, 21651768, 21670704, 21673919, 21681376, 21682257, 21688538, 21713950, 21726355, 21727928, 21731054, 21733087, 21733592, 21734129, 21735235, 21740236, 21743630],
+        '+')) #
+    print('Answer: chr10:21534645-21740231')
+    print(convert_local_to_genome(419, 2126, location(loc='chr10:3104724-3137718'), # ENST00000415005.6
+        [3104724, 3105393, 3107214, 3108701, 3109355, 3112222, 3113119, 3113372, 3116776, 3118782, 3119892, 3129819, 3132380, 3133203, 3134483, 3135736, 3136450],
+        [3105159, 3105501, 3107309, 3108793, 3109480, 3112286, 3113188, 3113518, 3116846, 3118869, 3120044, 3129983, 3132441, 3133314, 3134582, 3135838, 3137718],
+        '+'))
+    print('Answer: chr10:3105143-3136576')
+
+    print(convert_local_to_genome(420, 2706, location(loc='chr9:119166629-119369435'), # 'ENST00000265922.8'
+        [119369056, 119313138, 119248960, 119242047, 119238655, 119213919, 119208719, 119166629],
+        [119369435, 119313405, 119249150, 119242216, 119238760, 119214155, 119208941, 119168224],
+        '-'))
+    print('Answer: chr9:119167087-119313355')
+
 def convert_genocode_to_local(gencode):
     '''
     Convert a gencode genomic annotation into a local transcript structure. i.e. convert this:
@@ -317,28 +387,6 @@ def nice_scatter(x=None, y=None, filename=None, do_best_fit_line=False, spot_col
     draw.do_common_args(ax, **kargs)
 
     return(draw.savefigure(fig, filename))
-
-if __name__ == '__main__':
-    import matplotlib.pyplot as plot
-
-    # legend:
-    fig, ax=plot.subplots(figsize=(4,6))
-    ax.set_xlim(0, 30)
-    ax.set_axis_off()
-
-    for i, name in enumerate(reversed(list(col_keys.keys()))):
-        y = i * 10
-
-        ax.text(2.5, y, name, fontsize=6,
-                horizontalalignment='left',
-                verticalalignment='center')
-
-        ax.hlines(y, 1, 2, color=col_keys[name], linewidth=5)
-    fig.savefig('legend.png')
-    fig.savefig('legend.svg')
-    fig.savefig('legend.pdf')
-
-    print('\n'.join(list(col_keys.keys())))
 
 def pie(filename, data, labels, title=''):
     fig = plot.figure(figsize=[1,1])
@@ -661,3 +709,27 @@ def boxplots_simple(filename, data, qs,
 
     fig.savefig(filename)
     plot.close(fig)
+
+'''
+if __name__ == '__main__':
+    import matplotlib.pyplot as plot
+
+    # legend:
+    fig, ax=plot.subplots(figsize=(4,6))
+    ax.set_xlim(0, 30)
+    ax.set_axis_off()
+
+    for i, name in enumerate(reversed(list(col_keys.keys()))):
+        y = i * 10
+
+        ax.text(2.5, y, name, fontsize=6,
+                horizontalalignment='left',
+                verticalalignment='center')
+
+        ax.hlines(y, 1, 2, color=col_keys[name], linewidth=5)
+    fig.savefig('legend.png')
+    fig.savefig('legend.svg')
+    fig.savefig('legend.pdf')
+
+    print('\n'.join(list(col_keys.keys())))
+'''

@@ -30,8 +30,11 @@ locs = [
     'HPSCLR.14380.7',
     'HPSCSR.643.6',
     'HPSCSR.88755.6',
-    #'HPSCSR.
-    #'HPSCSR.
+    'HPSCSR.30639.18',
+    'HPSCSR.126056.12',
+    'HPSCSR.17088.41',
+    'HPSCSR.163834.5',
+    'HPSCSR.60772.41',
     ]
 locs = genelist(loadable_list=[{'transcript_id': k} for k in locs])
 ll = locs.map(genelist=gllocs, key='transcript_id')

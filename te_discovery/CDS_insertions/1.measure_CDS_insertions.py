@@ -34,7 +34,7 @@ for gene in gencode_peptide_fastas:
         gencode_peptide_fastas_lookup[name] = []
     gencode_peptide_fastas_lookup[name].append(gene['seq'])
 
-all_genes = glload('../../transcript_assembly/packed/all_genes.glb')
+all_transcripts = glload('../../transcript_assembly/packed/all_genes.glb')
 cds = glload('../../transcript_assembly/get_CDS/coding_genes_with_local_CDS-corrected.glb')
 cds = {gene['transcript_id']: gene for gene in cds}
 #print(cds)
@@ -55,30 +55,35 @@ def check_sequence_versus_gencode(seq, gencode_peptide_fastas_lookup):
 
 # First I need to bundle them up by their name;
 bundles = {}
-for gene in all_genes:
-    symbol = gene['name'].split(' ')[0]
+for transcript in all_transcripts:
+    symbol = transcript['name'].split(' ')[0]
 
     if symbol not in bundles:
         bundles[symbol] = []
 
-    if gene['transcript_id'] in tes:
-        gene['doms'] = tes[gene['transcript_id']]['doms']
-        gene['TEs'] = True
+    if transcript['transcript_id'] in tes:
+        transcript['doms'] = tes[transcript['transcript_id']]['doms']
+        transcript['TEs'] = True
     else:
-        gene['TEs'] = False
-        gene['doms'] = []
+        transcript['TEs'] = False
+        transcript['doms'] = []
 
     # Get hte CDS info:
-    if gene['transcript_id'] in cds:
-        gene['cds_info'] = True # and presumably 'coding' == True?
-        gene['cds_local_locs'] = cds[gene['transcript_id']]['cds_local_locs']
+    if transcript['transcript_id'] in cds:
+        transcript['cds_info'] = True # and presumably 'coding' == True?
+        transcript['cds_local_locs'] = cds[transcript['transcript_id']]['cds_local_locs']
+        transcript['cds_gencode_loc'] = cds[transcript['transcript_id']]['cds_gencode_loc']
+        transcript['cds_local_to_genome'] = cds[transcript['transcript_id']]['cds_local_to_genome']
     else:
-        gene['cds_info'] = False
-        gene['cds_local_locs'] = (-1,-1)
+        # Probably non-coding;
+        transcript['cds_info'] = False
+        transcript['cds_local_locs'] = (-1,-1)
+        transcript['cds_gencode_loc'] = None
+        transcript['cds_local_to_genome'] = None
 
-    bundles[symbol].append(gene)
+    bundles[symbol].append(transcript)
 
-print('Found {0:,} bundles of genes'.format(len(bundles)))
+print('Found {:,} bundles of genes'.format(len(bundles)))
 
 res = {'inframe_insertion': [], # Class 1 # numbers are per-transcript;
     'frameshift_insertion': [],
@@ -175,6 +180,12 @@ for idx, gene_name in enumerate(bundles):
             res['coding_to_noncoding'].append(transcript)
             continue
 
+        if transcript['strand'] == '+':
+            print(t)
+            canonical_cds_edges_genome = set([t['cds_gencode_loc']['left'] for t in bundles[gene_name] if '=' in t['tags']])
+        else:
+            canonical_cds_edges_genome = set([t['cds_gencode_loc']['right'] for t in bundles[gene_name] if '=' in t['tags']])
+
         if te:
             if 'coding' in novel_coding_status and 'coding' not in known_coding_status:
                 noncoding_to_coding_withTE = True # This will override all classes
@@ -192,7 +203,6 @@ for idx, gene_name in enumerate(bundles):
                 te_edges = (max(t['span'][0], i['cds_local_locs'][0]), min(t['span'][1], i['cds_local_locs'][1]))
                 te_span = te_edges[1] - te_edges[0]
                 cds_lengths_plus_te = [(i['cds_local_locs'][1]-i['cds_local_locs'][0])+te_span for i in known if i['coding'] == 'coding']
-                #canonical_cds_edges_genome = [
                 cds_edges = [i['cds_local_locs'][0] for i in known if i['coding'] == 'coding']
                 cds_edges += [i['cds_local_locs'][1] for i in known if i['coding'] == 'coding']
 
