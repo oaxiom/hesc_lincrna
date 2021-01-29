@@ -18,10 +18,13 @@ gencode_cds = glload('../../transcript_assembly/get_CDS/gencode_cds.glb')
 print(gencode_cds)
 canonical_all = canonical.map(genelist=gencode_cds, key='enst')
 
-canonical = {}# convert to a quick look up for speed
+canonical = {} # convert to a quick look up for speed
 for gene in canonical_all:
     if gene['name'] not in canonical:
         canonical[gene['name']] = []
+    gene['cds_info'] = True
+    gene['cds_gencode_loc'] = gene['cds_loc']
+    gene['cds_local_to_genome'] = gene['cds_loc']
     canonical[gene['name']].append(gene)
 
 # get sequences for extra string literal matching;
@@ -155,6 +158,30 @@ for idx, gene_name in enumerate(bundles):
 
     #print(known, novel)
 
+    canonical_cds_edges_genome = []
+    for t in known:
+        print('\n',t)
+        if t['coding'] != 'coding': continue
+        if not t['cds_info']: continue
+        if 'cds_gencode_loc' not in t: continue
+
+        if transcript['strand'] == '+':
+            canonical_cds_edges_genome = []
+            if t['cds_gencode_loc']:
+                edge = t['cds_gencode_loc']['left']
+                canonical_cds_edges_genome += [edge, edge-1, edge+1, edge+2]
+            edge = t['cds_local_to_genome']['left']
+            canonical_cds_edges_genome += [edge, edge-1, edge+1, edge+2]
+        else:
+            canonical_cds_edges_genome = []
+            if t['cds_gencode_loc']:
+                edge = t['cds_gencode_loc']['right']
+                canonical_cds_edges_genome += [edge, edge-1, edge+1, edge+2]
+            edge = t['cds_local_to_genome']['right']
+            canonical_cds_edges_genome += [edge, edge-1, edge+1, edge+2]
+
+    canonical_cds_edges_genome = set(canonical_cds_edges_genome)
+
     for transcript in novel:
         # calls:
         inframe_insertion = False
@@ -179,12 +206,6 @@ for idx, gene_name in enumerate(bundles):
         if transcript['coding'] == 'noncoding':
             res['coding_to_noncoding'].append(transcript)
             continue
-
-        if transcript['strand'] == '+':
-            print(t)
-            canonical_cds_edges_genome = set([t['cds_gencode_loc']['left'] for t in bundles[gene_name] if '=' in t['tags']])
-        else:
-            canonical_cds_edges_genome = set([t['cds_gencode_loc']['right'] for t in bundles[gene_name] if '=' in t['tags']])
 
         if te:
             if 'coding' in novel_coding_status and 'coding' not in known_coding_status:
@@ -229,6 +250,7 @@ for idx, gene_name in enumerate(bundles):
                                 new_ATG = True
 
                         else: # I can't ID it; Never gets here;
+                            1/0
                             frameshift_insertion = True
 
                 else: # No collision with this CDS; check it's 5' or 3':
@@ -240,11 +262,19 @@ for idx, gene_name in enumerate(bundles):
                             no_disruption_5prime = True
                         elif t['span'][0] >= transcript['cds_local_locs'][1]:
                             no_disruption_3prime = True
+
+                    elif transcript['cds_local_to_genome']['left'] in canonical_cds_edges_genome and transcript['cds_local_to_genome']['right'] in canonical_cds_edges_genome:
+                        pass # No distruptino to CDS
+
                     else:
                         #print('\n', transcript)
                         # see if one of the cds edges perfectly matches a canonical edge: Most likey a mid_CDS_insertion, that results in a STOP before the TE (hence no collision)'
                         if transcript['cds_local_locs'][0] in cds_edges or transcript['cds_local_locs'][1] in cds_edges:
                             frameshift_insertion = True
+
+                        if transcript['cds_local_to_genome']['left'] in canonical_cds_edges_genome or transcript['cds_local_to_genome']['right'] in canonical_cds_edges_genome:
+                            frameshift_insertion = True
+
                         #elif 1:
                         #    # see if the TSS CDS genomic location is the same. If yes, it's a mid-CDS insertion
                         #    print(transcript)

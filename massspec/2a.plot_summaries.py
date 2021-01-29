@@ -52,7 +52,7 @@ for stub in res_per_gene:
     res[stub] = [num_hits, num_hits2pep, len(pep_hits)] #these overlap, so don't adjust the bottoms.
 print(res)
 
-fig = plot.figure(figsize=[4.5,1.5])
+fig = plot.figure(figsize=[4.5,1.8])
 fig.subplots_adjust(left=0.3)
 ax = fig.add_subplot(111)
 
@@ -60,12 +60,17 @@ ys = numpy.arange(len(res))
 
 print(res.keys())
 order = [
-    'table_novel_coding',
-    'table_insertion_alternate_cds',
-    'table_new_STOP', 'table_new_ATG',
     'table_frameshift_insertion',
+    'table_new_STOP',
+    'table_new_ATG',
+    'table_insertion_alternate_cds',
+    'table_noncoding_to_coding_withTE',
+    'table_noncoding_to_coding_noTE',
+    'table_novel_coding',
+    'table_variant_coding_but_noTE',
+    ] # top to bottom
+order.reverse()
 
-    ] # bottom to top
 
 num_hits1 = numpy.array([res[k][0] for k in order])
 num_hits2 = numpy.array([res[k][1] for k in order])
@@ -86,9 +91,9 @@ ax.set_yticklabels(order)
 [t.set_fontsize(6) for t in ax.get_xticklabels()]
 
 for y, p, x in zip(ys, percs1, num_hits1):
-    ax.text(x+4, y-0.25, s='{0} ({1:.1f}%)'.format(x, p), va='center', fontsize=6)
+    ax.text(x+4, y-0.25, s='1 peptide {0} ({1:.1f}%)'.format(x, p), va='center', fontsize=6)
 for y, p, x in zip(ys, percs2, num_hits2):
-    ax.text(x+4, y+0.25, s='{0} ({1:.1f}%)'.format(x, p), va='center', fontsize=6)
+    ax.text(x+4, y+0.25, s='2+ peptides {0} ({1:.1f}%)'.format(x, p), va='center', fontsize=6)
 
 fig.savefig('summary.pdf')
 

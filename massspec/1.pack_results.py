@@ -12,7 +12,7 @@ all_fastas = genelist('2.blast_searches/all_masked_peptides.fa', format=format.f
 all_fastas = {i['name']: i['seq'] for i in all_fastas}
 dfam = genelist('../te_discovery/dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
 all_te_transcripts = glload('../te_discovery/te_transcripts/transcript_table_merged.mapped.glb')
-print(all_te_transcripts)
+
 CDSs = glload('../transcript_assembly/get_CDS/coding_genes_with_local_CDS-corrected.glb')
 CDSs = {i['transcript_id']: i for i in CDSs}
 all_te_transcripts = {i['transcript_id']: i['doms'] for i in all_te_transcripts}
@@ -27,6 +27,12 @@ for filename in glob.glob('3.hipsci_results/PT*.tsv.gz'):
             continue
 
         line = line.strip().split('\t')
+
+        #if 'table_noncoding_to_coding_noTE' in line[9]:
+        #    # new coding, but I'm not interested in them here as they have no TE;
+        #    continue
+        #elif 'table_variant_coding_but_noTE' in line[9]:
+        #    continue # same as above
 
         peptide = line[8]
         matches = line[9]
@@ -66,10 +72,13 @@ for filename in glob.glob('3.hipsci_results/PT*.tsv.gz'):
             left = aa_seq.index(peptide_string)
             rite = left+len(peptide_string)
 
-
             # see if it's in a TE domain:
             fullname = 'No'
-            te_doms = all_te_transcripts[hsc]
+            if 'noTE' in line[9]: # No TE peptide;
+                te_doms = []
+            else:
+                te_doms = all_te_transcripts[hsc]
+
             # the left/rite values don't include the UTRs. I need to add them as the doms are in mRNA +UTRs positions;
             mrna_left = CDSs[hsc]['cds_local_locs'][0] + (left*3)
             mrna_right = CDSs[hsc]['cds_local_locs'][0] + (rite*3)
