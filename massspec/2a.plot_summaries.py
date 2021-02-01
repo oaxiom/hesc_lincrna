@@ -33,12 +33,19 @@ for filename in glob.glob('2.blast_searches/masked/*.glb'):
         continue
     if 'class' in filename:
         continue
+
+    if 'table_variant_coding_but_noTE' in filename:
+        continue
+
     stub = os.path.split(filename)[1].replace('.glb', '').split('-')[1]
     pep_hits = glload(filename).getColumns(['name'])
 
     res_per_gene[stub] = {k: 0 for k in pep_hits['name']}
 
 for transcript in all_matches:
+    if 'table_variant_coding_but_noTE' in transcript['class']:
+        continue
+
     full_name = '|'.join([transcript['name'], transcript['transcript_id'], transcript['enst']])
     res_per_gene[transcript['class']][full_name] += 1
 
@@ -52,8 +59,8 @@ for stub in res_per_gene:
     res[stub] = [num_hits, num_hits2pep, len(pep_hits)] #these overlap, so don't adjust the bottoms.
 print(res)
 
-fig = plot.figure(figsize=[4.5,1.8])
-fig.subplots_adjust(left=0.3)
+fig = plot.figure(figsize=[4.0, 2.6])
+fig.subplots_adjust(left=0.4)
 ax = fig.add_subplot(111)
 
 ys = numpy.arange(len(res))
@@ -67,7 +74,7 @@ order = [
     'table_noncoding_to_coding_withTE',
     'table_noncoding_to_coding_noTE',
     'table_novel_coding',
-    'table_variant_coding_but_noTE',
+    #'table_variant_coding_but_noTE',
     ] # top to bottom
 order.reverse()
 
@@ -79,7 +86,7 @@ print(num_hits1, num_hits2, len_hits)
 percs1 = (num_hits1 / len_hits) * 100.0
 percs2 = (num_hits2 / len_hits) * 100.0
 
-ax.barh(ys, len_hits, color='grey')
+ax.barh(ys, len_hits, color='lightgrey')
 ax.barh(ys, num_hits1, color='tab:orange')
 ax.barh(ys, num_hits2, color='tab:red')
 
@@ -91,9 +98,9 @@ ax.set_yticklabels(order)
 [t.set_fontsize(6) for t in ax.get_xticklabels()]
 
 for y, p, x in zip(ys, percs1, num_hits1):
-    ax.text(x+4, y-0.25, s='1 peptide {0} ({1:.1f}%)'.format(x, p), va='center', fontsize=6)
+    ax.text(x+4, y-0.2, s='1 peptide ({0}; {1:.1f}%)'.format(x, p), va='center', fontsize=6)
 for y, p, x in zip(ys, percs2, num_hits2):
-    ax.text(x+4, y+0.25, s='2+ peptides {0} ({1:.1f}%)'.format(x, p), va='center', fontsize=6)
+    ax.text(x+4, y+0.2, s='2+ peptides ({0}; {1:.1f}%)'.format(x, p), va='center', fontsize=6)
 
 fig.savefig('summary.pdf')
 
