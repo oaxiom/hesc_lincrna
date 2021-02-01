@@ -1,0 +1,13 @@
+#PBS -l nodes=1:ppn=32
+#PBS -j oe
+#PBS -N nhmmer
+#PBS -o ${out}.out
+#PBS -q batch
+#PBS -V 
+cd $PBS_O_WORKDIR
+
+nhmmer -E 1e-10 --cpu 32 --dna --noali --tblout tblout.${out}.tsv /share/apps/genomics/genome/dfam/Dfam.hmm ${inp} >/dev/null
+#hmmsearch -E 1e-10 --domE 1e-10 --cpu 32 --noali --domtblout domtblout.${out}.tsv --tblout tblout.${out}.tsv /share/apps/genomics/genome/dfam/Dfam.hmm ${inp} >/dev/null
+
+gzip tblout.${out}.tsv
+
