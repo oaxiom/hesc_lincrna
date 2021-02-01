@@ -49,7 +49,7 @@ oh_all_seqs = open('all_masked_peptides.fa', 'w')
 final_counts = {}
 
 for filename in glob.glob('blaster/table_*.tsv'):
-    if 'table_inframe_insertion.tsv' in filename:
+    if 'table_inframe_insertion' in filename:
         continue
 
     stub = os.path.split(filename)[1].replace('.tsv', '')
@@ -65,13 +65,6 @@ for filename in glob.glob('blaster/table_*.tsv'):
     # Parse the FASTA
     fasta = genelist('../1.sequences/fasta/{}.fasta'.format(stub), format=format.fasta)
     fasta_lookup = {}
-
-    # A few squeek through somehow. I think these are a few crazy lucky ones that are the same length
-    # as the exisiting CDS. Probably a very subtle frameshift.
-    if 'class_not_found' in stub:
-        continue
-    if '_no_disruption_' in stub:
-        continue
 
     res = []
     for f in fasta:

@@ -33,7 +33,6 @@ for filename in glob.glob('2.blast_searches/masked/*.glb'):
         continue
     if 'class' in filename:
         continue
-
     if 'table_variant_coding_but_noTE' in filename:
         continue
 

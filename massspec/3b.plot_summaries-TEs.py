@@ -83,7 +83,7 @@ gl.sort('name')
 gl.saveTSV('unique_TE-derived_peptides.tsv', key_order=['name', 'num_peps'])
 
 # Plot 2: Peptide-derived TEs:
-fig = plot.figure(figsize=[3,5])
+fig = plot.figure(figsize=[3,4])
 fig.subplots_adjust(left=0.6, right=0.90, top=0.998, bottom=0.03)#, hspace=0.2, wspace=0.2)
 #ax = plot.subplot2grid((2,2), (0,0), rowspan=2)
 ax = fig.add_subplot(111)

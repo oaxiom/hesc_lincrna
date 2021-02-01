@@ -12,20 +12,24 @@ dfam = genelist('../../te_discovery/dfam/dfam_annotation.tsv', format={'force_ts
 draw = 'pdf'
 
 for n, gene in enumerate(res):
-    print(gene['transcript_id'])
-
     _class = gene['class']
-    gene = doms.get(key='transcript_id', value=gene['transcript_id'])[0] # By defiition
+    gene = doms.get(key='transcript_id', value=gene['transcript_id']) # By definition
+
+    if not gene:
+        continue
+
+    gene = gene[0]
 
     peptides = res.get(value=gene['transcript_id'], key='transcript_id', mode='greedy')
     if not peptides:
         continue
 
+    print(gene['transcript_id'])
+
     if gene['transcript_id'] in CDSs:
         gene['cds_local_locs'] = CDSs[gene['transcript_id']]['cds_local_locs']
 
     peptides = [(i['mrna_left'], i['mrna_right'], i['peptide_string'], i['insideTE']) for i in peptides]
-
 
     draw_domains_share.draw_domain(gene,
         '%s/%s.%s.%s.%s.%s' % (draw, _class, gene['name'], gene['transcript_id'], gene['enst'], draw),

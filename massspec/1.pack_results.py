@@ -54,10 +54,9 @@ for filename in glob.glob('3.hipsci_results/PT*.tsv.gz'):
         symbol_names = [m.split('|')[1] for m in matches]
         class_names = [m.split('|')[0] for m in matches]
 
-        if 'table_variant_coding_but_noTE' in class_names and len(class_names) == 1:
-            # Possible to have a peptide match two transcripts
-            #print(class_names)
-            continue
+        if 'table_variant_coding_but_noTE' in class_names and len(class_names) == 1: continue # Possible to have a peptide match two transcripts
+        elif 'table_no_disruption_5prime' in class_names and len(class_names) == 1: continue
+        elif 'table_no_disruption_3prime' in class_names and len(class_names) == 1: continue
 
         if (idx+1) % 1000 == 0:
             print('{:,}'.format(idx))
@@ -93,8 +92,6 @@ for filename in glob.glob('3.hipsci_results/PT*.tsv.gz'):
                     te = dfam.get(key='name', value=d['dom'])[0]
                     fullname = '{0}:{1}:{2}'.format(te['type'], te['subtype'], d['dom'])
 
-
-
             res_genes.append({'transcript_id': hsc,
                 'enst': enst,
                 'name': symbol,
@@ -113,9 +110,12 @@ gl = genelist()
 gl.load_list(res_genes)
 gl.sort('name')
 gl.sort('class')
-gl.saveTSV('results_gene.tsv', key_order=['transcript_id', 'enst', 'name', 'class', 'E', 'peptide', 'peptide_string', 'insideTE'])
+
+gl = gl.removeDuplicates(['transcript_id', 'peptide_string'])
+
+gl.saveTSV('results_gene.tsv', key_order=['transcript_id', 'enst', 'name', 'class', 'q-value', 'peptide', 'peptide_string', 'insideTE'])
 gl.save('results_gene.glb')
 
-print('{0} peptides passed'.format(len(res_peps)))
-print('{0} genes found'.format(len(set(gl['transcript_id']))))
+print('{} peptides passed'.format(len(gl)))
+print('{} genes found'.format(len(set(gl['transcript_id']))))
 
