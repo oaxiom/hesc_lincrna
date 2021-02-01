@@ -74,7 +74,6 @@ order = [
     'table_noncoding_to_coding_withTE',
     'table_noncoding_to_coding_noTE',
     'table_novel_coding',
-    #'table_variant_coding_but_noTE',
     ] # top to bottom
 order.reverse()
 

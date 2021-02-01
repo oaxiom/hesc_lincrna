@@ -54,6 +54,11 @@ for filename in glob.glob('3.hipsci_results/PT*.tsv.gz'):
         symbol_names = [m.split('|')[1] for m in matches]
         class_names = [m.split('|')[0] for m in matches]
 
+        if 'table_variant_coding_but_noTE' in class_names and len(class_names) == 1:
+            # Possible to have a peptide match two transcripts
+            #print(class_names)
+            continue
+
         if (idx+1) % 1000 == 0:
             print('{:,}'.format(idx))
 
@@ -88,12 +93,14 @@ for filename in glob.glob('3.hipsci_results/PT*.tsv.gz'):
                     te = dfam.get(key='name', value=d['dom'])[0]
                     fullname = '{0}:{1}:{2}'.format(te['type'], te['subtype'], d['dom'])
 
+
+
             res_genes.append({'transcript_id': hsc,
                 'enst': enst,
                 'name': symbol,
                 'class': class_,
                 'peptide': peptide,
-                'E': e,
+                'q-value': e, #It's from the TDA q-value (line[14])
                 'peptide_string': peptide_string,
                 'peptide_left': left,
                 'peptide_right': rite,
