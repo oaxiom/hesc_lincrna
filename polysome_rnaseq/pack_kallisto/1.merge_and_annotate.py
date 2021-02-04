@@ -119,12 +119,15 @@ expn_poly.save("kall_poly_ratios.glb")
 
 expn_nuccyt = expn.sliceConditions(['hESC Nuclear', 'hESC Cytoplasm'])
 newe = []
+pad = 0.01
 for e in expn_nuccyt:
-    s = sum(e['conditions'])
-    if e['conditions'][0] > 0.01: # one or two nan. This seq is not as deep as our full dataset, so some transcripts become unreliable.
-        e['conditions'] = [math.log2(e['conditions'][1]/e['conditions'][0]), ]
-        # i.e. lncATALAS RIC
-        newe.append(e)
-expn_nuccyt.load_list(newe, cond_names=['RIC'])
+    s = e['conditions'][0]
+    if e['conditions'][0] > 0.1 and e['conditions'][1] > 0.1: # one or two nan. This seq is not as deep as our full dataset, so some transcripts become unreliable.
+        print(math.log2((e['conditions'][1]+pad)/(e['conditions'][0]+pad)), (e['conditions'][1]+pad)/(e['conditions'][0]+pad), e['conditions'])
+        ric = math.log2((e['conditions'][1]+pad)/(e['conditions'][0]+pad))
+        e['conditions'] = [ric, ric] # i.e. lncATALAS RIC
+
+    newe.append(e)
+expn_nuccyt.load_list(newe, cond_names=['RIC', 'RIC2'])
 expn_nuccyt.saveTSV("kall_nuc_cyt_ratios_RIC.tsv")
 expn_nuccyt.save("kall_nuc_cyt_ratios_RIC.glb")
