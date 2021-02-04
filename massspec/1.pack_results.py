@@ -111,7 +111,7 @@ gl.load_list(res_genes)
 gl.sort('name')
 gl.sort('class')
 
-gl = gl.removeDuplicates(['transcript_id', 'peptide_string'])
+gl = gl.removeDuplicates(['transcript_id', 'peptide'])
 
 gl.saveTSV('results_gene.tsv', key_order=['transcript_id', 'enst', 'name', 'class', 'q-value', 'peptide', 'peptide_string', 'insideTE'])
 gl.save('results_gene.glb')

@@ -1,6 +1,9 @@
 
+import os, glob
 from glbase3 import glload, genelist
 import draw_domains_share
+
+[os.remove(f) for f in glob.glob('pdf/*.pdf')]
 
 res = glload('../results_gene.glb')
 

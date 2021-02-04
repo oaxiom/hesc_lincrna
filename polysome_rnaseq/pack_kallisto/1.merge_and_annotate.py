@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 
-import sys, os, glob, gzip
+import sys, os, glob, gzip, math
 from glbase3 import *
 
 all = None
@@ -121,9 +121,10 @@ expn_nuccyt = expn.sliceConditions(['hESC Nuclear', 'hESC Cytoplasm'])
 newe = []
 for e in expn_nuccyt:
     s = sum(e['conditions'])
-    if s > 0.01: # one or two nan. This seq is not as deep as our full dataset, so some transcripts become unreliable.
-        e['conditions'] = [i/s for i in e['conditions']]
+    if e['conditions'][0] > 0.01: # one or two nan. This seq is not as deep as our full dataset, so some transcripts become unreliable.
+        e['conditions'] = [math.log2(e['conditions'][1]/e['conditions'][0]), ]
+        # i.e. lncATALAS RIC
         newe.append(e)
-expn_nuccyt.load_list(newe, cond_names=expn_nuccyt.getConditionNames())
-expn_nuccyt.saveTSV("kall_nuc_cyt_ratios.tsv")
-expn_nuccyt.save("kall_nuc_cyt_ratios.glb")
+expn_nuccyt.load_list(newe, cond_names=['RIC'])
+expn_nuccyt.saveTSV("kall_nuc_cyt_ratios_RIC.tsv")
+expn_nuccyt.save("kall_nuc_cyt_ratios_RIC.glb")
