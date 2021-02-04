@@ -109,11 +109,12 @@ for filename in glob.glob('blaster/table_*.tsv'):
                 elif len(remaining_sequence) < min_length:
                     print('Warning: {0} <{1} Amino acids, skipping'.format(hit['query_name'], min_length))
                 elif True not in [aa in remaining_sequence for aa in ('K', 'R')]: # Lys-C/Trypsin mix cutters
-                    print('Warning: {} no Lys-C cleavage sites'.format(hit['query_name'], min_length))
+                    print('Warning: {} no Lys-C/Tryp cleavage sites'.format(hit['query_name'], min_length))
                 else:
                     # Sometimes the starting M fails to get masked;
                     if remaining_sequence[0:2] == 'Mn':
                         remaining_sequence = remaining_sequence[1:]
+
                     res.append({'name': f['name'],
                         'seq': remaining_sequence,
                         'blastp_status': blastp_status})
@@ -130,6 +131,7 @@ for filename in glob.glob('blaster/table_*.tsv'):
 
     if res:
         resgl = genelist()
+        [r.update({'table': stub}) for r in res]
         resgl.load_list(res)
         print('\n::: {}'.format(stub))
         print('Number of surviving peptides: {}\n'.format(len(resgl)))
