@@ -5,7 +5,7 @@ import matplotlib.pyplot as plot
 sys.path.append('../../../')
 import shared
 
-def bundle_up_by_name(mode, all_genes, tes):
+def bundle_up_by_name(mode, all_genes, tes, _draw_hist=True):
     # First I need to bundle them up by their name;
     bundles = {}
     for gene in all_genes:
@@ -39,16 +39,17 @@ def bundle_up_by_name(mode, all_genes, tes):
     # limit to 10+
     transcript_variants_per_gene = [min(b, 20) for b in transcript_variants_per_gene]
     # histogram;
-    fig = plot.figure(figsize=[1.6,1.1])
-    ax = fig.add_subplot(111)
-    ax.hist(transcript_variants_per_gene, max(transcript_variants_per_gene)-1, range=(0, 20))
-    ax.set_xlim([-0.5, 21.5])
+    if _draw_hist:
+        fig = plot.figure(figsize=[1.6,1.1])
+        ax = fig.add_subplot(111)
+        ax.hist(transcript_variants_per_gene, max(transcript_variants_per_gene)-1, range=(0, 20))
+        ax.set_xlim([-0.5, 21.5])
 
-    ax.set_xticks([1.5, 10, 19.5])
-    ax.set_xticklabels([2, 10, '>=20'])
-    [t.set_fontsize(6) for t in ax.get_yticklabels()]
-    [t.set_fontsize(6) for t in ax.get_xticklabels()]
-    fig.savefig('transcripts_per_gene-{0}.pdf'.format(mode))
+        ax.set_xticks([1.5, 10, 19.5])
+        ax.set_xticklabels([2, 10, '>=20'])
+        [t.set_fontsize(6) for t in ax.get_yticklabels()]
+        [t.set_fontsize(6) for t in ax.get_xticklabels()]
+        fig.savefig('transcripts_per_gene-{0}.pdf'.format(mode))
 
     return bundles
 

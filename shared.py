@@ -710,6 +710,54 @@ def boxplots_simple(filename, data, qs,
     fig.savefig(filename)
     plot.close(fig)
 
+def violin_simple(filename, data, qs,
+    title=None,
+    xlims=None,
+    sizer=0.062,
+    vert_height=4,
+    col='lightgrey',
+    bot_pad=0.1,
+    vlines=[]):
+
+    mmheat_hei = 0.1+(sizer*len(data))
+    fig = plot.figure(figsize=[2.8,vert_height])
+    fig.subplots_adjust(left=0.4, right=0.8, top=mmheat_hei, bottom=bot_pad)
+    ax = fig.add_subplot(111)
+    ax.tick_params(right=True)
+
+    m = 0
+    for vli in vlines:
+        ax.axvline(vli, ls=":", lw=0.5, color="grey") # add a grey line at zero for better orientation
+
+    dats = list(data.values())
+    r = ax.violinplot(
+        dats,
+        widths=0.8,
+        showmeans=True,
+        showextrema=False,
+        vert=False
+        )
+
+    ax.set_yticks(numpy.arange(len(data.keys()))+1)
+    ax.set_yticklabels(data.keys())
+
+    gtm = '#FF8A87' # red
+    ltm = '#92A7FF' # blue
+
+    xlim = ax.get_xlim()[1]
+    if xlims:
+        ax.set_xlim(xlims)
+        xlim = xlims[1]
+
+    if title:
+        ax.set_title(title, fontsize=6)
+
+    [t.set_fontsize(6) for t in ax.get_yticklabels()]
+    [t.set_fontsize(6) for t in ax.get_xticklabels()]
+
+    fig.savefig(filename)
+    plot.close(fig)
+
 '''
 if __name__ == '__main__':
     import matplotlib.pyplot as plot
