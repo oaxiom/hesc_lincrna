@@ -98,3 +98,4 @@ print('Cound not make a ORF prediction for {}'.format(no_prediction))
 
 newd = genelist()
 newd.load_list(newl)
+newd.save('coding_genes_with_local_CDS-predicted.glb')
