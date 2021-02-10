@@ -4,7 +4,7 @@
 #PBS -V 
 cd $PBS_O_WORKDIR
 
-rsem-prepare-reference --gtf ../gtf/current_gtf.gtf hg38.fa transcripts.fa
+rsem-prepare-reference --gtf current_gtf.fixed_contigs.gtf hg38.fa transcripts.fa
 
 gzip -c transcripts.fa.transcripts.fa >transcripts.fa.gz
 
