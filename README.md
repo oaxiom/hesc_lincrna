@@ -4,7 +4,7 @@ Transposable elements (TEs) occupy nearly 50% of mammalian genomes and are both 
 
 Preprint:
 
-
+https://www.biorxiv.org/content/10.1101/2020.07.26.220608v1
 
 Required Installation:
 
@@ -12,16 +12,18 @@ Required Installation:
 2. Numpy, scipy, sklearn, matplotlib
 3. scanpy, 
 4. glbase3
-5. RSEM, and hg38 genome
+5. RSEM and hg38 genome
 6. chipFish (Optional)
 
 Code run order:
 
-1. Pack and annotate the GTF: transcript_assembly/packed/pack_gtf.py
-2. Fix the GTF contig names: transcript_assembly/fasta/fix_gtf_contig_names.sh
-3. Get the FASTA using RSEM (qsub, or just execute): transcript_assembly/fasta/gtf_to_fasta.pbs
-4. Build the TE indeces: te_discovery/te_transcripts/get_te_containing_transcripts.py
+1. Execute gencode/download_gencode.sh
+2. Execute genome_repeats/get_rmsk.sh
+3. Execute transcript_assembly/get_CDS/download_data.sh
+5. Pack and annotate the GTF: transcript_assembly/packed/pack_gtf.py
+6. Fix the GTF contig names: transcript_assembly/fasta/fix_gtf_contig_names.sh
+7. Get the FASTA using RSEM (qsub, or just execute): transcript_assembly/fasta/gtf_to_fasta.pbs
+8. Build the TE indeces: te_discovery/te_transcripts/get_te_containing_transcripts.py
 
 From there, it should be possible to pretty much run the py scripts in any order. 
-Some may give errors, if they require certain other processed files to exist, but the above 
-is the only critical order.
+Some may give errors, if they require certain other processed files to exist, but the above is the only critical order.
