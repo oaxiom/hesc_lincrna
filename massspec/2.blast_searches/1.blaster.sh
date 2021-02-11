@@ -1,5 +1,6 @@
 
 rm blaster/*
+mkdir blaster
 
 for f in ../1.sequences/fasta/*.fasta
 do

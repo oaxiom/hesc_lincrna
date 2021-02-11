@@ -33,7 +33,7 @@ for trans in data:
         'strand': trans_data['strand'],
         'cds_loc': cds,
         }
-    print(newt)
+    #print(newt)
     newgl.append(newt)
 
 gl = genome()

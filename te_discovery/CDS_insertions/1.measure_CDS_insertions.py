@@ -221,6 +221,7 @@ for idx, gene_name in enumerate(bundles):
             # find out if a TE overlaps the CDS:
             for t in te['doms']:
                 # Collect the parameters:
+                #print(t, '\n', transcript)
                 colliding = qcollide(t['span'][0], t['span'][1], transcript['cds_local_locs'][0], transcript['cds_local_locs'][1])
                 enclosed = contained(t['span'][0], t['span'][1], transcript['cds_local_locs'][0], transcript['cds_local_locs'][1])
                 te_length = (t['span'][1] - t['span'][0])
