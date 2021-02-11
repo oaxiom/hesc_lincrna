@@ -25,6 +25,9 @@ blastp -outfmt 6
 import glob, sys, os
 from glbase3 import *
 
+if not os.path.isdir('masked/'):
+    os.mkdir('masked/')
+
 [os.remove(f) for f in glob.glob('masked/*.tsv')]
 [os.remove(f) for f in glob.glob('masked/*.glb')]
 

@@ -24,6 +24,7 @@ abundance.tsv
 PT*.tsv.gz
 PT*.txt
 ends.gtf
+current_gtf.fixed_contigs.gtf
 ss.*
 version*.txt
 all_masked_peptides.*

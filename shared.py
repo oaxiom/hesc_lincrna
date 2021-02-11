@@ -697,6 +697,9 @@ def boxplots_simple(filename, data, qs,
         xlim = xlims[1]
 
     draw_qs = True
+    if  draw_qs and qs:
+        for i, k, p in zip(range(0, len(data)), data, r['boxes']):
+            ax.text(xlim+(xlim/8), i+1, '{:.1f}'.format(qs[k]), ha='left', va='center', fontsize=6,)
 
     for i, k, p in zip(range(0, len(data)), data, r['boxes']):
         p.set_facecolor(col)
