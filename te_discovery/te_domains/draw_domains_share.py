@@ -63,7 +63,12 @@ def draw_domain(gene, filename, dfam):
     # TEs:
     patches = []
     this_dom = {}
-    for dom_idx, dom in enumerate(gene['doms']):
+    if 'doms' in gene and gene['doms']:
+        doms = gene['doms']
+    else:
+        doms = []
+        
+    for dom_idx, dom in enumerate(doms):
         # get the type and subtype out of dfam:
         t = dfam.get(key='name', value=dom['dom'])[0]
         col_name = '%s:%s' % (t['type'], t['subtype'])
