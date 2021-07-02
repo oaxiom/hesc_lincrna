@@ -661,7 +661,8 @@ def boxplots_simple(filename, data, qs,
     vert_height=4,
     col='lightgrey',
     bot_pad=0.1,
-    vlines=[]):
+    vlines=[],
+    showmeans=False):
 
     mmheat_hei = 0.1+(sizer*len(data))
     fig = plot.figure(figsize=[2.8,vert_height])
@@ -678,7 +679,9 @@ def boxplots_simple(filename, data, qs,
         showfliers=False,
         whis=True,
         patch_artist=True,
-        widths=0.5, vert=False)
+        widths=0.5,
+        vert=False,
+        showmeans=showmeans)
 
     plot.setp(r['medians'], color='black', lw=2) # set nicer colours
     plot.setp(r['boxes'], color='black', lw=0.5)
@@ -751,6 +754,62 @@ def violin_simple(filename, data, qs,
     if xlims:
         ax.set_xlim(xlims)
         xlim = xlims[1]
+
+    if title:
+        ax.set_title(title, fontsize=6)
+
+    [t.set_fontsize(6) for t in ax.get_yticklabels()]
+    [t.set_fontsize(6) for t in ax.get_xticklabels()]
+
+    fig.savefig(filename)
+    plot.close(fig)
+
+def plots_simple(filename, data, qs,
+    title=None,
+    xlims=None,
+    sizer=0.022,
+    vert_height=4,
+    col='lightgrey',
+    bot_pad=0.1,
+    vlines=[],
+    showmeans=False):
+
+    mmheat_hei = 0.1+(sizer*len(data))
+    fig = plot.figure(figsize=[2.8,vert_height])
+    fig.subplots_adjust(left=0.4, right=0.8, top=mmheat_hei, bottom=bot_pad)
+    ax = fig.add_subplot(111)
+    ax.tick_params(right=True)
+
+    m = 0
+    for vli in vlines:
+        ax.axvline(vli, ls=":", lw=0.5, color="grey") # add a grey line at zero for better orientation
+
+    dats = list(data.values())
+    dats = [numpy.mean(d) for d in dats]
+    print(dats)
+    r = ax.plot(dats, numpy.arange(len(dats))+1, ls='', marker='o', ms=4, mfc='none')
+
+    ax.set_yticks(numpy.arange(len(data.keys()))+1)
+    ax.set_yticklabels(data.keys())
+
+    gtm = '#FF8A87' # red
+    ltm = '#92A7FF' # blue
+
+    xlim = ax.get_xlim()[1]
+    if xlims:
+        ax.set_xlim(xlims)
+        xlim = xlims[1]
+
+    ax.set_ylim([0.2, len(dats)+0.5])
+
+    draw_qs = True
+    if  draw_qs and qs:
+        for i, k, p in zip(range(0, len(data)), data, r['boxes']):
+            ax.text(xlim+(xlim/8), i+1, '{:.1f}'.format(qs[k]), ha='left', va='center', fontsize=6,)
+
+    m = 0
+    for vli in vlines:
+        ax.axvline(vli, ls=":", lw=0.5, color="grey") # add a grey line at zero for better orientation
 
     if title:
         ax.set_title(title, fontsize=6)
