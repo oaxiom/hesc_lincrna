@@ -11,7 +11,7 @@ import scipy.stats
 matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['font.size'] = 6
 
-from statsmodels.stats.multitest import multipletests
+#from statsmodels.stats.multitest import multipletests
 from collections import defaultdict
 
 import matplotlib.pyplot as plot

@@ -70,6 +70,7 @@ for idx, line in enumerate(oh):
     if line[2] == 'gene': continue
 
     if line[2] == 'transcript':
+        #print('---')
         if line[6] == '+':
             tss = int(line[3])
             tts = int(line[4])
@@ -107,11 +108,12 @@ for idx, line in enumerate(oh):
 
     elif line[6] == '-':
         # check the 5' of the 'exon' is not the TSS:
-        if l != tss:
+        #print(l, r, tss, tts, line)
+        if l != tts:
             seq = utils.rc(hg38.getSequence('{}:{}-{}'.format(c, l-2, l-1)).upper()) # ....NN|RNA
             p5[k][seq] += 1
 
-        if r != tts:
+        if r != tss:
             seq = utils.rc(hg38.getSequence('{}:{}-{}'.format(c, r+1, r+2)).upper()) # RNA|NN...
             p3[k][seq] += 1
 
@@ -119,14 +121,11 @@ for idx, line in enumerate(oh):
 
     if idx % 1e4 == 0:
         print('{:,}'.format(idx))
-        #break
-
-print(p5)
-print(p3)
 
 for k in p5:
+    done = sum(p5[k].values())
     oh = open('hpsc_transcriptome_{}_results.tsv'.format(k), 'wt')
     oh.write("sequence\t5'\t5'%\t3'\t3'%\n")
     for seq in sorted(p5[k].keys()):
-        oh.write('{}\t{}\t{:.2f}%\t{}\t{:.2f}%\n'.format(seq, p5[k][seq], p5[k][seq]/done[k]*100, p3[k][seq], p3[k][seq]/done[k]*100))
+        oh.write('{}\t{}\t{:.2f}%\t{}\t{:.2f}%\n'.format(seq, p5[k][seq], p5[k][seq]/done*100, p3[k][seq], p3[k][seq]/done*100))
     oh.close()

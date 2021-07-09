@@ -124,12 +124,19 @@ for te in sorted(res_coding_family, reverse=True):
 shared.boxplots('family-pc.pdf', data, qs=ps_coding_family, no_TE_key=None)
 
 data = {}
+new_res_ncrna_family = {}
+for k in res_ncrna_family:
+    if len(res_ncrna_family[k]) > 50:
+        new_res_ncrna_family[k] = res_ncrna_family[k]
+
+res_ncrna_family = new_res_ncrna_family
+
 for te in sorted(res_ncrna_family, reverse=True):
     if True in [i in te for i in skips]:
         continue
     data[te] = res_ncrna_family[te]
 
-shared.boxplots('family-ncrna.pdf', data, qs=ps_ncrna_family, no_TE_key=None)
+shared.boxplots('family-ncrna.pdf', data, qs=ps_ncrna_family, no_TE_key=None, xlims=[-5.1, 5.1])
 
 coding_tes = [
     'DNA:TcMar-Tigger:Tigger1',

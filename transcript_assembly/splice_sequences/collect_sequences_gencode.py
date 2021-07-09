@@ -81,11 +81,11 @@ for idx, line in enumerate(oh):
 
     elif line[6] == '-':
         # check the 5' of the 'exon' is not the TSS:
-        if l != tss:
+        if l != tts:
             seq = utils.rc(hg38.getSequence('{}:{}-{}'.format(c, l-2, l-1)).upper()) # ....NN|RNA
             p5[seq] += 1
 
-        if r != tts:
+        if r != tss:
             seq = utils.rc(hg38.getSequence('{}:{}-{}'.format(c, r+1, r+2)).upper()) # RNA|NN...
             p3[seq] += 1
 
@@ -96,6 +96,14 @@ for idx, line in enumerate(oh):
 
 print(p5)
 print(p3)
+
+done1 = sum(list(p5.values()))
+done2 = sum(list(p3.values()))
+if done1 != done2:
+    print('Mismatch!')
+    1/0
+
+done = done1
 
 oh = open('genocde_results.tsv', 'wt')
 oh.write("sequence\t5'\t5'%\t3'\t3'%\n")
