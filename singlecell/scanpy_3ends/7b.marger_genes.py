@@ -6,8 +6,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
 from matplotlib import colors
-import seaborn as sb
-from rpy2.robjects.packages import importr
 from glbase3 import glload
 #from gprofiler import gprofiler
 plt.rcParams['figure.figsize']=(8,8) #rescale figures
