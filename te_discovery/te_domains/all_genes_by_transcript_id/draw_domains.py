@@ -20,7 +20,7 @@ import shared
 draw = 'pdf'
 
 [os.remove(f) for f in glob.glob('%s/*/*/*.%s' % (draw, draw))]
-[os.remove(f) for f in glob.glob('%s/*/*.%s' % (draw, draw))]
+[os.remove(f) for f in glob.glob('%s/*.%s' % (draw, draw))]
 
 doms = glload('../../te_transcripts/transcript_table_merged.mapped.glb')
 CDSs = glload('../../../transcript_assembly/get_CDS/coding_genes_with_local_CDS-corrected.glb')

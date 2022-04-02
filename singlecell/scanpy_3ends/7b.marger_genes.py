@@ -45,6 +45,7 @@ sc.pl.heatmap(adata, marker_genes_dict, groupby='leiden_r0.60', show=False, save
 '''
 
 genes_to_do = [
+    'TPRX1',
     # Senescence;
     'EIF4EBP1', 'EEF1E1', 'CDK8', 'TP53', 'CDKN1A', 'FOXO1', 'TGFB1',
     'POU5F1', 'SOX2', 'UTF1', 'NANOG', 'DPPA2', 'LEFTY2', 'KLF4', 'LIN28A', 'PCAT14', 'ESRRB', 'PIF1',

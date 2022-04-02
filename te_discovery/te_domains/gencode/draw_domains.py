@@ -5,7 +5,7 @@ Draw protein domain-style plots, but containing the locations of the TEs
 
 The plots should be the mRNA, with a protein coding exon (if present), and the location of the TE;
 
-This version will draw all canonical domains, even if they have no TE. 
+This version will draw all canonical domains, even if they have no TE.
 From GENCODE;
 
 '''
@@ -22,17 +22,20 @@ draw = 'pdf'
 
 if not os.path.isdir(draw):
     os.mkdir(draw)
-    
+
 [os.remove(f) for f in glob.glob('%s/*.%s' % (draw, draw))]
 
-GENCODE = glload('../../../gencode/hg38_gencode_v32.glb')
+GENCODE = glload('../../te_transcripts/transcript_table_gencode_all.glb')
 CDSs = glload('../../../transcript_assembly/get_CDS/gencode_cds.glb')
 dfam = genelist('../../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
 
-cds_doms = GENCODE.map(genelist=CDSs, key='enst')
+#cds_doms = GENCODE.map(genelist=CDSs, key='enst')
+cds_doms = GENCODE
 print(cds_doms)
 
 genes = set([
+    'XACT',
+    'XIST',
     'ANKRD36',
     'ARHGAP40',
     'ARHGEF6',
@@ -131,19 +134,3 @@ for n, gene in enumerate(cds_doms):
     if (n+1) % 1000 == 0:
         print('Processed: {:,} domains'.format(n+1))
         #break
-
-transcript_ids = [
-    # GRP 4:
-    'HPSCSR.157359.37','HPSCSR.1172.31', 'HPSCSR.157359.37', 'HPSCSR.157359.37',
-    ]
-
-gl = genelist()
-gl.load_list([{'transcript_id': i} for i in transcript_ids])
-tids = doms.map(genelist=gl, key='transcript_id')
-
-for gene in tids:
-    draw_domains_share.draw_domain(gene, '%s/%s.%s.%s.%s' % (draw, gene['name'], gene['transcript_id'], gene['enst'], draw), dfam)
-
-    if (n+1) % 1000 == 0:
-        print('Processed: {:,} domains'.format(n+1))
-

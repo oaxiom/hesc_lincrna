@@ -41,6 +41,12 @@ for filename in glob.glob('2.blast_searches/masked/*.glb'):
 
     res_per_gene[stub] = {k: 0 for k in pep_hits['name']}
 
+print(res_per_gene)
+
+# total number of transcripts:
+tot_trans = sum([len(res_per_gene[k].values()) for k in res_per_gene])
+print('Total transcripts considered: {}'.format(tot_trans))
+
 for transcript in all_matches:
     if 'table_variant_coding_but_noTE' in transcript['class']:
         continue

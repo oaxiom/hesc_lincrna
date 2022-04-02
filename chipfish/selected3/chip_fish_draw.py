@@ -14,6 +14,7 @@ c.startup(os.path.expanduser("../trk_TEs_3.txt"))
 gllocs = glload('../../transcript_assembly/packed/all_genes.glb') # needed for noTE
 
 locs = [
+    'ERVH48-1',
     'PMPCB',
     'PCAT14',
     'TFCP2L1', # LBP9

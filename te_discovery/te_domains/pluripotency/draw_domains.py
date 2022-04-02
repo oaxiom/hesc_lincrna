@@ -26,7 +26,9 @@ CDSs = glload('../../../transcript_assembly/get_CDS/coding_genes_with_local_CDS-
 CDSs = {i['transcript_id']: i for i in CDSs}
 dfam = genelist('../../dfam/dfam_annotation.tsv', format={'force_tsv': True, 'name': 0, 'type': 3, 'subtype': 4})
 
-genes = set(['SOX2', 'NANOG', 'SALL4', 'LIN28A', 'LIN28B', 'SALL1', 'POU5F1A',
+genes = set([
+    'XIST',
+    'SOX2', 'NANOG', 'SALL4', 'LIN28A', 'LIN28B', 'SALL1', 'POU5F1A',
     'DPPA2', 'DPPA3', 'DPPA5A', 'PRDM14', 'JARID2', 'SALL2', 'SALL3', 'TCF3',
     'ZFP42', 'C9ORF135', 'ST6GAL1', 'LRP4', 'MSTO1', 'PRODH',# From Pontis et al., 2019 CSC
     'ESRRB', 'LIN28A', 'LIN28B', 'PRDM14',
@@ -51,11 +53,11 @@ for n, gene in enumerate(doms):
     #print(gene['name'].split(' ')[0])
     if gene['name'].split(' ')[0] not in genes:
         continue
-    
+
     if gene['transcript_id'] in CDSs:
         gene['cds_local_locs'] = CDSs[gene['transcript_id']]['cds_local_locs']
 
-    draw_domains_share.draw_domain(gene, '%s/%s.%s.%s.%s' % (draw, gene['name'], gene['transcript_id'], gene['enst'], draw), 
+    draw_domains_share.draw_domain(gene, '%s/%s.%s.%s.%s' % (draw, gene['name'], gene['transcript_id'], gene['enst'], draw),
         dfam)
 
     if (n+1) % 1000 == 0:

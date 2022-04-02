@@ -21,7 +21,7 @@ draw = 'pdf'
 
 if not os.path.isdir(draw):
     os.mkdir(draw)
-    
+
 [os.remove(f) for f in glob.glob('%s/*.%s' % (draw, draw))]
 
 doms = glload('../../te_transcripts/transcript_table_merged.mapped.glb')
@@ -32,6 +32,7 @@ cds_doms = doms.map(genelist=CDSs, key='transcript_id')
 print(cds_doms)
 
 genes = set([
+    'XIST',
     'AC005099.1', 'UQCRHL', 'AC005099.1', 'AC005099.1', # GRP 4;
     'SOX2', 'NANOG', 'SALL4', 'LIN28A', 'LIN28B', 'SALL1', 'POU5F1', 'BRCA1', 'BRCA2',
     'DPPA2', 'DPPA3', 'DPPA5', 'PRDM14', 'JARID2', 'SALL2', 'SALL3', 'TCF3',
